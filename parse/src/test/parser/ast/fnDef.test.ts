@@ -138,13 +138,14 @@ describe('parser', () => {
                       params: [],
                     },
                   },
-                  body: [
+                  do: [
                     {
                       type: 'fnCall',
                       name: 'RGB_MATRIX_INDICATOR_SET_COLOR',
                       params: [73, 255, 255, 255],
                     },
                   ],
+                  else: [],
                 },
               ],
             },

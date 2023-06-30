@@ -5,10 +5,12 @@ import {
   EnumNode,
   FnCallNode,
   FnDefNode,
+  IfNode,
   IncludeNode,
   ReturnNode,
   StatementNode,
   StatementsNode,
+  SwitchCaseNode,
   ValueExprNode,
   VarNode,
 } from './types';
@@ -240,14 +242,40 @@ export class ToAst extends parser.getBaseCstVisitorConstructor() {
     };
   }
 
-  ifFlow(ctx: any) {
+  ifFlow(ctx: any): IfNode {
     return {
       type: 'if',
       condition: this.visit(ctx.conditionValue[0]),
-      body: ctx.body?.map((b) => this.visit(b)) || [],
+      do: ctx.body?.map((b) => this.visit(b)) || [],
+      else: [],
     };
   }
   whileFlow(ctx: any) {
+    return ctx;
+  }
+  switchFlow(ctx: any): SwitchCaseNode {
+    const cases = ctx.cases?.map((c) => this.visit(c)) || [];
+    return {
+      type: 'switch',
+      value: this.visit(ctx.value[0]),
+      cases: cases,
+    };
+  }
+  switchCase(ctx: any): SwitchCaseNode['cases'][number] {
+    const matches = ctx.matches.map((m) => this.visit(m));
+    return {
+      matches: matches.filter((m) => m?.type !== 'case_default'),
+      default: matches.some((m) => m?.type === 'case_default'),
+      do: ctx.do?.map((d) => this.visit(d)) || [],
+    };
+  }
+  switchCaseMatch(ctx: any): { type: 'case_default' } | ValueExprNode {
+    if (ctx.default) {
+      return { type: 'case_default' };
+    }
+    if (ctx.case) {
+      return this.visit(ctx.value[0]);
+    }
     return ctx;
   }
 }

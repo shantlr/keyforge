@@ -45,7 +45,34 @@ export type FnDefNode = {
     modifier?: string;
     arrayDim?: null;
   }[];
-  body: any[];
+  body: FnInstructionNode[];
+};
+export type FnInstructionNode =
+  | ReturnNode
+  | FnCallNode
+  | IfNode
+  | WhileNode
+  | SwitchCaseNode;
+
+export type IfNode = {
+  type: 'if';
+  condition: ValueExprNode;
+  do: FnInstructionNode[];
+  else: FnInstructionNode[];
+};
+export type WhileNode = {
+  type: 'while';
+  condition: ValueExprNode;
+  do: FnInstructionNode[];
+};
+export type SwitchCaseNode = {
+  type: 'switch';
+  value: ValueExprNode;
+  cases: {
+    matches: ValueExprNode[];
+    default: boolean;
+    do: FnInstructionNode[];
+  }[];
 };
 export type ReturnNode = {
   type: 'return';

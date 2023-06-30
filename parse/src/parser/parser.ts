@@ -35,6 +35,10 @@ const TOKENS = {
   true: createToken({ name: 'true', pattern: 'true' }),
   false: createToken({ name: 'false', pattern: 'false' }),
   dot: createToken({ name: 'dot', pattern: '.' }),
+  switch: createToken({ name: 'switch', pattern: 'switch' }),
+  case: createToken({ name: 'case', pattern: 'case' }),
+  default: createToken({ name: 'default', pattern: 'default' }),
+  colon: createToken({ name: 'colon', pattern: ':' }),
 
   const: createToken({
     name: 'const',
@@ -153,6 +157,10 @@ const allTokens = [
   TOKENS.gt,
   TOKENS.lte,
   TOKENS.lt,
+  TOKENS.switch,
+  TOKENS.case,
+  TOKENS.default,
+  TOKENS.colon,
 
   TOKENS.num,
   TOKENS.identifier,
@@ -391,6 +399,11 @@ class CParser extends CstParser {
           this.SUBRULE(this.whileStatement);
         },
       },
+      {
+        ALT: () => {
+          this.SUBRULE(this.switchStatement);
+        },
+      },
     ]);
   });
 
@@ -441,6 +454,69 @@ class CParser extends CstParser {
   whileStatement = this.RULE('whileFlow', () => {
     this.CONSUME(TOKENS.while);
     this.CONSUME(TOKENS.pthStart);
+  });
+  switchStatement = this.RULE('switchFlow', () => {
+    this.CONSUME(TOKENS.switch);
+    this.CONSUME(TOKENS.pthStart);
+    this.SUBRULE(this.valueExpression, {
+      LABEL: 'value',
+    });
+    this.CONSUME(TOKENS.pthEnd);
+    this.CONSUME(TOKENS.blockStart);
+    this.MANY(() => {
+      this.SUBRULE(this.switchCase, {
+        LABEL: 'cases',
+      });
+    });
+    this.CONSUME(TOKENS.blockEnd);
+  });
+  switchCase = this.RULE('switchCase', () => {
+    this.AT_LEAST_ONE(() => {
+      this.SUBRULE(this.switchCaseMatch, {
+        LABEL: 'matches',
+      });
+    });
+    this.OR([
+      {
+        GATE: () => this.LA(1).tokenType === TOKENS.blockStart,
+        ALT: () => {
+          this.CONSUME(TOKENS.blockStart);
+          this.MANY(() => {
+            this.SUBRULE1(this.fnStatement, {
+              LABEL: 'do',
+            });
+          });
+          this.CONSUME(TOKENS.blockEnd);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE2(this.fnStatement, {
+            LABEL: 'do',
+          });
+        },
+      },
+    ]);
+  });
+  switchCaseMatch = this.RULE('switchCaseMatch', () => {
+    this.OR([
+      {
+        GATE: () => this.LA(1).tokenType === TOKENS.case,
+        ALT: () => {
+          this.CONSUME(TOKENS.case);
+          this.SUBRULE(this.valueExpression, {
+            LABEL: 'value',
+          });
+          this.CONSUME1(TOKENS.colon);
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.default);
+          this.CONSUME2(TOKENS.colon);
+        },
+      },
+    ]);
   });
 
   typedIdentifier = this.RULE('typedIdentifier', () => {
