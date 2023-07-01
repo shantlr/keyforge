@@ -154,6 +154,58 @@ describe('parser', () => {
           ],
         });
       });
+
+      it.only('should parse fn if else', () => {
+        const res = parserCFile(`
+        bool rgb_matrix_indicators_advanced_user() {
+          if (host_keyboard_led_state().caps_lock) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        `);
+        expect(res).toEqual({
+          type: 'statements',
+          values: [
+            {
+              type: 'fnDef',
+              name: 'rgb_matrix_indicators_advanced_user',
+              returnType: 'bool',
+              params: [],
+              body: [
+                {
+                  type: 'if',
+                  condition: {
+                    type: 'postDotIndex',
+                    values: [
+                      {
+                        type: 'postCall',
+                        fn: 'host_keyboard_led_state',
+                        calls: [[]],
+                      },
+                      'caps_lock',
+                    ],
+                  },
+                  do: [
+                    {
+                      type: 'return',
+                      value: true,
+                    },
+                  ],
+                  elseifs: [],
+                  else: [
+                    {
+                      type: 'return',
+                      value: false,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+      });
     });
   });
 });

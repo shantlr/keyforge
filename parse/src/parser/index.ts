@@ -46,15 +46,12 @@ export const parserCFile = (fileContent: string) => {
     });
     // @ts-ignore
     throw new Error('FAILED TO PARSE', { cause: parser.errors });
-    // return null;
   } else if (parseRes) {
     // console.log('RES:', JSON.stringify(parseRes, null, 2));
     // console.log('---');
     // console.log('---');
 
-    // const visitor = new ToAst();
     const ast = toCAst(parseRes);
-    // const ast = visitor.visit(parseRes);
 
     return ast as StatementsNode;
   }

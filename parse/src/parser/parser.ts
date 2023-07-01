@@ -363,12 +363,6 @@ export class CParser extends CstParser {
   });
   fnStatement = this.RULE('fnStatement', () => {
     this.OR([
-      // {
-      //   ALT: () => {
-      //     this.SUBRULE(this.fnCall);
-      //     this.CONSUME(TOKENS.semicolon);
-      //   },
-      // },
       {
         ALT: () => {
           this.SUBRULE(this.varDeclaration);
@@ -420,34 +414,92 @@ export class CParser extends CstParser {
     // condition
     this.CONSUME(TOKENS.pthStart);
     this.SUBRULE(this.valueExpression, {
-      LABEL: 'conditionValue',
+      LABEL: 'condition',
     });
     this.CONSUME(TOKENS.pthEnd);
 
     // body
-    const next = this.LA(1);
-    const isBlockBody = next.tokenType === TOKENS.blockStart;
-    if (isBlockBody) {
-      this.CONSUME(TOKENS.blockStart);
-    } else {
-      this.SUBRULE1(this.fnStatement, {
-        LABEL: 'body',
-      });
-    }
-
-    this.MANY({
-      GATE: () => isBlockBody,
-      DEF: () => {
-        this.SUBRULE2(this.fnStatement, {
-          LABEL: 'body',
-        });
-      },
+    this.SUBRULE(this.statementBlock, {
+      LABEL: 'do',
     });
 
-    if (isBlockBody) {
-      this.CONSUME(TOKENS.blockEnd);
-    }
+    this.MANY(() => {
+      this.SUBRULE(this.elseif, {
+        LABEL: 'elseifs',
+      });
+    });
+    this.OPTION(() => {
+      this.SUBRULE(this.elseCase, {
+        LABEL: 'else',
+      });
+    });
   });
+  elseif = this.RULE('elseif', () => {
+    this.CONSUME(TOKENS.else);
+    this.CONSUME(TOKENS.if);
+    this.CONSUME(TOKENS.pthStart);
+    this.SUBRULE(this.valueExpression, {
+      LABEL: 'condition',
+    });
+    this.CONSUME(TOKENS.pthEnd);
+    this.SUBRULE(this.statementBlock, {
+      LABEL: 'do',
+    });
+  });
+  elseCase = this.RULE('elseCase', () => {
+    this.CONSUME(TOKENS.else);
+    this.SUBRULE(this.statementBlock, {
+      LABEL: 'do',
+    });
+  });
+
+  statementBlock = this.RULE('statementBlock', () => {
+    this.OR([
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.blockStart);
+          this.MANY(() => {
+            this.SUBRULE1(this.fnStatement, {
+              LABEL: 'do',
+            });
+          });
+          this.CONSUME(TOKENS.blockEnd);
+        },
+      },
+      {
+        GATE: () => this.LA(1).tokenType !== TOKENS.blockStart,
+        ALT: () => {
+          this.SUBRULE2(this.fnStatement, {
+            LABEL: 'do',
+          });
+        },
+      },
+    ]);
+
+    // const next = this.LA(1);
+    // const isBlockBody = next.tokenType === TOKENS.blockStart;
+    // if (isBlockBody) {
+    //   this.CONSUME(TOKENS.blockStart);
+    // } else {
+    //   this.SUBRULE1(this.fnStatement, {
+    //     LABEL: 'body',
+    //   });
+    // }
+
+    // this.MANY({
+    //   GATE: () => isBlockBody,
+    //   DEF: () => {
+    //     this.SUBRULE2(this.fnStatement, {
+    //       LABEL: 'body',
+    //     });
+    //   },
+    // });
+
+    // if (isBlockBody) {
+    //   this.CONSUME(TOKENS.blockEnd);
+    // }
+  });
+
   whileStatement = this.RULE('whileStatement', () => {
     this.CONSUME(TOKENS.while);
     this.CONSUME(TOKENS.pthStart);
@@ -557,22 +609,6 @@ export class CParser extends CstParser {
       });
     });
   });
-
-  // fnCall = this.RULE('fnCall', () => {
-  //   this.CONSUME(TOKENS.identifier, {
-  //     LABEL: 'name',
-  //   });
-  //   this.CONSUME(TOKENS.pthStart);
-  //   this.MANY_SEP({
-  //     SEP: TOKENS.comma,
-  //     DEF: () => {
-  //       this.SUBRULE(this.valueExpression, {
-  //         LABEL: 'params',
-  //       });
-  //     },
-  //   });
-  //   this.CONSUME(TOKENS.pthEnd);
-  // });
 
   valueExpression = this.RULE('valueExpression', () => {
     this.SUBRULE(this.valueAddExpression);

@@ -58,6 +58,11 @@ export type IfNode = {
   type: 'if';
   condition: ValueExprNode;
   do: FnInstructionNode[];
+
+  elseifs: {
+    condition: ValueExprNode;
+    do: FnInstructionNode[];
+  }[];
   else: FnInstructionNode[];
 };
 export type WhileNode = {

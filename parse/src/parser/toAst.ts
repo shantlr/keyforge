@@ -6,6 +6,7 @@ import {
   DefineNode,
   EnumNode,
   FnDefNode,
+  FnInstructionNode,
   IfNode,
   IncludeNode,
   ReturnNode,
@@ -87,7 +88,7 @@ export const toCAst = createVisitor(parser, {
     ) as ReturnType<(typeof this)['typedIdentifier']>;
     return {
       type: 'var',
-      const: ctx.const.length > 0,
+      const: ctx.const?.length > 0,
       varType,
       arrayDim,
       modifier,
@@ -364,13 +365,26 @@ export const toCAst = createVisitor(parser, {
   },
   //#endregion
 
-  ifStatement(ctx: any, visit): IfNode {
+  ifStatement(ctx, visit): IfNode {
     return {
       type: 'if',
-      condition: visit(ctx.conditionValue[0]),
-      do: ctx.body?.map((b) => toCAst(b)) || [],
-      else: [],
+      condition: visit(ctx.condition[0]),
+      do: ctx.do ? visit(ctx.do[0]) : [],
+      elseifs: ctx.elseifs?.map((e) => visit(e)) || [],
+      else: ctx.else ? visit(ctx.else[0]) : [],
     };
+  },
+  elseif(ctx, visit): IfNode['elseifs'][number] {
+    return {
+      condition: visit(ctx.condition[0]),
+      do: visit(ctx.do[0]),
+    };
+  },
+  elseCase(ctx, visit): FnInstructionNode[] {
+    return visit(ctx.do[0]);
+  },
+  statementBlock(ctx, visit) {
+    return ctx.do?.map((d) => visit(d)) || [];
   },
   whileStatement(ctx: any) {
     return ctx;

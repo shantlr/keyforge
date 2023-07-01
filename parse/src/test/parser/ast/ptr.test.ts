@@ -4,17 +4,17 @@ describe('parse', () => {
   describe('ast', () => {
     describe('ptr', () => {
       it('should parse ptr access', () => {
-        // const res = parserCFile(`
-        //   bool music_mask_user() {
-        //     switch (keycode) {
-        //       case RAISE:
-        //       case LOWER:
-        //         return false;
-        //       default:
-        //         return true;
-        //     }
-        //   }
-        // `);
+        const res = parserCFile(`
+          bool music_mask_user() {
+            switch (keycode) {
+              case RAISE:
+              case LOWER:
+                return false;
+              default:
+                return true;
+            }
+          }
+        `);
         // expect(res).toEqual({
         //   type: 'statements',
         //   values: [
