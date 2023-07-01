@@ -125,6 +125,22 @@ const TOKENS = {
     name: 'slash',
     pattern: '/',
   }),
+  and: createToken({
+    name: 'and',
+    pattern: '&&',
+  }),
+  amp: createToken({
+    name: 'amp',
+    pattern: '&',
+  }),
+  or: createToken({
+    name: 'or',
+    pattern: '||',
+  }),
+  pipe: createToken({
+    name: 'pipe',
+    pattern: '|',
+  }),
 
   num: createToken({ name: 'num', pattern: /\d+/ }),
   identifier: createToken({ name: 'identifier', pattern: /[a-zA-Z0-9-_]+/ }),
@@ -185,6 +201,11 @@ const allTokens = [
   TOKENS.gt,
   TOKENS.lte,
   TOKENS.lt,
+
+  TOKENS.and,
+  TOKENS.or,
+  TOKENS.amp,
+  TOKENS.pipe,
 
   TOKENS.num,
   TOKENS.identifier,
@@ -670,49 +691,72 @@ export class CParser extends CstParser {
   });
 
   valueExpression = this.RULE('valueExpression', () => {
-    this.SUBRULE(this.valueAddExpression);
+    this.SUBRULE(this.valueOrExpression);
+  });
+
+  valueOrExpression = this.RULE('valueOrExpression', () => {
+    this.SUBRULE1(this.valueAndExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.or);
+      this.SUBRULE2(this.valueAndExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueAndExpression = this.RULE('valueAndExpression', () => {
+    this.SUBRULE1(this.valueAddExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.and);
+      this.SUBRULE2(this.valueAddExpression, {
+        LABEL: 'rights',
+      });
+    });
   });
 
   valueAddExpression = this.RULE('valueAddExpression', () => {
-    this.SUBRULE(this.valueSubtractExpression, {
+    this.SUBRULE1(this.valueSubtractExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.plus);
-      this.SUBRULE(this.valueExpression, {
+      this.SUBRULE2(this.valueSubtractExpression, {
         LABEL: 'rights',
       });
     });
   });
   valueSubtractExpression = this.RULE('valueSubtractExpression', () => {
-    this.SUBRULE(this.valueMultExpression, {
+    this.SUBRULE1(this.valueMultExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.minus);
-      this.SUBRULE(this.valueExpression, {
+      this.SUBRULE2(this.valueMultExpression, {
         LABEL: 'rights',
       });
     });
   });
   valueMultExpression = this.RULE('valueMultExpression', () => {
-    this.SUBRULE(this.valueDivideExpression, {
+    this.SUBRULE1(this.valueDivideExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.asterisk);
-      this.SUBRULE(this.valueExpression, {
+      this.SUBRULE2(this.valueDivideExpression, {
         LABEL: 'rights',
       });
     });
   });
   valueDivideExpression = this.RULE('valueDivideExpression', () => {
-    this.SUBRULE(this.valueWithPostExpression, {
+    this.SUBRULE1(this.valueWithPostExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.slash);
-      this.SUBRULE(this.valueExpression, {
+      this.SUBRULE2(this.valueWithPostExpression, {
         LABEL: 'rights',
       });
     });
@@ -750,35 +794,35 @@ export class CParser extends CstParser {
     this.SUBRULE(this.valueWithPosBracketIndex);
   });
   valueWithPosBracketIndex = this.RULE('valueWithPosBracketIndex', () => {
-    this.SUBRULE(this.valueWithPostDotIndex, {
+    this.SUBRULE1(this.valueWithPostDotIndex, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.bracketStart);
-      this.SUBRULE(this.valueExpression, {
+      this.SUBRULE2(this.valueWithPostDotIndex, {
         LABEL: 'rights',
       });
       this.CONSUME(TOKENS.bracketEnd);
     });
   });
   valueWithPostDotIndex = this.RULE('valueWithPostDotIndex', () => {
-    this.SUBRULE(this.valueWithPostArrowIndex, {
+    this.SUBRULE1(this.valueWithPostArrowIndex, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.dot);
-      this.SUBRULE(this.valueExpression, {
+      this.SUBRULE2(this.valueWithPostArrowIndex, {
         LABEL: 'rights',
       });
     });
   });
   valueWithPostArrowIndex = this.RULE('valueWithPostArrowIndex', () => {
-    this.SUBRULE(this.valueWithPostCall, {
+    this.SUBRULE1(this.valueWithPostCall, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.arrow);
-      this.SUBRULE(this.valueExpression, {
+      this.SUBRULE2(this.valueWithPostCall, {
         LABEL: 'rights',
       });
     });

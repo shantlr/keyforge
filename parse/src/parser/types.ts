@@ -127,7 +127,23 @@ export type PostCallNode = {
   fn: ValueExprNode;
   calls: ValueExprNode[][];
 };
+export type PostIncNode = {
+  type: 'postInc';
+  values: ValueExprNode[];
+};
+export type PostDecNode = {
+  type: 'postDec';
+  values: ValueExprNode[];
+};
 
+export type AndNode = {
+  type: 'and';
+  values: ValueExprNode[];
+};
+export type OrNode = {
+  type: 'or';
+  values: ValueExprNode[];
+};
 export type AddNode = {
   type: 'add';
   values: ValueExprNode[];
@@ -153,6 +169,8 @@ export type ValueExprNode =
   | true
   | false
   | StringNode
+  | AndNode
+  | OrNode
   | AddNode
   | SubtractNode
   | MultNode
@@ -160,7 +178,9 @@ export type ValueExprNode =
   | PostArrowIndexNode
   | PostBracketIndexNode
   | PostDotIndexNode
-  | PostCallNode;
+  | PostCallNode
+  | PostIncNode
+  | PostDecNode;
 
 export type VoidNode = {
   type: 'void';

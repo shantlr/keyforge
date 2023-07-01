@@ -1,10 +1,10 @@
-import { parserCFile } from '../../../parser';
+import { parseC } from '../../../parser';
 
 describe('parse', () => {
   describe('ast', () => {
     describe('switch case', () => {
       it('should parse switch case with default', () => {
-        const res = parserCFile(`
+        const res = parseC(`
           bool music_mask_user() {
             switch (keycode) {
               case RAISE:

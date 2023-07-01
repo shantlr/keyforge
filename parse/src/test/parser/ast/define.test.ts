@@ -1,10 +1,10 @@
-import { parserCFile } from '../../../parser';
+import { parseC } from '../../../parser';
 
 describe('parser', () => {
   describe('ast', () => {
     describe('define', () => {
       it('should parse empty define', () => {
-        const res = parserCFile(`#define TEST`);
+        const res = parseC(`#define TEST`);
         expect(res).toEqual({
           type: 'statements',
           values: [{ type: 'define', name: 'TEST', value: null }],
@@ -12,7 +12,7 @@ describe('parser', () => {
       });
 
       it('should parse define fnCall', () => {
-        const res = parserCFile(`#define TEST FN(ARG)`);
+        const res = parseC(`#define TEST FN(ARG)`);
         expect(res).toEqual({
           type: 'statements',
           values: [
@@ -30,7 +30,7 @@ describe('parser', () => {
       });
 
       it('should parse ifdef', () => {
-        const res = parserCFile(`
+        const res = parseC(`
           #ifdef TEST
           int var = 1;
           #endif
@@ -57,7 +57,7 @@ describe('parser', () => {
         });
       });
       it('should parse if defined', () => {
-        const res = parserCFile(`
+        const res = parseC(`
           #if defined(TEST)
           int var = 1;
           #endif

@@ -1,7 +1,6 @@
 import { createVisitor, visitSubRule } from './createVisitor';
 import { parser } from './parser';
 import {
-  AddNode,
   ArrayNode,
   DefineNode,
   EnumNode,
@@ -13,7 +12,6 @@ import {
   ReturnNode,
   StatementNode,
   StatementsNode,
-  SubtractNode,
   SwitchCaseNode,
   ValueExprNode,
   VarNode,
@@ -127,21 +125,37 @@ export const toCAst = createVisitor(parser, {
   },
 
   //#region value expression
-  valueExpression(ctx: any): ValueExprNode {
-    let value: ValueExprNode = visitSubRule(ctx, toCAst, {
+  valueExpression(ctx, visit): ValueExprNode {
+    let value: ValueExprNode = visitSubRule(ctx, visit, {
       omit: ['post'],
       name: 'valueExpression',
     });
 
-    if (ctx.post) {
-      ctx.post.forEach((p) => {
-        console.log(p);
-      });
-    }
-
     return value;
   },
-  valueAddExpression(ctx, visit): AddNode {
+  valueAndExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'and',
+      values: [left, ...rights],
+    };
+  },
+  valueOrExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'or',
+      values: [left, ...rights],
+    };
+  },
+  valueAddExpression(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -153,7 +167,7 @@ export const toCAst = createVisitor(parser, {
       values: [left, ...rights],
     };
   },
-  valueSubtractExpression(ctx, visit): SubtractNode {
+  valueSubtractExpression(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -165,7 +179,7 @@ export const toCAst = createVisitor(parser, {
       values: [left, ...rights],
     };
   },
-  valueMultExpression(ctx, visit) {
+  valueMultExpression(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -177,7 +191,7 @@ export const toCAst = createVisitor(parser, {
       values: [left, ...rights],
     };
   },
-  valueDivideExpression(ctx, visit) {
+  valueDivideExpression(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -189,12 +203,12 @@ export const toCAst = createVisitor(parser, {
       values: [left, ...rights],
     };
   },
-  valueWithPostExpression(ctx, visit) {
+  valueWithPostExpression(ctx, visit): ValueExprNode {
     return visitSubRule(ctx, visit, {
       name: 'valueWithPostExpression',
     });
   },
-  valueWithPosBracketIndex(ctx, visit) {
+  valueWithPosBracketIndex(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -206,7 +220,7 @@ export const toCAst = createVisitor(parser, {
       values: [left, ...rights],
     };
   },
-  valueWithPostDotIndex(ctx, visit) {
+  valueWithPostDotIndex(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -218,7 +232,7 @@ export const toCAst = createVisitor(parser, {
       values: [left, ...rights],
     };
   },
-  valueWithPostArrowIndex(ctx, visit) {
+  valueWithPostArrowIndex(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -230,7 +244,7 @@ export const toCAst = createVisitor(parser, {
       values: [left, ...rights],
     };
   },
-  valueWithPostCall(ctx, visit) {
+  valueWithPostCall(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -246,7 +260,7 @@ export const toCAst = createVisitor(parser, {
   valueWithPostCallArgList(ctx, visit) {
     return ctx.list?.map((l) => visit(l)) || [];
   },
-  valuePostInc(ctx, visit) {
+  valuePostInc(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {
@@ -258,7 +272,7 @@ export const toCAst = createVisitor(parser, {
       values: [left, ...rights],
     };
   },
-  valuePostDec(ctx, visit) {
+  valuePostDec(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
     if (!rights?.length) {

@@ -1,10 +1,10 @@
-import { parserCFile } from '../../../parser';
+import { parseC } from '../../../parser';
 
 describe('parser', () => {
   describe('ast', () => {
     describe('def array', () => {
       it('should parse defined array var', () => {
-        const res = parserCFile(`
+        const res = parseC(`
         const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
           [_DEF] = LAYOUT_all(KC_A, KC_B, KC_C),
           [_FNC] = LAYOUT_all(KC_1, KC_2, KC_3)

@@ -7,13 +7,15 @@ import { StatementsNode } from './types';
 export * from './types';
 export { lexer, parser } from './parser';
 
-export const parserCFile = (fileContent: string) => {
-  const lexRes = lexer.tokenize(fileContent);
+export const parseC = (
+  content: string,
+  callParserRule = (p: typeof parser) => p.statements()
+) => {
+  const lexRes = lexer.tokenize(content);
 
   parser.input = lexRes.tokens;
 
-  // @ts-ignore
-  const parseRes = parser.statements();
+  const cst = callParserRule(parser);
 
   if (parser.errors.length) {
     console.log('ERRORS:');
@@ -25,9 +27,9 @@ export const parserCFile = (fileContent: string) => {
         const off = err.token.startOffset;
 
         console.log(
-          `${fileContent.slice(off - 30, off)}${chalk.red(
-            fileContent[off]
-          )}${fileContent.slice(off + 1, off + 30)}`
+          `${content.slice(off - 30, off)}${chalk.red(
+            content[off]
+          )}${content.slice(off + 1, off + 30)}`
         );
       } else if (err instanceof NoViableAltException) {
         console.log(err);
@@ -36,9 +38,9 @@ export const parserCFile = (fileContent: string) => {
 
         const off = err.token.startOffset;
         console.log(
-          `${fileContent.slice(off - 30, off)}${chalk.red(
-            fileContent[off]
-          )}${fileContent.slice(off + 1, off + 30)}`
+          `${content.slice(off - 30, off)}${chalk.red(
+            content[off]
+          )}${content.slice(off + 1, off + 30)}`
         );
       } else {
         console.log(err);
@@ -46,12 +48,12 @@ export const parserCFile = (fileContent: string) => {
     });
     // @ts-ignore
     throw new Error('FAILED TO PARSE', { cause: parser.errors });
-  } else if (parseRes) {
+  } else if (cst) {
     // console.log('RES:', JSON.stringify(parseRes, null, 2));
     // console.log('---');
     // console.log('---');
 
-    const ast = toCAst(parseRes);
+    const ast = toCAst(cst);
 
     return ast as StatementsNode;
   }

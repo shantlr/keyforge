@@ -1,10 +1,10 @@
-import { parserCFile } from '../../../parser';
+import { parseC } from '../../../parser';
 
 describe('parser', () => {
   describe('ast', () => {
     describe('include', () => {
       it('should parse enum', () => {
-        const res = parserCFile(`enum test {
+        const res = parseC(`enum test {
           VAL_1,
           VAL_2,
           VAL_3

@@ -1,10 +1,10 @@
-import { parserCFile } from '../../../parser';
+import { parseC } from '../../../parser';
 
 describe('parser', () => {
   describe('ast', () => {
     describe('def fn', () => {
       it('should parse void fn', () => {
-        const res = parserCFile(`
+        const res = parseC(`
         void keyboard_post_init_user(void) {
           rgb_matrix_enable_noeeprom();
         }
@@ -30,7 +30,7 @@ describe('parser', () => {
       });
 
       it('should parse fn with params', () => {
-        const res = parserCFile(`
+        const res = parseC(`
         void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         }
         `);
@@ -62,7 +62,7 @@ describe('parser', () => {
       });
 
       it('should parse fn return boolean', () => {
-        const res = parserCFile(`
+        const res = parseC(`
         boolean rgb_matrix_indicators_advanced_user() {
           return true;
         }
@@ -86,7 +86,7 @@ describe('parser', () => {
         });
       });
       it('should parse fn return void', () => {
-        const res = parserCFile(`
+        const res = parseC(`
         void rgb_matrix_indicators_advanced_user() {
           return;
         }
@@ -111,7 +111,7 @@ describe('parser', () => {
       });
 
       it('should parse fn if', () => {
-        const res = parserCFile(`
+        const res = parseC(`
         void rgb_matrix_indicators_advanced_user() {
           if (host_keyboard_led_state().caps_lock) {
             RGB_MATRIX_INDICATOR_SET_COLOR(73, 255, 255, 255);
@@ -157,7 +157,7 @@ describe('parser', () => {
       });
 
       it('should parse fn if else', () => {
-        const res = parserCFile(`
+        const res = parseC(`
         bool rgb_matrix_indicators_advanced_user() {
           if (host_keyboard_led_state().caps_lock) {
             return true;
@@ -208,7 +208,7 @@ describe('parser', () => {
         });
       });
       it('should parse ifdef', () => {
-        const res = parserCFile(`
+        const res = parseC(`
           void matrix_scan_user(void) {
             #ifdef AUDIO_ENABLE
               return;
