@@ -28,6 +28,65 @@ describe('parser', () => {
           ],
         });
       });
+
+      it('should parse ifdef', () => {
+        const res = parserCFile(`
+          #ifdef TEST
+          int var = 1;
+          #endif
+        `);
+        expect(res).toEqual({
+          type: 'statements',
+          values: [
+            {
+              type: 'preprocIf',
+              condition: 'TEST',
+              value: [
+                {
+                  type: 'var',
+                  varType: 'int',
+                  modifier: undefined,
+                  arrayDim: null,
+                  const: false,
+                  name: 'var',
+                  value: 1,
+                },
+              ],
+            },
+          ],
+        });
+      });
+      it('should parse if defined', () => {
+        const res = parserCFile(`
+          #if defined(TEST)
+          int var = 1;
+          #endif
+        `);
+        expect(res).toEqual({
+          type: 'statements',
+          values: [
+            {
+              type: 'preprocIf',
+              condition: {
+                type: 'postCall',
+                fn: 'defined',
+                calls: [['TEST']],
+              },
+              value: [
+                {
+                  type: 'var',
+                  varType: 'int',
+                  modifier: undefined,
+                  arrayDim: null,
+                  const: false,
+                  name: 'var',
+                  value: 1,
+                },
+              ],
+            },
+          ],
+        });
+      });
     });
   });
 });

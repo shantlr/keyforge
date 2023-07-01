@@ -23,6 +23,10 @@ const TOKENS = {
 
   include: createToken({ name: 'include', pattern: '#include' }),
   define: createToken({ name: 'define', pattern: '#define' }),
+  ifdef: createToken({ name: 'ifdef', pattern: '#ifdef' }),
+  preprocIf: createToken({ name: 'preprocIf', pattern: '#if' }),
+  endif: createToken({ name: 'endif', pattern: '#endif' }),
+
   enum: createToken({ name: 'enum', pattern: 'enum' }),
   void: createToken({ name: 'void', pattern: 'void' }),
   if: createToken({ name: 'if', pattern: 'if' }),
@@ -133,8 +137,13 @@ const allTokens = [
   TOKENS.string,
 
   // Keywords
+  // Preprocessing
   TOKENS.enum,
   TOKENS.define,
+  TOKENS.ifdef,
+  TOKENS.endif,
+  TOKENS.preprocIf,
+
   TOKENS.include,
   TOKENS.const,
   TOKENS.void,
@@ -218,7 +227,23 @@ export class CParser extends CstParser {
           this.SUBRULE(this.varDeclaration);
         },
       },
+      {
+        ALT: () => {
+          this.SUBRULE(this.ifDefStatement);
+        },
+      },
     ]);
+  });
+  ifDefStatement = this.RULE('ifDefStatement', () => {
+    this.SUBRULE(this.ifDefCondition, {
+      LABEL: 'condition',
+    });
+    this.MANY(() => {
+      this.SUBRULE(this.statement, {
+        LABEL: 'do',
+      });
+    });
+    this.CONSUME(TOKENS.endif);
   });
 
   defineDeclaration = this.RULE('defineDeclaration', () => {
@@ -393,6 +418,40 @@ export class CParser extends CstParser {
       {
         ALT: () => {
           this.SUBRULE(this.switchStatement);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.ifDefFnStatement);
+        },
+      },
+    ]);
+  });
+  ifDefFnStatement = this.RULE('ifDefFnStatement', () => {
+    this.SUBRULE(this.ifDefCondition, {
+      LABEL: 'condition',
+    });
+    this.MANY(() => {
+      this.SUBRULE(this.fnStatement, {
+        LABEL: 'do',
+      });
+    });
+    this.CONSUME(TOKENS.endif);
+  });
+  ifDefCondition = this.RULE('ifDefCondition', () => {
+    this.OR([
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.ifdef);
+          this.CONSUME(TOKENS.identifier);
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.preprocIf);
+          this.SUBRULE(this.valueExpression, {
+            LABEL: 'condition',
+          });
         },
       },
     ]);

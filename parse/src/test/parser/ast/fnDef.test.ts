@@ -207,6 +207,38 @@ describe('parser', () => {
           ],
         });
       });
+      it('should parse ifdef', () => {
+        const res = parserCFile(`
+          void matrix_scan_user(void) {
+            #ifdef AUDIO_ENABLE
+              return;
+            #endif
+          }
+        `);
+        expect(res).toEqual({
+          type: 'statements',
+          values: [
+            {
+              type: 'fnDef',
+              name: 'matrix_scan_user',
+              returnType: 'void',
+              params: [],
+              body: [
+                {
+                  type: 'preprocIf',
+                  condition: 'AUDIO_ENABLE',
+                  value: [
+                    {
+                      type: 'return',
+                      value: undefined,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+      });
     });
   });
 });

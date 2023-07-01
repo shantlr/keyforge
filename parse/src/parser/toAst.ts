@@ -9,6 +9,7 @@ import {
   FnInstructionNode,
   IfNode,
   IncludeNode,
+  PreprocIfNode,
   ReturnNode,
   StatementNode,
   StatementsNode,
@@ -16,6 +17,7 @@ import {
   SwitchCaseNode,
   ValueExprNode,
   VarNode,
+  WhileNode,
 } from './types';
 
 export const toCAst = createVisitor(parser, {
@@ -124,6 +126,7 @@ export const toCAst = createVisitor(parser, {
     return ctx;
   },
 
+  //#region value expression
   valueExpression(ctx: any): ValueExprNode {
     let value: ValueExprNode = visitSubRule(ctx, toCAst, {
       omit: ['post'],
@@ -137,13 +140,6 @@ export const toCAst = createVisitor(parser, {
     }
 
     return value;
-
-    // if (ctx.fnCall) {
-    //   return toCAst(ctx.fnCall[0]);
-    // }
-    // if (ctx.arrayDefinition) {
-    //   return toCAst(ctx.arrayDefinition[0]);
-    // }
   },
   valueAddExpression(ctx, visit): AddNode {
     const left = visit(ctx.left[0]);
@@ -331,6 +327,7 @@ export const toCAst = createVisitor(parser, {
     console.log('val', ctx);
     throw new Error(`CANNOT MAP VALUE ATOMIC: ${JSON.stringify(ctx)}`);
   },
+  //#endregion
 
   //#region Function
   fnDefinition(ctx: any): FnDefNode {
@@ -363,8 +360,33 @@ export const toCAst = createVisitor(parser, {
       value: ctx.value ? toCAst(ctx.value[0]) : undefined,
     };
   },
+  ifDefFnStatement(ctx, visit): PreprocIfNode<FnInstructionNode[]> {
+    return {
+      type: 'preprocIf',
+      condition: visit(ctx.condition[0]),
+      value: ctx.do?.map((d) => visit(d)) || [],
+    };
+  },
   //#endregion
+  ifDefCondition(ctx, visit) {
+    if (ctx.identifier) {
+      return ctx.identifier[0].image;
+    }
+    if (ctx.condition) {
+      return visit(ctx.condition[0]);
+    }
 
+    throw new Error(`CANNOT MAP #IF CONDITION: ${JSON.stringify(ctx)}`);
+  },
+  ifDefStatement(ctx, visit) {
+    return {
+      type: 'preprocIf',
+      condition: visit(ctx.condition[0]),
+      value: ctx.do?.map((d) => visit(d)) || [],
+    };
+  },
+
+  //#region if
   ifStatement(ctx, visit): IfNode {
     return {
       type: 'if',
@@ -383,10 +405,11 @@ export const toCAst = createVisitor(parser, {
   elseCase(ctx, visit): FnInstructionNode[] {
     return visit(ctx.do[0]);
   },
-  statementBlock(ctx, visit) {
+  //#endregion
+  statementBlock(ctx, visit): FnInstructionNode[] {
     return ctx.do?.map((d) => visit(d)) || [];
   },
-  whileStatement(ctx: any) {
+  whileStatement(ctx: any): WhileNode {
     return ctx;
   },
   //#region switch

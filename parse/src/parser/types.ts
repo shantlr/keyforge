@@ -3,17 +3,26 @@ export type StatementsNode = {
   values: StatementNode[];
 };
 
-export type StatementNode = DefineNode | IncludeNode | EnumNode | VarNode;
+export type StatementNode =
+  | DefineNode
+  | IncludeNode
+  | EnumNode
+  | VarNode
+  | PreprocIfNode<StatementNode[]>;
 
 export type DefineNode = {
   type: 'define';
   name: string;
   value: ValueExprNode | null;
 };
-
 export type IncludeNode = {
   type: 'include';
   fileName: string;
+};
+export type PreprocIfNode<T> = {
+  type: 'preprocIf';
+  condition: any;
+  value: T;
 };
 
 export type EnumNode = {
@@ -52,7 +61,8 @@ export type FnInstructionNode =
   | FnCallNode
   | IfNode
   | WhileNode
-  | SwitchCaseNode;
+  | SwitchCaseNode
+  | PreprocIfNode<FnInstructionNode[]>;
 
 export type IfNode = {
   type: 'if';
@@ -134,6 +144,7 @@ export type DivideNode = {
   type: 'divide';
   values: ValueExprNode[];
 };
+
 export type ValueExprNode =
   | string
   | number
