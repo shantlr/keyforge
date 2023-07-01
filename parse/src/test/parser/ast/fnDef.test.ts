@@ -147,6 +147,7 @@ describe('parser', () => {
                       calls: [[73, 255, 255, 255]],
                     },
                   ],
+                  elseifs: [],
                   else: [],
                 },
               ],
@@ -155,7 +156,7 @@ describe('parser', () => {
         });
       });
 
-      it.only('should parse fn if else', () => {
+      it('should parse fn if else', () => {
         const res = parserCFile(`
         bool rgb_matrix_indicators_advanced_user() {
           if (host_keyboard_led_state().caps_lock) {
