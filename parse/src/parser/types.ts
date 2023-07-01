@@ -95,10 +95,39 @@ export type ArrayNode = {
   values: Record<string, ValueExprNode>;
 };
 
-export type AccessFieldNode = {
-  type: 'accessField';
-  value: ValueExprNode;
-  field: string;
+export type PostBracketIndexNode = {
+  type: 'postBracketIndex';
+  values: ValueExprNode[];
+};
+export type PostDotIndexNode = {
+  type: 'postDotIndex';
+  values: ValueExprNode[];
+};
+export type PostArrowIndexNode = {
+  type: 'postArrowIndex';
+  values: ValueExprNode[];
+};
+export type PostCallNode = {
+  type: 'postCall';
+  fn: ValueExprNode;
+  calls: ValueExprNode[][];
+};
+
+export type AddNode = {
+  type: 'add';
+  values: ValueExprNode[];
+};
+export type SubtractNode = {
+  type: 'subtract';
+  values: ValueExprNode[];
+};
+export type MultNode = {
+  type: 'mult';
+  values: ValueExprNode[];
+};
+export type DivideNode = {
+  type: 'divide';
+  values: ValueExprNode[];
 };
 export type ValueExprNode =
   | string
@@ -108,7 +137,14 @@ export type ValueExprNode =
   | true
   | false
   | StringNode
-  | AccessFieldNode;
+  | AddNode
+  | SubtractNode
+  | MultNode
+  | DivideNode
+  | PostArrowIndexNode
+  | PostBracketIndexNode
+  | PostDotIndexNode
+  | PostCallNode;
 
 export type VoidNode = {
   type: 'void';

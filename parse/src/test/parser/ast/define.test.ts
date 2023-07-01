@@ -20,9 +20,9 @@ describe('parser', () => {
               type: 'define',
               name: 'TEST',
               value: {
-                type: 'fnCall',
-                name: 'FN',
-                params: ['ARG'],
+                type: 'postCall',
+                fn: 'FN',
+                calls: [['ARG']],
               },
             },
           ],

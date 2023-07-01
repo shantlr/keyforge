@@ -24,14 +24,14 @@ describe('parser', () => {
                 type: 'array',
                 values: {
                   _DEF: {
-                    type: 'fnCall',
-                    name: 'LAYOUT_all',
-                    params: ['KC_A', 'KC_B', 'KC_C'],
+                    type: 'postCall',
+                    fn: 'LAYOUT_all',
+                    calls: [['KC_A', 'KC_B', 'KC_C']],
                   },
                   _FNC: {
-                    type: 'fnCall',
-                    name: 'LAYOUT_all',
-                    params: ['KC_1', 'KC_2', 'KC_3'],
+                    type: 'postCall',
+                    fn: 'LAYOUT_all',
+                    calls: [['KC_1', 'KC_2', 'KC_3']],
                   },
                 },
               },

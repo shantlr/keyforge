@@ -1,11 +1,10 @@
 import { MismatchedTokenException, NoViableAltException } from 'chevrotain';
 import { lexer, parser } from './parser';
 import chalk from 'chalk';
-import { ToAst } from './toAst';
+import { toCAst } from './toAst';
 import { StatementsNode } from './types';
 
 export * from './types';
-export { ToAst } from './toAst';
 export { lexer, parser } from './parser';
 
 export const parserCFile = (fileContent: string) => {
@@ -53,8 +52,9 @@ export const parserCFile = (fileContent: string) => {
     // console.log('---');
     // console.log('---');
 
-    const visitor = new ToAst();
-    const ast = visitor.visit(parseRes);
+    // const visitor = new ToAst();
+    const ast = toCAst(parseRes);
+    // const ast = visitor.visit(parseRes);
 
     return ast as StatementsNode;
   }

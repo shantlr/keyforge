@@ -19,9 +19,9 @@ describe('parser', () => {
               returnType: 'void',
               body: [
                 {
-                  type: 'fnCall',
-                  name: 'rgb_matrix_enable_noeeprom',
-                  params: [],
+                  type: 'postCall',
+                  fn: 'rgb_matrix_enable_noeeprom',
+                  calls: [[]],
                 },
               ],
             },
@@ -130,19 +130,21 @@ describe('parser', () => {
                 {
                   type: 'if',
                   condition: {
-                    type: 'accessField',
-                    field: 'caps_lock',
-                    value: {
-                      type: 'fnCall',
-                      name: 'host_keyboard_led_state',
-                      params: [],
-                    },
+                    type: 'postDotIndex',
+                    values: [
+                      {
+                        type: 'postCall',
+                        fn: 'host_keyboard_led_state',
+                        calls: [[]],
+                      },
+                      'caps_lock',
+                    ],
                   },
                   do: [
                     {
-                      type: 'fnCall',
-                      name: 'RGB_MATRIX_INDICATOR_SET_COLOR',
-                      params: [73, 255, 255, 255],
+                      type: 'postCall',
+                      fn: 'RGB_MATRIX_INDICATOR_SET_COLOR',
+                      calls: [[73, 255, 255, 255]],
                     },
                   ],
                   else: [],

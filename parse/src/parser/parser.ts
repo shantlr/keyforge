@@ -39,6 +39,7 @@ const TOKENS = {
   case: createToken({ name: 'case', pattern: 'case' }),
   default: createToken({ name: 'default', pattern: 'default' }),
   colon: createToken({ name: 'colon', pattern: ':' }),
+  arrow: createToken({ name: 'arrow', pattern: '->' }),
 
   const: createToken({
     name: 'const',
@@ -96,6 +97,14 @@ const TOKENS = {
     name: 'lt',
     pattern: '<',
   }),
+  inc: createToken({
+    name: 'inc',
+    pattern: '++',
+  }),
+  dec: createToken({
+    name: 'dec',
+    pattern: '--',
+  }),
   plus: createToken({
     name: 'plus',
     pattern: '+',
@@ -138,6 +147,10 @@ const allTokens = [
   TOKENS.return,
   TOKENS.true,
   TOKENS.false,
+  TOKENS.switch,
+  TOKENS.case,
+  TOKENS.default,
+  TOKENS.colon,
 
   TOKENS.comma,
   TOKENS.dot,
@@ -148,19 +161,21 @@ const allTokens = [
   TOKENS.bracketEnd,
   TOKENS.pthStart,
   TOKENS.pthEnd,
+
+  TOKENS.inc,
+  TOKENS.dec,
+
   TOKENS.equal,
   TOKENS.plus,
   TOKENS.minus,
   TOKENS.asterisk,
   TOKENS.slash,
+
+  TOKENS.arrow,
   TOKENS.gte,
   TOKENS.gt,
   TOKENS.lte,
   TOKENS.lt,
-  TOKENS.switch,
-  TOKENS.case,
-  TOKENS.default,
-  TOKENS.colon,
 
   TOKENS.num,
   TOKENS.identifier,
@@ -168,7 +183,7 @@ const allTokens = [
 
 export const lexer = new Lexer(allTokens);
 
-class CParser extends CstParser {
+export class CParser extends CstParser {
   statements = this.RULE('statements', () => {
     this.MANY(() => {
       this.SUBRULE(this.statement);
@@ -315,31 +330,6 @@ class CParser extends CstParser {
     this.CONSUME(TOKENS.bracketEnd);
   });
 
-  arrayDefinition = this.RULE('arrayDefinition', () => {
-    this.CONSUME(TOKENS.blockStart);
-    this.MANY_SEP({
-      SEP: TOKENS.comma,
-      DEF: () => {
-        this.SUBRULE(this.arrayItemDefinition, {
-          LABEL: 'items',
-        });
-      },
-    });
-    this.CONSUME(TOKENS.blockEnd);
-  });
-  arrayItemDefinition = this.RULE('arrayItemDefinition', () => {
-    this.CONSUME(TOKENS.bracketStart);
-    this.CONSUME(TOKENS.identifier, {
-      LABEL: 'index',
-    });
-    this.CONSUME(TOKENS.bracketEnd);
-    this.CONSUME(TOKENS.equal);
-
-    this.SUBRULE(this.valueExpression, {
-      LABEL: 'value',
-    });
-  });
-
   fnDefinition = this.RULE('fnDefinition', () => {
     this.SUBRULE(this.valueType, {
       LABEL: 'type',
@@ -373,16 +363,23 @@ class CParser extends CstParser {
   });
   fnStatement = this.RULE('fnStatement', () => {
     this.OR([
-      {
-        ALT: () => {
-          this.SUBRULE(this.fnCall);
-          this.CONSUME(TOKENS.semicolon);
-        },
-      },
+      // {
+      //   ALT: () => {
+      //     this.SUBRULE(this.fnCall);
+      //     this.CONSUME(TOKENS.semicolon);
+      //   },
+      // },
       {
         ALT: () => {
           this.SUBRULE(this.varDeclaration);
         },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.valueExpression);
+          this.CONSUME(TOKENS.semicolon);
+        },
+        IGNORE_AMBIGUITIES: true,
       },
       {
         ALT: () => {
@@ -417,7 +414,7 @@ class CParser extends CstParser {
     }
     this.CONSUME(TOKENS.semicolon);
   });
-  ifStatement = this.RULE('ifFlow', () => {
+  ifStatement = this.RULE('ifStatement', () => {
     this.CONSUME(TOKENS.if);
 
     // condition
@@ -451,11 +448,11 @@ class CParser extends CstParser {
       this.CONSUME(TOKENS.blockEnd);
     }
   });
-  whileStatement = this.RULE('whileFlow', () => {
+  whileStatement = this.RULE('whileStatement', () => {
     this.CONSUME(TOKENS.while);
     this.CONSUME(TOKENS.pthStart);
   });
-  switchStatement = this.RULE('switchFlow', () => {
+  switchStatement = this.RULE('switchStatement', () => {
     this.CONSUME(TOKENS.switch);
     this.CONSUME(TOKENS.pthStart);
     this.SUBRULE(this.valueExpression, {
@@ -561,27 +558,194 @@ class CParser extends CstParser {
     });
   });
 
-  fnCall = this.RULE('fnCall', () => {
-    this.CONSUME(TOKENS.identifier, {
-      LABEL: 'name',
+  // fnCall = this.RULE('fnCall', () => {
+  //   this.CONSUME(TOKENS.identifier, {
+  //     LABEL: 'name',
+  //   });
+  //   this.CONSUME(TOKENS.pthStart);
+  //   this.MANY_SEP({
+  //     SEP: TOKENS.comma,
+  //     DEF: () => {
+  //       this.SUBRULE(this.valueExpression, {
+  //         LABEL: 'params',
+  //       });
+  //     },
+  //   });
+  //   this.CONSUME(TOKENS.pthEnd);
+  // });
+
+  valueExpression = this.RULE('valueExpression', () => {
+    this.SUBRULE(this.valueAddExpression);
+  });
+
+  valueAddExpression = this.RULE('valueAddExpression', () => {
+    this.SUBRULE(this.valueSubtractExpression, {
+      LABEL: 'left',
     });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.plus);
+      this.SUBRULE(this.valueExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueSubtractExpression = this.RULE('valueSubtractExpression', () => {
+    this.SUBRULE(this.valueMultExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.minus);
+      this.SUBRULE(this.valueExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueMultExpression = this.RULE('valueMultExpression', () => {
+    this.SUBRULE(this.valueDivideExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.asterisk);
+      this.SUBRULE(this.valueExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueDivideExpression = this.RULE('valueDivideExpression', () => {
+    this.SUBRULE(this.valueWithPostExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.slash);
+      this.SUBRULE(this.valueExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+
+  //#region Array
+  valueArrayExpression = this.RULE('valueArrayExpression', () => {
+    this.CONSUME(TOKENS.blockStart);
+    this.MANY_SEP({
+      SEP: TOKENS.comma,
+      DEF: () => {
+        this.SUBRULE(this.valueArrayItemExpression, {
+          LABEL: 'items',
+        });
+      },
+    });
+    this.CONSUME(TOKENS.blockEnd);
+  });
+  valueArrayItemExpression = this.RULE('valueArrayItemExpression', () => {
+    this.CONSUME(TOKENS.bracketStart);
+    this.CONSUME(TOKENS.identifier, {
+      LABEL: 'index',
+    });
+    this.CONSUME(TOKENS.bracketEnd);
+    this.CONSUME(TOKENS.equal);
+
+    this.SUBRULE(this.valueExpression, {
+      LABEL: 'value',
+    });
+  });
+  //#endregion
+
+  //#region post expression
+  valueWithPostExpression = this.RULE('valueWithPostExpression', () => {
+    this.SUBRULE(this.valueWithPosBracketIndex);
+  });
+  valueWithPosBracketIndex = this.RULE('valueWithPosBracketIndex', () => {
+    this.SUBRULE(this.valueWithPostDotIndex, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.bracketStart);
+      this.SUBRULE(this.valueExpression, {
+        LABEL: 'rights',
+      });
+      this.CONSUME(TOKENS.bracketEnd);
+    });
+  });
+  valueWithPostDotIndex = this.RULE('valueWithPostDotIndex', () => {
+    this.SUBRULE(this.valueWithPostArrowIndex, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.dot);
+      this.SUBRULE(this.valueExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueWithPostArrowIndex = this.RULE('valueWithPostArrowIndex', () => {
+    this.SUBRULE(this.valueWithPostCall, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.arrow);
+      this.SUBRULE(this.valueExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueWithPostCall = this.RULE('valueWithPostCall', () => {
+    this.SUBRULE(this.valuePostInc, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.SUBRULE(this.valueWithPostCallArgList, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueWithPostCallArgList = this.RULE('valueWithPostCallArgList', () => {
     this.CONSUME(TOKENS.pthStart);
     this.MANY_SEP({
       SEP: TOKENS.comma,
       DEF: () => {
         this.SUBRULE(this.valueExpression, {
-          LABEL: 'params',
+          LABEL: 'list',
         });
       },
     });
     this.CONSUME(TOKENS.pthEnd);
   });
+  valuePostInc = this.RULE('valuePostInc', () => {
+    this.SUBRULE(this.valuePostDec, {
+      LABEL: 'left',
+    });
+    // TODO: improve
+    this.MANY(() => {
+      this.CONSUME(TOKENS.inc, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valuePostDec = this.RULE('valuePostDec', () => {
+    this.SUBRULE(this.valueAtomic, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.dec, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  //#endregion
 
-  valueExpression = this.RULE('valueExpression', () => {
+  valuePthExpression = this.RULE('valuePthExpression', () => {
+    this.CONSUME(TOKENS.pthStart);
+    this.SUBRULE(this.valueExpression, {
+      LABEL: 'value',
+    });
+    this.CONSUME(TOKENS.pthEnd);
+  });
+
+  valueAtomic = this.RULE('valueAtomic', () => {
     this.OR([
       {
         ALT: () => {
-          this.SUBRULE(this.fnCall);
+          this.CONSUME(TOKENS.void);
         },
       },
       {
@@ -591,22 +755,9 @@ class CParser extends CstParser {
       },
       {
         ALT: () => {
-          this.CONSUME(TOKENS.string);
-        },
-      },
-      {
-        ALT: () => {
           this.CONSUME(TOKENS.false);
         },
       },
-
-      {
-        // array
-        ALT: () => {
-          this.SUBRULE(this.arrayDefinition);
-        },
-      },
-
       {
         ALT: () => {
           this.CONSUME(TOKENS.num);
@@ -614,20 +765,25 @@ class CParser extends CstParser {
       },
       {
         ALT: () => {
-          this.CONSUME1(TOKENS.identifier);
+          this.CONSUME(TOKENS.string);
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.identifier);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.valueArrayExpression);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.valuePthExpression);
         },
       },
     ]);
-
-    this.MANY({
-      GATE: () => this.LA(1).tokenType === TOKENS.dot,
-      DEF: () => {
-        this.CONSUME(TOKENS.dot);
-        this.CONSUME(TOKENS.identifier, {
-          LABEL: 'accessField',
-        });
-      },
-    });
   });
 
   constructor() {
