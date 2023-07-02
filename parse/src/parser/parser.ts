@@ -25,6 +25,8 @@ const TOKENS = {
   define: createToken({ name: 'define', pattern: '#define' }),
   ifdef: createToken({ name: 'ifdef', pattern: '#ifdef' }),
   preprocIf: createToken({ name: 'preprocIf', pattern: '#if' }),
+  preprocElif: createToken({ name: 'preprocElif', pattern: '#elif' }),
+  preprocElse: createToken({ name: 'preprocElse', pattern: '#else' }),
   endif: createToken({ name: 'endif', pattern: '#endif' }),
 
   enum: createToken({ name: 'enum', pattern: 'enum' }),
@@ -44,6 +46,8 @@ const TOKENS = {
   default: createToken({ name: 'default', pattern: 'default' }),
   colon: createToken({ name: 'colon', pattern: ':' }),
   arrow: createToken({ name: 'arrow', pattern: '->' }),
+  tilde: createToken({ name: 'tilde', pattern: '~' }),
+  excl: createToken({ name: 'excl', pattern: '!' }),
 
   const: createToken({
     name: 'const',
@@ -109,10 +113,7 @@ const TOKENS = {
     name: 'dec',
     pattern: '--',
   }),
-  plus: createToken({
-    name: 'plus',
-    pattern: '+',
-  }),
+  plus: createToken({ name: 'plus', pattern: '+' }),
   minus: createToken({
     name: 'minus',
     pattern: '-',
@@ -159,6 +160,8 @@ const allTokens = [
   TOKENS.ifdef,
   TOKENS.endif,
   TOKENS.preprocIf,
+  TOKENS.preprocElif,
+  TOKENS.preprocElse,
 
   TOKENS.include,
   TOKENS.const,
@@ -206,6 +209,8 @@ const allTokens = [
   TOKENS.or,
   TOKENS.amp,
   TOKENS.pipe,
+  TOKENS.tilde,
+  TOKENS.excl,
 
   TOKENS.num,
   TOKENS.identifier,
@@ -250,21 +255,64 @@ export class CParser extends CstParser {
       },
       {
         ALT: () => {
-          this.SUBRULE(this.ifDefStatement);
+          this.SUBRULE(this.rPreprocIfDef);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.rPreprocIf);
         },
       },
     ]);
   });
-  ifDefStatement = this.RULE('ifDefStatement', () => {
-    this.SUBRULE(this.ifDefCondition, {
-      LABEL: 'condition',
-    });
+
+  rPreprocIfDef = this.RULE('rPreprocIfDef', () => {
+    this.CONSUME(TOKENS.ifdef);
+    this.CONSUME(TOKENS.identifier);
     this.MANY(() => {
       this.SUBRULE(this.statement, {
         LABEL: 'do',
       });
     });
     this.CONSUME(TOKENS.endif);
+  });
+  rPreprocIf = this.RULE('rPreprocIf', () => {
+    this.CONSUME(TOKENS.preprocIf);
+    this.SUBRULE(this.valueExpression, {
+      LABEL: 'condition',
+    });
+
+    this.MANY1(() => {
+      this.SUBRULE(this.statement, {
+        LABEL: 'do',
+      });
+    });
+
+    this.MANY2(() => {
+      this.SUBRULE(this.rPreprocElif, {
+        LABEL: 'elifs',
+      });
+    });
+    this.OPTION(() => {
+      this.SUBRULE(this.rPreprocElse);
+    });
+    this.CONSUME(TOKENS.endif);
+  });
+  rPreprocElif = this.RULE('rPreprocElif', () => {
+    this.CONSUME(TOKENS.preprocElif);
+    this.MANY(() => {
+      this.SUBRULE(this.statement, {
+        LABEL: 'do',
+      });
+    });
+  });
+  rPreprocElse = this.RULE('rPreprocElse', () => {
+    this.CONSUME(TOKENS.preprocElse);
+    this.MANY(() => {
+      this.SUBRULE(this.statement, {
+        LABEL: 'do',
+      });
+    });
   });
 
   defineDeclaration = this.RULE('defineDeclaration', () => {
@@ -443,15 +491,21 @@ export class CParser extends CstParser {
       },
       {
         ALT: () => {
-          this.SUBRULE(this.ifDefFnStatement);
+          this.SUBRULE(this.rPreprocFnIf);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.rPreprocFnIfDef);
         },
       },
     ]);
   });
-  ifDefFnStatement = this.RULE('ifDefFnStatement', () => {
-    this.SUBRULE(this.ifDefCondition, {
-      LABEL: 'condition',
-    });
+
+  //#region fn statements
+  rPreprocFnIfDef = this.RULE('rPreprocFnIfDef', () => {
+    this.CONSUME(TOKENS.ifdef);
+    this.CONSUME(TOKENS.identifier);
     this.MANY(() => {
       this.SUBRULE(this.fnStatement, {
         LABEL: 'do',
@@ -459,23 +513,41 @@ export class CParser extends CstParser {
     });
     this.CONSUME(TOKENS.endif);
   });
-  ifDefCondition = this.RULE('ifDefCondition', () => {
-    this.OR([
-      {
-        ALT: () => {
-          this.CONSUME(TOKENS.ifdef);
-          this.CONSUME(TOKENS.identifier);
-        },
-      },
-      {
-        ALT: () => {
-          this.CONSUME(TOKENS.preprocIf);
-          this.SUBRULE(this.valueExpression, {
-            LABEL: 'condition',
-          });
-        },
-      },
-    ]);
+  rPreprocFnIf = this.RULE('rPreprocFnIf', () => {
+    this.CONSUME(TOKENS.preprocIf);
+    this.SUBRULE1(this.valueExpression, {
+      LABEL: 'condition',
+    });
+
+    this.MANY1(() => {
+      this.SUBRULE(this.fnStatement, {
+        LABEL: 'do',
+      });
+    });
+
+    this.MANY2(() => {
+      this.SUBRULE(this.rPreprocFnElif);
+    });
+    this.OPTION(() => {
+      this.SUBRULE(this.rPreprocFnElse);
+    });
+    this.CONSUME(TOKENS.endif);
+  });
+  rPreprocFnElif = this.RULE('rPreprocFnElif', () => {
+    this.CONSUME(TOKENS.preprocElif);
+    this.MANY(() => {
+      this.SUBRULE(this.fnStatement, {
+        LABEL: 'do',
+      });
+    });
+  });
+  rPreprocFnElse = this.RULE('rPreprocFnElse', () => {
+    this.CONSUME(TOKENS.preprocElse);
+    this.MANY(() => {
+      this.SUBRULE(this.fnStatement, {
+        LABEL: 'do',
+      });
+    });
   });
 
   returnStatement = this.RULE('returnStatement', () => {
@@ -924,6 +996,7 @@ export class CParser extends CstParser {
       },
     ]);
   });
+  //#endregion
 
   constructor() {
     super(allTokens);

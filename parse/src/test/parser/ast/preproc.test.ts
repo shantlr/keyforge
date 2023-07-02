@@ -2,7 +2,7 @@ import { parseC } from '../../../parser';
 
 describe('parser', () => {
   describe('ast', () => {
-    describe('define', () => {
+    describe('preproc', () => {
       it('should parse empty define', () => {
         const res = parseC(`#define TEST`);
         expect(res).toEqual({
@@ -40,7 +40,13 @@ describe('parser', () => {
           values: [
             {
               type: 'preprocIf',
-              condition: 'TEST',
+              condition: {
+                type: 'postCall',
+                fn: 'defined',
+                calls: [['TEST']],
+              },
+              elseifs: [],
+              else: null,
               value: [
                 {
                   type: 'var',
@@ -72,6 +78,8 @@ describe('parser', () => {
                 fn: 'defined',
                 calls: [['TEST']],
               },
+              elseifs: [],
+              else: null,
               value: [
                 {
                   type: 'var',

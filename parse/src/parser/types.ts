@@ -23,6 +23,11 @@ export type PreprocIfNode<T> = {
   type: 'preprocIf';
   condition: any;
   value: T;
+  elseifs: {
+    condition: any;
+    value: T;
+  }[];
+  else?: PreprocIfNode<T> | null;
 };
 
 export type EnumNode = {

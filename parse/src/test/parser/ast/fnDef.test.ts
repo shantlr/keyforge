@@ -226,7 +226,13 @@ describe('parser', () => {
               body: [
                 {
                   type: 'preprocIf',
-                  condition: 'AUDIO_ENABLE',
+                  condition: {
+                    type: 'postCall',
+                    fn: 'defined',
+                    calls: [['AUDIO_ENABLE']],
+                  },
+                  elseifs: [],
+                  else: null,
                   value: [
                     {
                       type: 'return',

@@ -52,6 +52,37 @@ export const toCAst = createVisitor(parser, {
     }
     throw new Error(`CANNOT MAP INCLUDE: ${JSON.stringify(ctx)}`);
   },
+  rPreprocIfDef(ctx, visit): PreprocIfNode<StatementNode[]> {
+    return {
+      type: 'preprocIf',
+      condition: {
+        type: 'postCall',
+        fn: 'defined',
+        calls: [[ctx.identifier[0].image]],
+      },
+      value: ctx.do?.map((d) => visit(d)) || [],
+      elseifs: [],
+      else: null,
+    };
+  },
+  rPreprocIf(ctx, visit): PreprocIfNode<StatementNode[]> {
+    return {
+      type: 'preprocIf',
+      condition: visit(ctx.condition[0]),
+      value: ctx.do?.map((d) => visit(d)) || [],
+      elseifs: ctx.elifs?.map((e) => visit(e)) || [],
+      else: ctx.else ? visit(ctx.else[0]) : null,
+    };
+  },
+  rPreprocElif(ctx, visit): { condition: any; value: StatementNode[] } {
+    return {
+      condition: visit(ctx.condition[0]),
+      value: ctx.do?.map((d) => visit(d)) || [],
+    };
+  },
+  rPreprocElse(ctx, visit) {
+    return ctx.do?.map((d) => visit(d)) || [];
+  },
   //#endregion
 
   enumDeclaration(ctx: any): EnumNode {
@@ -374,32 +405,38 @@ export const toCAst = createVisitor(parser, {
       value: ctx.value ? toCAst(ctx.value[0]) : undefined,
     };
   },
-  ifDefFnStatement(ctx, visit): PreprocIfNode<FnInstructionNode[]> {
+
+  rPreprocFnIfDef(ctx, visit): PreprocIfNode<FnInstructionNode[]> {
+    return {
+      type: 'preprocIf',
+      condition: {
+        type: 'postCall',
+        fn: 'defined',
+        calls: [[ctx.identifier[0].image]],
+      },
+      value: ctx.do?.map((d) => visit(d)) || [],
+      elseifs: [],
+      else: null,
+    };
+  },
+  rPreprocFnIf(ctx, visit): PreprocIfNode<FnInstructionNode[]> {
     return {
       type: 'preprocIf',
       condition: visit(ctx.condition[0]),
       value: ctx.do?.map((d) => visit(d)) || [],
+      elseifs: ctx.elifs?.map((e) => visit(e)) || [],
+      else: ctx.else ? visit(ctx.else[0]) : null,
     };
   },
-  //#endregion
-  ifDefCondition(ctx, visit) {
-    if (ctx.identifier) {
-      return ctx.identifier[0].image;
-    }
-    if (ctx.condition) {
-      return visit(ctx.condition[0]);
-    }
-
-    throw new Error(`CANNOT MAP #IF CONDITION: ${JSON.stringify(ctx)}`);
-  },
-  ifDefStatement(ctx, visit) {
+  rPreprocFnElif(ctx, visit): { condition: any; value: FnInstructionNode[] } {
     return {
-      type: 'preprocIf',
       condition: visit(ctx.condition[0]),
       value: ctx.do?.map((d) => visit(d)) || [],
     };
   },
-
+  rPreprocFnElse(ctx, visit) {
+    return ctx.do?.map((d) => visit(d)) || [];
+  },
   //#region if
   ifStatement(ctx, visit): IfNode {
     return {
