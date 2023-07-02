@@ -164,6 +164,17 @@ export const toCAst = createVisitor(parser, {
 
     return value;
   },
+  valueAssignExpression(ctx, visit) {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'assign',
+      values: [left, ...rights],
+    };
+  },
   valueAndExpression(ctx, visit): ValueExprNode {
     const left = visit(ctx.left[0]);
     const rights = ctx.rights?.map((r) => visit(r));
@@ -183,6 +194,28 @@ export const toCAst = createVisitor(parser, {
     }
     return {
       type: 'or',
+      values: [left, ...rights],
+    };
+  },
+  valueDiffExpression(ctx, visit) {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'diff',
+      values: [left, ...rights],
+    };
+  },
+  valueEqualExpression(ctx, visit) {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'equal',
       values: [left, ...rights],
     };
   },
@@ -219,6 +252,18 @@ export const toCAst = createVisitor(parser, {
 
     return {
       type: 'mult',
+      values: [left, ...rights],
+    };
+  },
+  valueModuloExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+
+    return {
+      type: 'modulo',
       values: [left, ...rights],
     };
   },
@@ -383,6 +428,9 @@ export const toCAst = createVisitor(parser, {
     if (ctx.valueArrayListExpression) {
       return visit(ctx.valueArrayListExpression[0]);
     }
+    if (ctx.hexa) {
+      return parseInt(ctx.hexa[0].image.slice(2), 16);
+    }
 
     console.log('val', ctx);
     throw new Error(`CANNOT MAP VALUE ATOMIC: ${JSON.stringify(ctx)}`);
@@ -407,6 +455,17 @@ export const toCAst = createVisitor(parser, {
     if (ctx.semicolon) {
       delete ctx.semicolon;
     }
+    if (ctx.break) {
+      return {
+        type: 'break',
+      };
+    }
+    if (ctx.continue) {
+      return {
+        type: 'continue',
+      };
+    }
+
     const keys = Object.keys(ctx);
     if (keys.length === 1 && ctx[keys[0]].length === 1) {
       return toCAst(ctx[keys[0]][0]);

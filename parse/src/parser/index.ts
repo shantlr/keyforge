@@ -27,9 +27,9 @@ export const parseC = (
         const off = err.token.startOffset;
 
         console.log(
-          `${content.slice(off - 30, off)}${chalk.red(
+          `${content.slice(off - 50, off)}${chalk.red(
             content[off]
-          )}${content.slice(off + 1, off + 30)}`
+          )}${content.slice(off + 1, off + 50)}`
         );
       } else if (err instanceof NoViableAltException) {
         console.log(err);
@@ -38,9 +38,9 @@ export const parseC = (
 
         const off = err.token.startOffset;
         console.log(
-          `${content.slice(off - 30, off)}${chalk.red(
+          `${content.slice(off - 50, off)}${chalk.red(
             content[off]
-          )}${content.slice(off + 1, off + 30)}`
+          )}${content.slice(off + 1, off + 50)}`
         );
       } else {
         console.log(err);

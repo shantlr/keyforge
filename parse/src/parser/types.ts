@@ -67,7 +67,15 @@ export type FnInstructionNode =
   | IfNode
   | WhileNode
   | SwitchCaseNode
-  | PreprocIfNode<FnInstructionNode[]>;
+  | PreprocIfNode<FnInstructionNode[]>
+  | ContinueNode
+  | BreakNode;
+export type ContinueNode = {
+  type: 'continue';
+};
+export type BreakNode = {
+  type: 'break';
+};
 
 export type IfNode = {
   type: 'if';
@@ -165,6 +173,18 @@ export type DivideNode = {
   type: 'divide';
   values: ValueExprNode[];
 };
+export type ModuloNode = {
+  type: 'modulo';
+  values: ValueExprNode[];
+};
+export type EqualNode = {
+  type: 'equal';
+  values: ValueExprNode[];
+};
+export type DiffNode = {
+  type: 'diff';
+  values: ValueExprNode[];
+};
 
 export type ValueExprNode =
   | string
@@ -180,6 +200,9 @@ export type ValueExprNode =
   | SubtractNode
   | MultNode
   | DivideNode
+  | ModuloNode
+  | DiffNode
+  | EqualNode
   | PostArrowIndexNode
   | PostBracketIndexNode
   | PostDotIndexNode

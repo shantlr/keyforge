@@ -20,6 +20,9 @@ const TOKENS = {
     name: 'string',
     pattern: /"[^"]*"/,
   }),
+  hexa: createToken({ name: 'hexa', pattern: /0x[A-F0-9]+/ }),
+  num: createToken({ name: 'num', pattern: /\d+/ }),
+  identifier: createToken({ name: 'identifier', pattern: /[a-zA-Z0-9-_]+/ }),
 
   include: createToken({ name: 'include', pattern: '#include' }),
   define: createToken({ name: 'define', pattern: '#define' }),
@@ -85,6 +88,14 @@ const TOKENS = {
     name: 'pthEnd',
     pattern: ')',
   }),
+  equality: createToken({
+    name: 'equality',
+    pattern: '==',
+  }),
+  diff: createToken({
+    name: 'diff',
+    pattern: '!=',
+  }),
   equal: createToken({
     name: 'equal',
     pattern: '=',
@@ -112,6 +123,10 @@ const TOKENS = {
   dec: createToken({
     name: 'dec',
     pattern: '--',
+  }),
+  percent: createToken({
+    name: 'percent',
+    pattern: '%',
   }),
   plus: createToken({ name: 'plus', pattern: '+' }),
   minus: createToken({
@@ -142,9 +157,6 @@ const TOKENS = {
     name: 'pipe',
     pattern: '|',
   }),
-
-  num: createToken({ name: 'num', pattern: /\d+/ }),
-  identifier: createToken({ name: 'identifier', pattern: /[a-zA-Z0-9-_]+/ }),
 };
 
 const allTokens = [
@@ -193,6 +205,8 @@ const allTokens = [
   TOKENS.inc,
   TOKENS.dec,
 
+  TOKENS.equality,
+  TOKENS.diff,
   TOKENS.equal,
   TOKENS.plus,
   TOKENS.minus,
@@ -211,7 +225,9 @@ const allTokens = [
   TOKENS.pipe,
   TOKENS.tilde,
   TOKENS.excl,
+  TOKENS.percent,
 
+  TOKENS.hexa,
   TOKENS.num,
   TOKENS.identifier,
 ];
@@ -499,6 +515,18 @@ export class CParser extends CstParser {
           this.SUBRULE(this.rPreprocFnIfDef);
         },
       },
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.break);
+          this.CONSUME2(TOKENS.semicolon);
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.continue);
+          this.CONSUME3(TOKENS.semicolon);
+        },
+      },
     ]);
   });
 
@@ -684,7 +712,7 @@ export class CParser extends CstParser {
         GATE: () => this.LA(1).tokenType === TOKENS.blockStart,
         ALT: () => {
           this.CONSUME(TOKENS.blockStart);
-          this.MANY(() => {
+          this.MANY1(() => {
             this.SUBRULE1(this.fnStatement, {
               LABEL: 'do',
             });
@@ -693,9 +721,12 @@ export class CParser extends CstParser {
         },
       },
       {
+        GATE: () => this.LA(1).tokenType !== TOKENS.blockStart,
         ALT: () => {
-          this.SUBRULE2(this.fnStatement, {
-            LABEL: 'do',
+          this.MANY2(() => {
+            this.SUBRULE2(this.fnStatement, {
+              LABEL: 'do',
+            });
           });
         },
       },
@@ -765,9 +796,20 @@ export class CParser extends CstParser {
   });
 
   valueExpression = this.RULE('valueExpression', () => {
-    this.SUBRULE(this.valueOrExpression);
+    this.SUBRULE(this.valueAssignExpression);
   });
 
+  valueAssignExpression = this.RULE('valueAssignExpression', () => {
+    this.SUBRULE(this.valueOrExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.equal);
+      this.SUBRULE2(this.valueOrExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
   valueOrExpression = this.RULE('valueOrExpression', () => {
     this.SUBRULE1(this.valueAndExpression, {
       LABEL: 'left',
@@ -780,11 +822,34 @@ export class CParser extends CstParser {
     });
   });
   valueAndExpression = this.RULE('valueAndExpression', () => {
-    this.SUBRULE1(this.valueAddExpression, {
+    this.SUBRULE1(this.valueEqualExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.and);
+      this.SUBRULE2(this.valueEqualExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+
+  valueEqualExpression = this.RULE('valueEqualExpression', () => {
+    this.SUBRULE1(this.valueDiffExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.equality);
+      this.SUBRULE2(this.valueDiffExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueDiffExpression = this.RULE('valueDiffExpression', () => {
+    this.SUBRULE1(this.valueAddExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.diff);
       this.SUBRULE2(this.valueAddExpression, {
         LABEL: 'rights',
       });
@@ -814,11 +879,22 @@ export class CParser extends CstParser {
     });
   });
   valueMultExpression = this.RULE('valueMultExpression', () => {
-    this.SUBRULE1(this.valueDivideExpression, {
+    this.SUBRULE1(this.valueModuloExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.asterisk);
+      this.SUBRULE2(this.valueModuloExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueModuloExpression = this.RULE('valueModuloExpression', () => {
+    this.SUBRULE1(this.valueDivideExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.percent);
       this.SUBRULE2(this.valueDivideExpression, {
         LABEL: 'rights',
       });
@@ -846,6 +922,9 @@ export class CParser extends CstParser {
           LABEL: 'items',
         });
       },
+    });
+    this.OPTION(() => {
+      this.CONSUME(TOKENS.comma);
     });
     this.CONSUME(TOKENS.blockEnd);
   });
@@ -987,6 +1066,11 @@ export class CParser extends CstParser {
       {
         ALT: () => {
           this.CONSUME(TOKENS.num);
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.hexa);
         },
       },
       {
