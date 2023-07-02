@@ -503,6 +503,7 @@ export class CParser extends CstParser {
   });
 
   //#region fn statements
+  //#region preproc
   rPreprocFnIfDef = this.RULE('rPreprocFnIfDef', () => {
     this.CONSUME(TOKENS.ifdef);
     this.CONSUME(TOKENS.identifier);
@@ -549,6 +550,7 @@ export class CParser extends CstParser {
       });
     });
   });
+  //#endregion
 
   returnStatement = this.RULE('returnStatement', () => {
     this.CONSUME(TOKENS.return);
@@ -859,6 +861,19 @@ export class CParser extends CstParser {
       LABEL: 'value',
     });
   });
+  valueArrayListExpression = this.RULE('valueArrayListExpression', () => {
+    this.CONSUME(TOKENS.blockStart);
+    this.MANY_SEP({
+      SEP: TOKENS.comma,
+      DEF: () => {
+        this.SUBRULE(this.valueExpression, {
+          LABEL: 'items',
+        });
+      },
+    });
+    this.CONSUME(TOKENS.blockEnd);
+  });
+
   //#endregion
 
   //#region post expression
@@ -988,6 +1003,12 @@ export class CParser extends CstParser {
         ALT: () => {
           this.SUBRULE(this.valueArrayExpression);
         },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.valueArrayListExpression);
+        },
+        IGNORE_AMBIGUITIES: true,
       },
       {
         ALT: () => {

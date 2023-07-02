@@ -340,6 +340,18 @@ export const toCAst = createVisitor(parser, {
   valuePthExpression(ctx, visit) {
     return visit(ctx.value[0]);
   },
+  valueArrayListExpression(ctx, visit): ArrayNode {
+    return {
+      type: 'array',
+      values:
+        ctx.items
+          ?.map((i) => visit(i))
+          .reduce((acc, item, idx) => {
+            acc[idx] = item;
+            return acc;
+          }, {}) || {},
+    };
+  },
   valueAtomic(ctx, visit): ValueExprNode {
     if (ctx.num) {
       return Number(ctx.num[0].image);
@@ -367,6 +379,9 @@ export const toCAst = createVisitor(parser, {
     }
     if (ctx.valuePthExpression) {
       return visit(ctx.valuePthExpression[0]);
+    }
+    if (ctx.valueArrayListExpression) {
+      return visit(ctx.valueArrayListExpression[0]);
     }
 
     console.log('val', ctx);
