@@ -15,10 +15,15 @@ export type DefineNode = {
   name: string;
   value: ValueExprNode | null;
 };
-export type IncludeNode = {
-  type: 'include';
-  fileName: string;
-};
+export type IncludeNode =
+  | {
+      type: 'include';
+      fileName: string;
+    }
+  | {
+      type: 'include';
+      value: string;
+    };
 export type PreprocIfNode<T> = {
   type: 'preprocIf';
   condition: any;

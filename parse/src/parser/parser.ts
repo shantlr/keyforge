@@ -3,7 +3,7 @@ import { CstParser, Lexer, createToken } from 'chevrotain';
 const TOKENS = {
   multiLineComment: createToken({
     name: 'mlComment',
-    pattern: /\/\*[\s\S]*\*\//,
+    pattern: /\/\*([\s\S]*?)\*\//,
     group: Lexer.SKIPPED,
   }),
   comment: createToken({
@@ -22,7 +22,7 @@ const TOKENS = {
   }),
   hexa: createToken({ name: 'hexa', pattern: /0x[A-F0-9]+/ }),
   num: createToken({ name: 'num', pattern: /\d+/ }),
-  identifier: createToken({ name: 'identifier', pattern: /[a-zA-Z0-9-_]+/ }),
+  identifier: createToken({ name: 'identifier', pattern: /[a-zA-Z0-9_]+/ }),
 
   include: createToken({ name: 'include', pattern: '#include' }),
   define: createToken({ name: 'define', pattern: '#define' }),
@@ -175,6 +175,7 @@ const allTokens = [
   TOKENS.preprocElif,
   TOKENS.preprocElse,
 
+  TOKENS.arrow,
   TOKENS.include,
   TOKENS.const,
   TOKENS.void,
@@ -213,7 +214,6 @@ const allTokens = [
   TOKENS.asterisk,
   TOKENS.slash,
 
-  TOKENS.arrow,
   TOKENS.gte,
   TOKENS.gt,
   TOKENS.lte,
@@ -277,6 +277,11 @@ export class CParser extends CstParser {
       {
         ALT: () => {
           this.SUBRULE(this.rPreprocIf);
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.semicolon);
         },
       },
     ]);
@@ -1038,14 +1043,6 @@ export class CParser extends CstParser {
   });
   //#endregion
 
-  valuePthExpression = this.RULE('valuePthExpression', () => {
-    this.CONSUME(TOKENS.pthStart);
-    this.SUBRULE(this.valueExpression, {
-      LABEL: 'value',
-    });
-    this.CONSUME(TOKENS.pthEnd);
-  });
-
   valueAtomic = this.RULE('valueAtomic', () => {
     this.OR([
       {
@@ -1100,6 +1097,13 @@ export class CParser extends CstParser {
         },
       },
     ]);
+  });
+  valuePthExpression = this.RULE('valuePthExpression', () => {
+    this.CONSUME(TOKENS.pthStart);
+    this.SUBRULE(this.valueExpression, {
+      LABEL: 'value',
+    });
+    this.CONSUME(TOKENS.pthEnd);
   });
   //#endregion
 

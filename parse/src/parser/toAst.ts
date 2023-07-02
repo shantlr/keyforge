@@ -19,20 +19,19 @@ import {
 } from './types';
 
 export const toCAst = createVisitor(parser, {
-  statements(ctx: any): StatementsNode {
+  statements(ctx, visit): StatementsNode {
     return {
       type: 'statements',
-      values: ctx.statement?.map((s) => toCAst(s)) || [],
+      values: ctx.statement?.map((s) => visit(s)).filter((u) => u) || [],
     };
   },
-  statement(ctx: any): StatementNode {
-    const keys = Object.keys(ctx);
-    if (keys.length === 1 && ctx[keys[0]].length === 1) {
-      return toCAst(ctx[keys[0]][0]);
+  statement(ctx, visit): StatementNode {
+    if (ctx.semicolon) {
+      return null;
     }
-
-    console.log('STATEMENT', ctx);
-    throw new Error(`Cannot map statment`);
+    return visitSubRule(ctx, visit, {
+      name: 'statement',
+    });
   },
 
   //#region PREPROCESSOR
@@ -44,6 +43,12 @@ export const toCAst = createVisitor(parser, {
     };
   },
   includeStatement(ctx: any): IncludeNode {
+    if (ctx.identifier) {
+      return {
+        type: 'include',
+        value: ctx.identifier[0].image,
+      };
+    }
     if (ctx.string) {
       return {
         type: 'include',
@@ -113,8 +118,8 @@ export const toCAst = createVisitor(parser, {
     console.log('ENUM', ctx);
     throw new Error(`CANNOT map enum option`);
   },
-  varDeclaration(ctx: any): VarNode {
-    const { name, modifier, arrayDim, varType } = toCAst(
+  varDeclaration(ctx, visit): VarNode {
+    const { name, modifier, arrayDim, varType } = visit(
       ctx.typedIdentifier[0]
     ) as ReturnType<(typeof this)['typedIdentifier']>;
     return {
@@ -124,7 +129,7 @@ export const toCAst = createVisitor(parser, {
       arrayDim,
       modifier,
       name,
-      value: toCAst(ctx.value[0]),
+      value: visit(ctx.value[0]),
     };
   },
 
