@@ -8,7 +8,8 @@ export type StatementNode =
   | IncludeNode
   | EnumNode
   | VarNode
-  | PreprocIfNode<StatementNode[]>;
+  | PreprocIfNode<StatementNode[]>
+  | FnDefNode;
 
 export type DefineNode = {
   type: 'define';

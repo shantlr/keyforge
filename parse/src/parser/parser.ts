@@ -1,238 +1,6 @@
-import { CstParser, Lexer, createToken } from 'chevrotain';
+import { CstParser, TokenType } from 'chevrotain';
 
-const TOKENS = {
-  multiLineComment: createToken({
-    name: 'mlComment',
-    pattern: /\/\*([\s\S]*?)\*\//,
-    group: Lexer.SKIPPED,
-  }),
-  comment: createToken({
-    name: 'comment',
-    pattern: /\/\/.*/,
-    group: Lexer.SKIPPED,
-  }),
-  ws: createToken({
-    name: 'ws',
-    pattern: /\s+/,
-    group: Lexer.SKIPPED,
-  }),
-  string: createToken({
-    name: 'string',
-    pattern: /"[^"]*"/,
-  }),
-  hexa: createToken({ name: 'hexa', pattern: /0x[A-F0-9]+/ }),
-  num: createToken({ name: 'num', pattern: /\d+/ }),
-  identifier: createToken({ name: 'identifier', pattern: /[a-zA-Z0-9_]+/ }),
-
-  include: createToken({ name: 'include', pattern: '#include' }),
-  define: createToken({ name: 'define', pattern: '#define' }),
-  ifdef: createToken({ name: 'ifdef', pattern: '#ifdef' }),
-  preprocIf: createToken({ name: 'preprocIf', pattern: '#if' }),
-  preprocElif: createToken({ name: 'preprocElif', pattern: '#elif' }),
-  preprocElse: createToken({ name: 'preprocElse', pattern: '#else' }),
-  endif: createToken({ name: 'endif', pattern: '#endif' }),
-
-  enum: createToken({ name: 'enum', pattern: 'enum' }),
-  void: createToken({ name: 'void', pattern: 'void' }),
-  if: createToken({ name: 'if', pattern: 'if' }),
-  else: createToken({ name: 'else', pattern: 'else' }),
-  while: createToken({ name: 'while', pattern: 'while' }),
-  do: createToken({ name: 'do', pattern: 'do' }),
-  continue: createToken({ name: 'continue', pattern: 'continue' }),
-  break: createToken({ name: 'break', pattern: 'break' }),
-  return: createToken({ name: 'return', pattern: 'return' }),
-  true: createToken({ name: 'true', pattern: 'true' }),
-  false: createToken({ name: 'false', pattern: 'false' }),
-  dot: createToken({ name: 'dot', pattern: '.' }),
-  switch: createToken({ name: 'switch', pattern: 'switch' }),
-  case: createToken({ name: 'case', pattern: 'case' }),
-  default: createToken({ name: 'default', pattern: 'default' }),
-  colon: createToken({ name: 'colon', pattern: ':' }),
-  arrow: createToken({ name: 'arrow', pattern: '->' }),
-  tilde: createToken({ name: 'tilde', pattern: '~' }),
-  excl: createToken({ name: 'excl', pattern: '!' }),
-
-  const: createToken({
-    name: 'const',
-    pattern: 'const',
-  }),
-  blockStart: createToken({
-    name: 'blockStart',
-    pattern: '{',
-  }),
-  blockEnd: createToken({
-    name: 'blockEnd',
-    pattern: '}',
-  }),
-  bracketStart: createToken({
-    name: 'bracketStart',
-    pattern: '[',
-  }),
-  bracketEnd: createToken({
-    name: 'bracketEnd',
-    pattern: ']',
-  }),
-  comma: createToken({
-    name: 'comma',
-    pattern: ',',
-  }),
-  semicolon: createToken({
-    name: 'semicolon',
-    pattern: ';',
-  }),
-  pthStart: createToken({
-    name: 'pthStart',
-    pattern: '(',
-  }),
-  pthEnd: createToken({
-    name: 'pthEnd',
-    pattern: ')',
-  }),
-  equality: createToken({
-    name: 'equality',
-    pattern: '==',
-  }),
-  diff: createToken({
-    name: 'diff',
-    pattern: '!=',
-  }),
-  equal: createToken({
-    name: 'equal',
-    pattern: '=',
-  }),
-  gte: createToken({
-    name: 'gte',
-    pattern: '>=',
-  }),
-  gt: createToken({
-    name: 'gt',
-    pattern: '>',
-  }),
-  lte: createToken({
-    name: 'lte',
-    pattern: '<=',
-  }),
-  lt: createToken({
-    name: 'lt',
-    pattern: '<',
-  }),
-  inc: createToken({
-    name: 'inc',
-    pattern: '++',
-  }),
-  dec: createToken({
-    name: 'dec',
-    pattern: '--',
-  }),
-  percent: createToken({
-    name: 'percent',
-    pattern: '%',
-  }),
-  plus: createToken({ name: 'plus', pattern: '+' }),
-  minus: createToken({
-    name: 'minus',
-    pattern: '-',
-  }),
-  asterisk: createToken({
-    name: 'asterisk',
-    pattern: '*',
-  }),
-  slash: createToken({
-    name: 'slash',
-    pattern: '/',
-  }),
-  and: createToken({
-    name: 'and',
-    pattern: '&&',
-  }),
-  amp: createToken({
-    name: 'amp',
-    pattern: '&',
-  }),
-  or: createToken({
-    name: 'or',
-    pattern: '||',
-  }),
-  pipe: createToken({
-    name: 'pipe',
-    pattern: '|',
-  }),
-};
-
-const allTokens = [
-  TOKENS.multiLineComment,
-  TOKENS.comment,
-  TOKENS.ws,
-  TOKENS.string,
-
-  // Keywords
-  // Preprocessing
-  TOKENS.enum,
-  TOKENS.define,
-  TOKENS.ifdef,
-  TOKENS.endif,
-  TOKENS.preprocIf,
-  TOKENS.preprocElif,
-  TOKENS.preprocElse,
-
-  TOKENS.arrow,
-  TOKENS.include,
-  TOKENS.const,
-  TOKENS.void,
-  TOKENS.if,
-  TOKENS.else,
-  TOKENS.while,
-  TOKENS.do,
-  TOKENS.continue,
-  TOKENS.break,
-  TOKENS.return,
-  TOKENS.true,
-  TOKENS.false,
-  TOKENS.switch,
-  TOKENS.case,
-  TOKENS.default,
-  TOKENS.colon,
-
-  TOKENS.comma,
-  TOKENS.dot,
-  TOKENS.semicolon,
-  TOKENS.blockStart,
-  TOKENS.blockEnd,
-  TOKENS.bracketStart,
-  TOKENS.bracketEnd,
-  TOKENS.pthStart,
-  TOKENS.pthEnd,
-
-  TOKENS.inc,
-  TOKENS.dec,
-
-  TOKENS.equality,
-  TOKENS.diff,
-  TOKENS.equal,
-  TOKENS.plus,
-  TOKENS.minus,
-  TOKENS.asterisk,
-  TOKENS.slash,
-
-  TOKENS.gte,
-  TOKENS.gt,
-  TOKENS.lte,
-  TOKENS.lt,
-
-  TOKENS.and,
-  TOKENS.or,
-  TOKENS.amp,
-  TOKENS.pipe,
-  TOKENS.tilde,
-  TOKENS.excl,
-  TOKENS.percent,
-
-  TOKENS.hexa,
-  TOKENS.num,
-  TOKENS.identifier,
-];
-
-export const lexer = new Lexer(allTokens);
+import { TOKENS, TOKEN_LIST } from './lexer';
 
 export class CParser extends CstParser {
   statements = this.RULE('statements', () => {
@@ -246,6 +14,11 @@ export class CParser extends CstParser {
       {
         ALT: () => {
           this.SUBRULE(this.defineDeclaration);
+        },
+      },
+      {
+        ALT: () => {
+          this.SUBRULE(this.pragmaStatement);
         },
       },
       {
@@ -287,6 +60,10 @@ export class CParser extends CstParser {
     ]);
   });
 
+  pragmaStatement = this.RULE('pragmaStatement', () => {
+    this.CONSUME(TOKENS.pragma);
+    this.CONSUME(TOKENS.identifier);
+  });
   rPreprocIfDef = this.RULE('rPreprocIfDef', () => {
     this.CONSUME(TOKENS.ifdef);
     this.CONSUME(TOKENS.identifier);
@@ -342,7 +119,20 @@ export class CParser extends CstParser {
       LABEL: 'name',
     });
 
-    this.OPTION(() => {
+    this.OPTION1(() => {
+      this.CONSUME(TOKENS.pthStart);
+      this.MANY_SEP({
+        SEP: TOKENS.comma,
+        DEF: () => {
+          this.CONSUME2(TOKENS.identifier, {
+            LABEL: 'params',
+          });
+        },
+      });
+      this.CONSUME(TOKENS.pthEnd);
+    });
+
+    this.OPTION2(() => {
       this.SUBRULE(this.valueExpression, {
         LABEL: 'value',
       });
@@ -373,14 +163,24 @@ export class CParser extends CstParser {
     });
     this.CONSUME(TOKENS.blockStart);
 
-    // enum values
-    this.AT_LEAST_ONE_SEP({
+    this.SEP({
       SEP: TOKENS.comma,
-      // enum value assignation
-      DEF: () => {
-        this.SUBRULE(this.enumOption);
+      dangling: true,
+      DEF: (i) => {
+        this.subrule(i, this.enumOption);
       },
     });
+    // // enum values
+    // this.MANY_SEP({
+    //   SEP: TOKENS.comma,
+    //   // enum value assignation
+    //   DEF: () => {
+    //     this.SUBRULE(this.enumOption);
+    //   },
+    // });
+    // this.OPTION(() => {
+    //   this.CONSUME(TOKENS.comma);
+    // });
 
     this.CONSUME(TOKENS.blockEnd);
     this.CONSUME(TOKENS.semicolon);
@@ -757,6 +557,7 @@ export class CParser extends CstParser {
       },
     ]);
   });
+  //#endregion
 
   typedIdentifier = this.RULE('typedIdentifier', () => {
     this.SUBRULE(this.valueType, {
@@ -800,21 +601,40 @@ export class CParser extends CstParser {
     });
   });
 
+  //#region Value expression
   valueExpression = this.RULE('valueExpression', () => {
     this.SUBRULE(this.valueAssignExpression);
   });
 
   valueAssignExpression = this.RULE('valueAssignExpression', () => {
-    this.SUBRULE(this.valueOrExpression, {
+    this.SUBRULE(this.valueTernaryExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.equal);
-      this.SUBRULE2(this.valueOrExpression, {
+      this.SUBRULE2(this.valueTernaryExpression, {
         LABEL: 'rights',
       });
     });
   });
+
+  valueTernaryExpression = this.RULE('valueTernaryExpression', () => {
+    this.SUBRULE1(this.valueOrExpression, {
+      LABEL: 'left',
+    });
+
+    this.OPTION(() => {
+      this.CONSUME(TOKENS.question);
+      this.SUBRULE2(this.valueOrExpression, {
+        LABEL: 'then',
+      });
+      this.CONSUME(TOKENS.colon);
+      this.SUBRULE3(this.valueTernaryExpression, {
+        LABEL: 'else',
+      });
+    });
+  });
+
   valueOrExpression = this.RULE('valueOrExpression', () => {
     this.SUBRULE1(this.valueAndExpression, {
       LABEL: 'left',
@@ -827,11 +647,34 @@ export class CParser extends CstParser {
     });
   });
   valueAndExpression = this.RULE('valueAndExpression', () => {
-    this.SUBRULE1(this.valueEqualExpression, {
+    this.SUBRULE1(this.valueBitAndExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.and);
+      this.SUBRULE2(this.valueBitAndExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+
+  valueBitAndExpression = this.RULE('valueBitAndExpression', () => {
+    this.SUBRULE1(this.valueBitOrExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.amp);
+      this.SUBRULE2(this.valueBitOrExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueBitOrExpression = this.RULE('valueBitOrExpression', () => {
+    this.SUBRULE1(this.valueEqualExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.pipe);
       this.SUBRULE2(this.valueEqualExpression, {
         LABEL: 'rights',
       });
@@ -850,11 +693,79 @@ export class CParser extends CstParser {
     });
   });
   valueDiffExpression = this.RULE('valueDiffExpression', () => {
-    this.SUBRULE1(this.valueAddExpression, {
+    this.SUBRULE1(this.valueLtExpression, {
       LABEL: 'left',
     });
     this.MANY(() => {
       this.CONSUME(TOKENS.diff);
+      this.SUBRULE2(this.valueLtExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+
+  valueLtExpression = this.RULE('valueLtExpression', () => {
+    this.SUBRULE1(this.valueGtExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.lt);
+      this.SUBRULE2(this.valueGtExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueGtExpression = this.RULE('valueGtExpression', () => {
+    this.SUBRULE1(this.valueLteExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.gt);
+      this.SUBRULE2(this.valueLteExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueLteExpression = this.RULE('valueLteExpression', () => {
+    this.SUBRULE1(this.valueGteExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.lte);
+      this.SUBRULE2(this.valueGteExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueGteExpression = this.RULE('valueGteExpression', () => {
+    this.SUBRULE1(this.valueShiftRightExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.gte);
+      this.SUBRULE2(this.valueShiftRightExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+
+  valueShiftRightExpression = this.RULE('valueShiftRightExpression', () => {
+    this.SUBRULE1(this.valueShiftLeftExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.shiftRight);
+      this.SUBRULE2(this.valueShiftLeftExpression, {
+        LABEL: 'rights',
+      });
+    });
+  });
+  valueShiftLeftExpression = this.RULE('valueShiftLeftExpression', () => {
+    this.SUBRULE1(this.valueAddExpression, {
+      LABEL: 'left',
+    });
+    this.MANY(() => {
+      this.CONSUME(TOKENS.shiftLeft);
       this.SUBRULE2(this.valueAddExpression, {
         LABEL: 'rights',
       });
@@ -957,7 +868,6 @@ export class CParser extends CstParser {
     });
     this.CONSUME(TOKENS.blockEnd);
   });
-
   //#endregion
 
   //#region post expression
@@ -1107,10 +1017,31 @@ export class CParser extends CstParser {
   });
   //#endregion
 
-  constructor() {
-    super(allTokens);
+  SEP({
+    SEP,
+    DEF,
+    dangling,
+  }: {
+    SEP: TokenType;
+    DEF: (idx: number) => void;
+    dangling?: boolean;
+  }) {
+    this.OPTION1(() => {
+      DEF(0);
+    });
+    this.MANY(() => {
+      this.CONSUME1(SEP);
+      DEF(1);
+    });
+    if (dangling) {
+      this.OPTION2(() => {
+        this.CONSUME2(SEP);
+      });
+    }
+  }
 
-    const $ = this;
+  constructor() {
+    super(TOKEN_LIST);
 
     this.performSelfAnalysis();
   }

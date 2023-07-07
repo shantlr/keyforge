@@ -1,15 +1,21 @@
+import { readFile } from 'fs/promises';
+
 import { MismatchedTokenException, NoViableAltException } from 'chevrotain';
-import { lexer, parser } from './parser';
 import chalk from 'chalk';
+
+import { parser } from './parser';
 import { toCAst } from './toAst';
 import { StatementsNode } from './types';
+import { Context, astToContext } from './astToContext';
+import { lexer } from './lexer';
 
 export * from './types';
-export { lexer, parser } from './parser';
+export { parser } from './parser';
+export { lexer } from './lexer';
 
 export const parseC = (
   content: string,
-  callParserRule = (p: typeof parser) => p.statements()
+  callParserRule = (p: typeof parser) => p.statements(),
 ) => {
   const lexRes = lexer.tokenize(content);
 
@@ -28,8 +34,8 @@ export const parseC = (
 
         console.log(
           `${content.slice(off - 50, off)}${chalk.red(
-            content[off]
-          )}${content.slice(off + 1, off + 50)}`
+            content[off],
+          )}${content.slice(off + 1, off + 50)}`,
         );
       } else if (err instanceof NoViableAltException) {
         console.log(err);
@@ -39,8 +45,8 @@ export const parseC = (
         const off = err.token.startOffset;
         console.log(
           `${content.slice(off - 50, off)}${chalk.red(
-            content[off]
-          )}${content.slice(off + 1, off + 50)}`
+            content[off],
+          )}${content.slice(off + 1, off + 50)}`,
         );
       } else {
         console.log(err);
@@ -57,4 +63,14 @@ export const parseC = (
 
     return ast as StatementsNode;
   }
+};
+
+export const parseFileToContext = async (
+  filePath: string,
+  context?: Context,
+) => {
+  const content = (await readFile(filePath)).toString();
+
+  const ast = parseC(content);
+  return astToContext(ast, context);
 };
