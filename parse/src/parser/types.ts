@@ -191,6 +191,44 @@ export type DiffNode = {
   type: 'diff';
   values: ValueExprNode[];
 };
+export type ShiftRightNode = {
+  type: 'shiftRight';
+  values: ValueExprNode[];
+};
+export type ShiftLeftNode = {
+  type: 'shiftLeft';
+  values: ValueExprNode[];
+};
+export type BitAndNode = {
+  type: 'bitAnd';
+  values: ValueExprNode[];
+};
+export type BitOrNode = {
+  type: 'bitOr';
+  values: ValueExprNode[];
+};
+export type LtNode = {
+  type: 'lt';
+  values: ValueExprNode[];
+};
+export type LteNode = {
+  type: 'lte';
+  values: ValueExprNode[];
+};
+export type GtNode = {
+  type: 'gt';
+  values: ValueExprNode[];
+};
+export type GteNode = {
+  type: 'gte';
+  values: ValueExprNode[];
+};
+export type TernaryNode = {
+  type: 'ternary';
+  condition: ValueExprNode;
+  true: ValueExprNode;
+  false: ValueExprNode;
+};
 
 export type ValueExprNode =
   | string
@@ -200,9 +238,18 @@ export type ValueExprNode =
   | true
   | false
   | StringNode
+  | TernaryNode
   | AndNode
   | OrNode
   | AddNode
+  | LtNode
+  | LteNode
+  | GtNode
+  | GteNode
+  | ShiftLeftNode
+  | ShiftRightNode
+  | BitAndNode
+  | BitOrNode
   | SubtractNode
   | MultNode
   | DivideNode

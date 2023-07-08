@@ -120,7 +120,7 @@ export const toCAst = createVisitor(parser, {
   },
   varDeclaration(ctx, visit): VarNode {
     const { name, modifier, arrayDim, varType } = visit(
-      ctx.typedIdentifier[0]
+      ctx.typedIdentifier[0],
     ) as ReturnType<(typeof this)['typedIdentifier']>;
     return {
       type: 'var',
@@ -162,7 +162,7 @@ export const toCAst = createVisitor(parser, {
 
   //#region value expression
   valueExpression(ctx, visit): ValueExprNode {
-    let value: ValueExprNode = visitSubRule(ctx, visit, {
+    const value: ValueExprNode = visitSubRule(ctx, visit, {
       omit: ['post'],
       name: 'valueExpression',
     });
@@ -178,6 +178,18 @@ export const toCAst = createVisitor(parser, {
     return {
       type: 'assign',
       values: [left, ...rights],
+    };
+  },
+  valueTernaryExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    if (!ctx.question?.length) {
+      return left;
+    }
+    return {
+      type: 'ternary',
+      condition: left,
+      true: visit(ctx.then[0]),
+      false: visit(ctx.else[0]),
     };
   },
   valueAndExpression(ctx, visit): ValueExprNode {
@@ -199,6 +211,94 @@ export const toCAst = createVisitor(parser, {
     }
     return {
       type: 'or',
+      values: [left, ...rights],
+    };
+  },
+  valueShiftRightExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'shiftRight',
+      values: [left, ...rights],
+    };
+  },
+  valueShiftLeftExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'shiftLeft',
+      values: [left, ...rights],
+    };
+  },
+  valueBitAndExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'bitAnd',
+      values: [left, ...rights],
+    };
+  },
+  valueBitOrExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'bitOr',
+      values: [left, ...rights],
+    };
+  },
+  valueLtExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'lt',
+      values: [left, ...rights],
+    };
+  },
+  valueLteExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'lte',
+      values: [left, ...rights],
+    };
+  },
+  valueGtExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'gt',
+      values: [left, ...rights],
+    };
+  },
+  valueGteExpression(ctx, visit): ValueExprNode {
+    const left = visit(ctx.left[0]);
+    const rights = ctx.rights?.map((r) => visit(r));
+    if (!rights?.length) {
+      return left;
+    }
+    return {
+      type: 'gte',
       values: [left, ...rights],
     };
   },
@@ -371,7 +471,7 @@ export const toCAst = createVisitor(parser, {
       const mappedItem = visit(item);
       if (!('key' in mappedItem) || !('value' in mappedItem)) {
         throw new Error(
-          `UNEXPECTED ARRAY ITEM: ${JSON.stringify(mappedItem, null, 2)}`
+          `UNEXPECTED ARRAY ITEM: ${JSON.stringify(mappedItem, null, 2)}`,
         );
       }
       values[mappedItem.key] = mappedItem.value;

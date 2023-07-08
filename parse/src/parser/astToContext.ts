@@ -25,8 +25,6 @@ export const astToContext = (
     identifiers: {},
   },
 ) => {
-  console.log(ast);
-
   ast.values.forEach((statement) => {
     if (statement.type === 'fnDef') {
       if (statement.name in context.identifiers) {
