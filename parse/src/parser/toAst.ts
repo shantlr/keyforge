@@ -35,14 +35,14 @@ export const toCAst = createVisitor(parser, {
   },
 
   //#region PREPROCESSOR
-  defineDeclaration(ctx: any): DefineNode {
+  defineDeclaration(ctx): DefineNode {
     return {
       type: 'define',
       name: ctx.name[0].image,
       value: ctx.value ? toCAst(ctx.value[0]) : null,
     };
   },
-  includeStatement(ctx: any): IncludeNode {
+  includeStatement(ctx): IncludeNode {
     if (ctx.identifier) {
       return {
         type: 'include',
@@ -90,7 +90,7 @@ export const toCAst = createVisitor(parser, {
   },
   //#endregion
 
-  enumDeclaration(ctx: any): EnumNode {
+  enumDeclaration(ctx): EnumNode {
     return {
       type: 'enum',
       name: ctx.name[0].image,
@@ -111,7 +111,7 @@ export const toCAst = createVisitor(parser, {
         }, []) || [],
     };
   },
-  enumOption(ctx: any): string {
+  enumOption(ctx): string {
     if (ctx.name) {
       return ctx.name[0].image;
     }
@@ -133,7 +133,7 @@ export const toCAst = createVisitor(parser, {
     };
   },
 
-  valueType(ctx: any) {
+  valueType(ctx) {
     if (ctx.void) {
       return 'void';
     }
@@ -142,7 +142,7 @@ export const toCAst = createVisitor(parser, {
     }
     throw new Error(`CANNOT MAP VALUE TYPE: ${JSON.stringify(ctx)}`);
   },
-  typedIdentifier(ctx: any): {
+  typedIdentifier(ctx): {
     varType: string;
     modifier?: string;
     name: string;
@@ -156,7 +156,7 @@ export const toCAst = createVisitor(parser, {
       // arrayDim: ctx.arrayDim ? toCAst(ctx.arrayDim) : null,
     };
   },
-  arrayDimensionDeclaration(ctx: any) {
+  arrayDimensionDeclaration(ctx) {
     return ctx;
   },
 
@@ -543,7 +543,7 @@ export const toCAst = createVisitor(parser, {
   //#endregion
 
   //#region Function
-  fnDefinition(ctx: any): FnDefNode {
+  fnDefinition(ctx): FnDefNode {
     let params = ctx.params?.map((p) => toCAst(p)) || [];
     if (params.length === 1 && params[0]?.type === 'void') {
       params = [];
@@ -556,7 +556,7 @@ export const toCAst = createVisitor(parser, {
       body: ctx.body?.map((p) => toCAst(p)) || [],
     };
   },
-  fnStatement(ctx: any) {
+  fnStatement(ctx) {
     if (ctx.semicolon) {
       delete ctx.semicolon;
     }
@@ -578,7 +578,7 @@ export const toCAst = createVisitor(parser, {
 
     throw new Error(`CANNOT MAP FN STATEMENT: ${JSON.stringify(ctx)}`);
   },
-  returnStatement(ctx: any): ReturnNode {
+  returnStatement(ctx): ReturnNode {
     return {
       type: 'return',
       value: ctx.value ? toCAst(ctx.value[0]) : undefined,
@@ -639,11 +639,11 @@ export const toCAst = createVisitor(parser, {
   statementBlock(ctx, visit): FnInstructionNode[] {
     return ctx.do?.map((d) => visit(d)) || [];
   },
-  whileStatement(ctx: any): WhileNode {
+  whileStatement(ctx): WhileNode {
     return ctx;
   },
   //#region switch
-  switchStatement(ctx: any): SwitchCaseNode {
+  switchStatement(ctx): SwitchCaseNode {
     const cases = ctx.cases?.map((c) => toCAst(c)) || [];
     return {
       type: 'switch',
@@ -651,7 +651,7 @@ export const toCAst = createVisitor(parser, {
       cases: cases,
     };
   },
-  switchCase(ctx: any): SwitchCaseNode['cases'][number] {
+  switchCase(ctx): SwitchCaseNode['cases'][number] {
     const matches = ctx.matches.map((m) => toCAst(m));
     return {
       matches: matches.filter((m) => m?.type !== 'case_default'),
@@ -659,7 +659,7 @@ export const toCAst = createVisitor(parser, {
       do: ctx.do?.map((d) => toCAst(d)) || [],
     };
   },
-  switchCaseMatch(ctx: any): { type: 'case_default' } | ValueExprNode {
+  switchCaseMatch(ctx): { type: 'case_default' } | ValueExprNode {
     if (ctx.default) {
       return { type: 'case_default' };
     }

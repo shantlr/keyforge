@@ -16,6 +16,7 @@ export { lexer } from './lexer';
 export const parseC = (
   content: string,
   callParserRule = (p: typeof parser) => p.statements(),
+  opt?: { debug: boolean },
 ) => {
   const lexRes = lexer.tokenize(content);
 
@@ -24,34 +25,36 @@ export const parseC = (
   const cst = callParserRule(parser);
 
   if (parser.errors.length) {
-    console.log('ERRORS:');
-    parser.errors.forEach((err) => {
-      if (err instanceof MismatchedTokenException) {
-        console.log(err);
-        console.log(`RULE:`, err.context.ruleStack.join(' > '));
-        console.log('AT:');
-        const off = err.token.startOffset;
+    if (opt?.debug) {
+      console.log('ERRORS:');
+      parser.errors.forEach((err) => {
+        if (err instanceof MismatchedTokenException) {
+          console.log(err);
+          console.log(`RULE:`, err.context.ruleStack.join(' > '));
+          console.log('AT:');
+          const off = err.token.startOffset;
 
-        console.log(
-          `${content.slice(off - 50, off)}${chalk.red(
-            content[off],
-          )}${content.slice(off + 1, off + 50)}`,
-        );
-      } else if (err instanceof NoViableAltException) {
-        console.log(err);
-        console.log(`RULE:`, err.context.ruleStack.join(' > '));
-        console.log('AT:');
+          console.log(
+            `${content.slice(off - 50, off)}${chalk.red(
+              content[off],
+            )}${content.slice(off + 1, off + 50)}`,
+          );
+        } else if (err instanceof NoViableAltException) {
+          console.log(err);
+          console.log(`RULE:`, err.context.ruleStack.join(' > '));
+          console.log('AT:');
 
-        const off = err.token.startOffset;
-        console.log(
-          `${content.slice(off - 50, off)}${chalk.red(
-            content[off],
-          )}${content.slice(off + 1, off + 50)}`,
-        );
-      } else {
-        console.log(err);
-      }
-    });
+          const off = err.token.startOffset;
+          console.log(
+            `${content.slice(off - 50, off)}${chalk.red(
+              content[off],
+            )}${content.slice(off + 1, off + 50)}`,
+          );
+        } else {
+          console.log(err);
+        }
+      });
+    }
     // @ts-ignore
     throw new Error('FAILED TO PARSE', { cause: parser.errors });
   } else if (cst) {

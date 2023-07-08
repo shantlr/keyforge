@@ -846,9 +846,22 @@ export class CParser extends CstParser {
   });
   valueArrayItemExpression = this.RULE('valueArrayItemExpression', () => {
     this.CONSUME(TOKENS.bracketStart);
-    this.CONSUME(TOKENS.identifier, {
-      LABEL: 'index',
-    });
+    this.OR([
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.identifier, {
+            LABEL: 'index',
+          });
+        },
+      },
+      {
+        ALT: () => {
+          this.CONSUME(TOKENS.num, {
+            LABEL: 'index',
+          });
+        },
+      },
+    ]);
     this.CONSUME(TOKENS.bracketEnd);
     this.CONSUME(TOKENS.equal);
 
