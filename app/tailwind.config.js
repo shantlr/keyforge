@@ -1,3 +1,5 @@
+import colors from 'tailwindcss/colors';
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,6 +9,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: colors.amber[400],
+        'primary-darker': colors.amber[600],
+        'primary-lighter': colors.amber[300],
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
@@ -15,4 +22,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};

@@ -1,7 +1,7 @@
 import { mkdir, readFile, readdir, writeFile } from 'fs/promises';
 import path from 'path';
 
-import { cloneDeep, forEach } from 'lodash';
+import { cloneDeep, forEach, uniq } from 'lodash';
 import { Command } from 'commander';
 
 import { parseFileToContext } from './parser';
@@ -138,15 +138,20 @@ const main = async () => {
         parsedKeymaps: 0,
       };
 
+      const keyboardList = [];
       await parseKeyboardsFolder(keyboardsFolder, async ({ dir, infoJson }) => {
         stats.totalKeyboards += 1;
 
-        const { name } = path.parse(dir);
-        const outputKeyboardDir = path.resolve(outputDir, name);
+        // const { name } = path.parse(dir);
+        const keyboardPath = path.relative(keyboardsFolder, dir);
+        const outputKeyboardDir = path.resolve(outputDir, keyboardPath);
         await mkdir(outputKeyboardDir, { recursive: true });
+
+        const keymaps: string[] = [];
         await parseKeymaps(dir, async ({ dir: keymapDir, keymapPath }) => {
           stats.totalKeymaps += 1;
 
+          // const keymapName = path.relative(dir, keymapDir);
           const { name: keymapName } = path.parse(keymapDir);
           const outputKeymapDir = path.resolve(outputKeyboardDir, keymapName);
 
@@ -163,17 +168,28 @@ const main = async () => {
                 JSON.stringify({ name: keymapName, layers }),
               );
               stats.parsedKeymaps += 1;
+              keymaps.push(keymapName);
               console.log(`keymap ${name}/${keymapName} parsed`);
             }
           } catch (err) {
             console.error(`failed to parse ${keymapPath}`);
           }
         });
+
+        infoJson.keymaps = keymaps;
         await writeFile(
           path.resolve(outputKeyboardDir, 'info.json'),
           JSON.stringify(infoJson),
         );
+        keyboardList.push({
+          name: infoJson.keyboard_name || keyboardPath,
+          path: keyboardPath,
+        });
       });
+      await writeFile(
+        path.resolve(outputDir, 'list.json'),
+        JSON.stringify(uniq(keyboardList)),
+      );
 
       console.log('Total keyboards', stats.totalKeyboards);
       console.log(
