@@ -142,9 +142,14 @@ const main = async () => {
       await parseKeyboardsFolder(keyboardsFolder, async ({ dir, infoJson }) => {
         stats.totalKeyboards += 1;
 
-        // const { name } = path.parse(dir);
         const keyboardPath = path.relative(keyboardsFolder, dir);
-        const outputKeyboardDir = path.resolve(outputDir, keyboardPath);
+        const mappedKBName = keyboardPath.replace(/\//g, '_');
+
+        const outputKeyboardDir = path.resolve(
+          outputDir,
+          mappedKBName[0],
+          mappedKBName,
+        );
         await mkdir(outputKeyboardDir, { recursive: true });
 
         const keymaps: string[] = [];
@@ -183,7 +188,7 @@ const main = async () => {
         );
         keyboardList.push({
           name: infoJson.keyboard_name || keyboardPath,
-          path: keyboardPath,
+          path: path.relative(outputDir, outputKeyboardDir),
         });
       });
       await writeFile(
@@ -200,8 +205,6 @@ const main = async () => {
         `(${((stats.parsedKeymaps / stats.totalKeymaps) * 100).toFixed(2)}%)`,
       );
     });
-
-  // prog.command('').action(async () => {});
 
   await prog.parseAsync(process.argv);
   // const content = (await readFile('./data/keymap3.c')).toString();

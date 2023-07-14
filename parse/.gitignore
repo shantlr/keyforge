@@ -4,3 +4,4 @@ yarn-error.log
 /qmk_firmware
 /data
 /output
+/build
