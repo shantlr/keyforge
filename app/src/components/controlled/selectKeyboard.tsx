@@ -1,8 +1,9 @@
 'use client';
 
 import { Item } from 'react-stately';
-import { Select } from '../base/select';
+// import { Select } from '../base/select';
 import { useRouter } from 'next/navigation';
+import { ComboBox } from '../base/comboBox';
 
 export const SelectKeyboard = ({
   value,
@@ -15,14 +16,14 @@ export const SelectKeyboard = ({
 }) => {
   const router = useRouter();
   return (
-    <Select
+    <ComboBox
       aria-label="select your keyboard"
       className={className}
       selectedKey={value}
       onSelectionChange={(key) => {
         router.push(`/${key}`);
       }}
-      items={keyboards}
+      defaultItems={keyboards}
     >
       {(item) => (
         <Item key={item.path} textValue={`${item.name} (${item.path})`}>
@@ -31,6 +32,6 @@ export const SelectKeyboard = ({
           </span>
         </Item>
       )}
-    </Select>
+    </ComboBox>
   );
 };

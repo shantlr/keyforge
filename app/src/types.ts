@@ -15,7 +15,9 @@ export type KeyboardInfo = {
         x: number;
         y: number;
         w?: number;
+        h?: number;
       }[];
     }
   >;
+  keymaps: string[];
 };

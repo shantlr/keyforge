@@ -28,22 +28,7 @@ export const keyboardInfo = createCache<string, KeyboardInfo>(
   async (key: string) => {
     try {
       const res = await readFile(path.resolve(baseDir, key, 'info.json'));
-      return JSON.parse(res.toString()) as {
-        keyboard_name?: string;
-        manufacturer?: string;
-        url?: string;
-        maintainer?: string;
-        matrix_pins?: {
-          cols: string[];
-          rows: string[];
-        };
-        layouts: Record<
-          string,
-          {
-            layout: any;
-          }
-        >;
-      };
+      return JSON.parse(res.toString());
     } catch (err) {
       if ((err as any)?.code === 'ENOENT') {
         console.warn(`keyboard not found '${key}'`);
@@ -57,5 +42,36 @@ export const keyboardInfo = createCache<string, KeyboardInfo>(
   },
   {
     max: 100,
+  }
+);
+
+export const existingKeymap = createCache<
+  string,
+  {
+    name: string;
+    layers: {
+      name: string;
+      keys: string[];
+    }[];
+  }
+>(
+  async (key: string) => {
+    try {
+      const res = await readFile(path.resolve(baseDir, key, 'layout.json'));
+      console.log(res.toString());
+      return JSON.parse(res.toString());
+    } catch (err) {
+      if ((err as any)?.code === 'ENOENT') {
+        console.warn(`keymap not found '${key}'`);
+        return undefined;
+      }
+      if (err instanceof SyntaxError) {
+        console.warn(`keymap not found '${key}'`);
+        return undefined;
+      }
+    }
+  },
+  {
+    max: 1000,
   }
 );

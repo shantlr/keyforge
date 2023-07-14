@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { MutableRefObject, useRef } from 'react';
 import { DismissButton, Overlay, usePopover } from 'react-aria';
 import type { AriaPopoverProps } from 'react-aria';
 import type { OverlayTriggerState } from 'react-stately';
@@ -12,9 +12,12 @@ export function Popover({
   children,
   state,
   offset = 8,
+  popoverRef: forwardPopoverRef,
   ...props
-}: PopoverProps) {
-  const popoverRef = useRef(null);
+}: PopoverProps & {
+  popoverRef?: MutableRefObject<HTMLDivElement | null>;
+}) {
+  const popoverRef = useRef<HTMLDivElement | null>(null);
   const { popoverProps, underlayProps, arrowProps, placement } = usePopover(
     {
       ...props,
@@ -24,13 +27,17 @@ export function Popover({
     state
   );
 
+  if (typeof forwardPopoverRef === 'object') {
+    forwardPopoverRef.current = popoverRef.current;
+  }
+
   return (
     <Overlay>
       <div {...underlayProps} className="underlay" />
       <div
         {...popoverProps}
         ref={popoverRef}
-        className="popover bg-white px-1 py-2 text-slate-900 rounded-sm"
+        className="popover bg-white px-1 py-2 text-slate-900 rounded-sm overflow-hidden"
       >
         <DismissButton onDismiss={state.close} />
         {children}

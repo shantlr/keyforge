@@ -1,20 +1,26 @@
 import type { AriaListBoxProps } from 'react-aria';
 import { ListState, Node } from 'react-stately';
 import { mergeProps, useFocusRing, useListBox, useOption } from 'react-aria';
-import { useRef } from 'react';
+import { MutableRefObject, useRef } from 'react';
 
 export function ListBox<T extends object>({
   state,
+  listBoxRef,
   ...props
 }: Omit<AriaListBoxProps<T>, 'children'> & {
   state: ListState<T>;
+  listBoxRef?: MutableRefObject<HTMLUListElement | null>;
 }) {
   // // Create state based on the incoming props
   // let state = useListState(props);
 
   // Get props for the listbox element
-  let ref = useRef(null);
+  let ref = useRef<HTMLUListElement | null>(null);
   let { listBoxProps, labelProps } = useListBox(props, state, ref);
+
+  if (typeof listBoxRef === 'object') {
+    listBoxRef.current = ref.current;
+  }
 
   return (
     <>

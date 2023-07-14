@@ -22,7 +22,7 @@ export default async function Keyboard({
         <SelectKeyboard className="ml-2" value={keyboardPath} keyboards={res} />
       </div>
       <div className="mt-8">
-        <KeymapConfigurator keyboard={keyboard} />
+        <KeymapConfigurator keyboardId={keyboardPath} keyboard={keyboard} />
       </div>
     </main>
   );
