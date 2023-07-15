@@ -831,16 +831,14 @@ export class CParser extends CstParser {
   //#region Array
   valueArrayExpression = this.RULE('valueArrayExpression', () => {
     this.CONSUME(TOKENS.blockStart);
-    this.MANY_SEP({
+    this.SEP({
       SEP: TOKENS.comma,
-      DEF: () => {
-        this.SUBRULE(this.valueArrayItemExpression, {
+      DEF: (idx) => {
+        this.subrule(idx, this.valueArrayItemExpression, {
           LABEL: 'items',
         });
       },
-    });
-    this.OPTION(() => {
-      this.CONSUME(TOKENS.comma);
+      dangling: true,
     });
     this.CONSUME(TOKENS.blockEnd);
   });
@@ -871,13 +869,14 @@ export class CParser extends CstParser {
   });
   valueArrayListExpression = this.RULE('valueArrayListExpression', () => {
     this.CONSUME(TOKENS.blockStart);
-    this.MANY_SEP({
+    this.SEP({
       SEP: TOKENS.comma,
-      DEF: () => {
-        this.SUBRULE(this.valueExpression, {
+      DEF: (idx) => {
+        this.subrule(idx, this.valueExpression, {
           LABEL: 'items',
         });
       },
+      dangling: true,
     });
     this.CONSUME(TOKENS.blockEnd);
   });
