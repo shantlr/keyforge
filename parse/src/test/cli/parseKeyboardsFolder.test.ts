@@ -10,7 +10,7 @@ describe('parseKeybardsFolders', () => {
     vol.reset();
   });
 
-  it.only('should ignore folder without rules.mk', async () => {
+  it('should ignore folder without rules.mk', async () => {
     vol.fromNestedJSON({
       '/keyboards': {
         kb_1: {
@@ -26,7 +26,7 @@ describe('parseKeybardsFolders', () => {
     expect(onKBFolder).not.toHaveBeenCalled();
   });
 
-  it.only('should parse basic keyboard', async () => {
+  it('should parse basic keyboard', async () => {
     const info = { name: 'kb_1' };
 
     vol.fromNestedJSON({
@@ -49,7 +49,7 @@ describe('parseKeybardsFolders', () => {
       keymapsDir: '/keyboards/kb_1/keymaps',
     });
   });
-  it.only('should parse revisions', async () => {
+  it('should parse revisions', async () => {
     const info = { name: 'kb_1' };
 
     vol.fromNestedJSON({
@@ -86,7 +86,7 @@ describe('parseKeybardsFolders', () => {
       keymapsDir: '/keyboards/kb_1/keymaps',
     });
   });
-  it.only('should parse merge info.json when parsing rev', async () => {
+  it('should parse merge info.json when parsing rev', async () => {
     const info = { name: 'kb_1', manufacturer: 'test' };
 
     vol.fromNestedJSON({
@@ -114,7 +114,7 @@ describe('parseKeybardsFolders', () => {
     });
   });
 
-  it.only('should use rev keymaps folder instead of parent', async () => {
+  it('should use rev keymaps folder instead of parent', async () => {
     const info = { name: 'kb_1' };
 
     vol.fromNestedJSON({
@@ -142,7 +142,7 @@ describe('parseKeybardsFolders', () => {
       keymapsDir: '/keyboards/kb_1/rev1/keymaps',
     });
   });
-  it.only('should parse brand folder keyboards', async () => {
+  it('should parse brand folder keyboards', async () => {
     const info = { name: 'kb_1' };
 
     vol.fromNestedJSON({
