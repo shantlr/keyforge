@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir, writeFile } from 'fs/promises';
+import { mkdir, readdir, writeFile } from 'fs/promises';
 import path from 'path';
 
 import { cloneDeep, forEach, uniq } from 'lodash';
@@ -6,6 +6,7 @@ import { Command } from 'commander';
 
 import { parseFileToContext } from './parser';
 import { AstContext, Context } from './parser/astToContext';
+import { parseKeyboardsFolder } from './parseKeyboardFolders';
 
 const parseKeyboardLayouts = (context: AstContext) => {
   const keymaps = context.identifiers.keymaps;
@@ -55,47 +56,6 @@ const parseKeyboardLayouts = (context: AstContext) => {
   // console.log(keymaps.value.values);
 };
 
-const parseKeyboardsFolder = async (
-  dir: string,
-  onKeyboardFolder: (input: {
-    dir: string;
-    infoJson: any;
-  }) => Promise<void> | void,
-) => {
-  const files = await readdir(dir, { withFileTypes: true });
-  const info = files.find((f) => f.name === 'info.json' && f.isFile());
-  if (info) {
-    try {
-      const infoJson = JSON.parse(
-        (await readFile(path.resolve(dir, info.name))).toString(),
-      );
-
-      await onKeyboardFolder({
-        dir,
-        infoJson,
-      });
-    } catch (err) {
-      if (err instanceof SyntaxError) {
-        console.error(
-          `failed to parse ${path.resolve(dir, info.name)} (skipped)`,
-        );
-        return;
-      }
-      throw err;
-    }
-  } else {
-    await Promise.all(
-      files.map(async (f) => {
-        if (!f.isDirectory()) {
-          return;
-        }
-
-        await parseKeyboardsFolder(path.resolve(dir, f.name), onKeyboardFolder);
-      }),
-    );
-  }
-};
-
 export const parseKeymaps = async (
   dir: string,
   onKeymap: (input: {
@@ -139,58 +99,68 @@ const main = async () => {
       };
 
       const keyboardList = [];
-      await parseKeyboardsFolder(keyboardsFolder, async ({ dir, infoJson }) => {
-        stats.totalKeyboards += 1;
+      await parseKeyboardsFolder(
+        keyboardsFolder,
+        async ({ dir, infoJson, keymapsDir }) => {
+          stats.totalKeyboards += 1;
 
-        const keyboardPath = path.relative(keyboardsFolder, dir);
-        const mappedKBName = keyboardPath.replace(/\//g, '_');
+          const keyboardPath = path.relative(keyboardsFolder, dir);
+          const mappedKBName = keyboardPath.replace(/\//g, '_');
 
-        const outputKeyboardDir = path.resolve(
-          outputDir,
-          mappedKBName[0],
-          mappedKBName,
-        );
-        await mkdir(outputKeyboardDir, { recursive: true });
+          // for easier navigation we put use keyboard name first character as parent directory
+          // planck/rev7 => p/planck_rev7
+          const outputKeyboardDir = path.resolve(
+            outputDir,
+            mappedKBName[0],
+            mappedKBName,
+          );
+          await mkdir(outputKeyboardDir, { recursive: true });
 
-        const keymaps: string[] = [];
-        await parseKeymaps(dir, async ({ dir: keymapDir, keymapPath }) => {
-          stats.totalKeymaps += 1;
+          const keymaps: string[] = [];
+          await parseKeymaps(
+            keymapsDir,
+            async ({ dir: keymapDir, keymapPath }) => {
+              stats.totalKeymaps += 1;
 
-          // const keymapName = path.relative(dir, keymapDir);
-          const { name: keymapName } = path.parse(keymapDir);
-          const outputKeymapDir = path.resolve(outputKeyboardDir, keymapName);
-
-          try {
-            const res = await parseFileToContext(
-              keymapPath,
-              cloneDeep(context),
-            );
-            const layers = parseKeyboardLayouts(res);
-            if (layers.length) {
-              await mkdir(outputKeymapDir, { recursive: true });
-              await writeFile(
-                path.resolve(outputKeymapDir, 'layout.json'),
-                JSON.stringify({ name: keymapName, layers }),
+              const { name: keymapName } = path.parse(keymapDir);
+              const outputKeymapDir = path.resolve(
+                outputKeyboardDir,
+                keymapName,
               );
-              stats.parsedKeymaps += 1;
-              keymaps.push(keymapName);
-              console.log(`keymap ${name}/${keymapName} parsed`);
-            }
-          } catch (err) {
-            console.error(`failed to parse ${keymapPath}`);
-          }
-        });
 
-        infoJson.keymaps = keymaps;
-        await writeFile(
-          path.resolve(outputKeyboardDir, 'info.json'),
-          JSON.stringify(infoJson),
-        );
-        keyboardList.push({
-          name: infoJson.keyboard_name || keyboardPath,
-          path: path.relative(outputDir, outputKeyboardDir),
-        });
-      });
+              try {
+                const res = await parseFileToContext(
+                  keymapPath,
+                  cloneDeep(context),
+                );
+                const layers = parseKeyboardLayouts(res);
+                if (layers.length) {
+                  await mkdir(outputKeymapDir, { recursive: true });
+                  await writeFile(
+                    path.resolve(outputKeymapDir, 'layout.json'),
+                    JSON.stringify({ name: keymapName, layers }),
+                  );
+                  stats.parsedKeymaps += 1;
+                  keymaps.push(keymapName);
+                  console.log(`keymap ${name}/${keymapName} parsed`);
+                }
+              } catch (err) {
+                console.error(`failed to parse ${keymapPath}`);
+              }
+            },
+          );
+
+          infoJson.keymaps = keymaps;
+          await writeFile(
+            path.resolve(outputKeyboardDir, 'info.json'),
+            JSON.stringify(infoJson),
+          );
+          keyboardList.push({
+            name: infoJson.keyboard_name || keyboardPath,
+            path: path.relative(outputDir, outputKeyboardDir),
+          });
+        },
+      );
       await writeFile(
         path.resolve(outputDir, 'list.json'),
         JSON.stringify(uniq(keyboardList)),
