@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={clsx(inter.className, 'bg-slate-900 h-full')}>
+      <body className={clsx(inter.className, 'bg-mainbg h-full')}>
         {children}
       </body>
     </html>

@@ -4,6 +4,9 @@ import { useComboBoxState } from 'react-stately';
 import { Button } from '../button';
 import { Popover } from '../popover';
 import { ListBox } from '../listBox';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { Input } from '../input';
 
 export function ComboBox<Option extends object>({
   className,
@@ -39,21 +42,13 @@ export function ComboBox<Option extends object>({
     >
       <label {...labelProps}>{props.label}</label>
       <div>
-        <input
-          {...inputProps}
-          ref={inputRef}
-          style={{
-            height: 24,
-            boxSizing: 'border-box',
-            marginRight: 0,
-            fontSize: 16,
-          }}
-        />
-        <Button {...buttonProps} ref={buttonRef}>
-          <span aria-hidden="true" style={{ padding: '0 2px' }}>
-            ▼
-          </span>
-        </Button>
+        <div>
+          <Input {...inputProps} ref={inputRef} />
+          <Button {...buttonProps} ref={buttonRef}>
+            <FontAwesomeIcon icon={faCaretDown} />
+          </Button>
+        </div>
+
         {state.isOpen && (
           <Popover
             state={state}

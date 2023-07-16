@@ -13,11 +13,9 @@ export default async function Keyboard({
 
   const keyboard = await keyboardInfo.get(keyboardPath);
 
-  console.log(keyboard);
-
   return (
     <main className="p-16 h-full">
-      <div className="text-primary">
+      <div className="text-primary flex items-center">
         <span className="text-primary-lighter">Pick your keyboard</span>
         <SelectKeyboard className="ml-2" value={keyboardPath} keyboards={res} />
       </div>

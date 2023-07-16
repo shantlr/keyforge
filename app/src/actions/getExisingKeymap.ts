@@ -9,5 +9,6 @@ export const getExistingKeymap = async ({
   keyboard: string;
   keymap: string;
 }) => {
+  console.log(keyboard, keymap);
   return existingKeymap.get(`${keyboard}/${keymap}`);
 };

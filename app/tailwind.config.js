@@ -10,6 +10,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        mainbg: colors.slate[900],
         primary: colors.amber[400],
         'primary-darker': colors.amber[600],
         'primary-lighter': colors.amber[300],

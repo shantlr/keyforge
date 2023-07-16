@@ -21,7 +21,7 @@ export const Button = forwardRef(
       <button
         {...buttonProps}
         className={clsx(
-          'px-4 rounded-sm bg-primary text-slate-900 outline-none hover:bg-primary-light active:bg-primary-darker',
+          'px-4 rounded-sm bg-primary text-slate-900 outline-none hover:bg-primary-darker active:bg-primary-darker',
           className
         )}
         ref={(r) => {

@@ -6,7 +6,7 @@ export default async function Home() {
 
   return (
     <main className="p-16 h-full">
-      <div className="text-primary">
+      <div className="text-primary flex items-center">
         <span className="text-primary-lighter">Pick your keyboard</span>
         <SelectKeyboard className="ml-2" keyboards={res} />
       </div>

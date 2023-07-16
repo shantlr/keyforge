@@ -2,7 +2,7 @@
 
 import { KeyboardInfo } from '@/types';
 import { Keymap } from '../keymap';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Select } from '../base/select';
 import { map, reverse } from 'lodash';
 import { Item } from 'react-stately';
@@ -19,11 +19,11 @@ export const KeymapConfigurator = ({
 }) => {
   const layouts = useMemo(
     () =>
-      map(keyboard.layouts, (l, name) => ({
+      map(keyboard?.layouts, (l, name) => ({
         name,
         ...l,
       })),
-    [keyboard.layouts]
+    [keyboard?.layouts]
   );
   const [layout, setLayout] = useState(() => layouts[0]?.name);
 
@@ -36,19 +36,22 @@ export const KeymapConfigurator = ({
   } | null>(null);
   const [layerIdx, setLayerIdx] = useState(0);
 
-  const onSelectKeymap = async (key: string) => {
-    const keymap = await getExistingKeymap({
-      keyboard: keyboardId,
-      keymap: key as string,
-    });
-    setKeymap(keymap);
-  };
+  const onSelectKeymap = useCallback(
+    async (key: string) => {
+      const keymap = await getExistingKeymap({
+        keyboard: keyboardId,
+        keymap: key as string,
+      });
+      setKeymap(keymap);
+    },
+    [keyboardId]
+  );
 
   useEffect(() => {
     if (!keymap && keyboard.keymaps.length) {
       onSelectKeymap(keyboard.keymaps[0]);
     }
-  }, [keymap, keyboard]);
+  }, [keymap, keyboard, onSelectKeymap]);
 
   return (
     <div>
@@ -72,6 +75,7 @@ export const KeymapConfigurator = ({
       <div className="flex">
         <div className="text-primary-lighter">From keymap:</div>
         <Select
+          className="ml-2"
           selectedKey={keymap?.name}
           onSelectionChange={async (key) => {
             onSelectKeymap(key as string);
@@ -85,6 +89,7 @@ export const KeymapConfigurator = ({
         </Select>
       </div>
 
+      {/* Layers */}
       <div className="flex mt-4">
         <div className="text-white flex flex-col mr-8 space-y-2">
           {(keymap?.layers || [])
@@ -109,6 +114,7 @@ export const KeymapConfigurator = ({
               </Button>
             ))}
         </div>
+
         <Keymap
           keyboard={keyboard}
           layout={layout}
