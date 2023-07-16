@@ -5,3 +5,9 @@
 * {
   box-sizing: border-box;
 }
+
+@layer components {
+  .expanded-container {
+    @apply flex flex-col h-full w-full;
+  }
+}

@@ -55,7 +55,7 @@ export const KeymapConfigurator = ({
   }, [keymap, keyboard, onSelectKeymap]);
 
   return (
-    <div>
+    <div className="expanded-container overflow-hiddden">
       {layouts.length > 1 && (
         <div className="flex mb-4">
           <div className="text-primary-lighter mr-2">Pick your layout</div>
@@ -92,7 +92,7 @@ export const KeymapConfigurator = ({
 
       {/* Layers */}
       <div className="flex mt-4">
-        <div className="text-white flex flex-col mr-8 space-y-2">
+        <div className="text-white text-sm flex flex-col mr-8 space-y-2">
           {(keymap?.layers || [])
             .slice()
             ?.reverse()
@@ -117,12 +117,11 @@ export const KeymapConfigurator = ({
         </div>
 
         <Keymap
-          keyboard={keyboard}
-          layout={layout}
+          keyPositions={keyboard.layouts?.[layout]?.layout}
           keys={keymap?.layers?.[layerIdx]?.keys}
         />
       </div>
-      <div className="rounded bg-primary w-full h-full">
+      <div className="mt-4 expanded-container rounded bg-secondarybg w-full h-full">
         <KeysPicker />
       </div>
     </div>

@@ -14,12 +14,12 @@ export default async function Keyboard({
   const keyboard = await keyboardInfo.get(keyboardPath);
 
   return (
-    <main className="p-16 h-full">
+    <main className="p-4 expanded-container overflow-hidden">
       <div className="text-primary flex items-center">
         <span className="text-primary-lighter">Pick your keyboard</span>
         <SelectKeyboard className="ml-2" value={keyboardPath} keyboards={res} />
       </div>
-      <div className="mt-8">
+      <div className="expanded-container mt-8">
         <KeymapConfigurator keyboardId={keyboardPath} keyboard={keyboard} />
       </div>
     </main>

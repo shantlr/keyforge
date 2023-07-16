@@ -1,25 +1,20 @@
 'use client';
 
 import { KEY_TO_TEXT } from '@/lib/keyMapping';
-import { KeyboardInfo } from '@/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ReactNode, useMemo } from 'react';
 
 export const Keymap = ({
-  keyboard,
-  layout,
+  keyPositions,
   baseWidth = 36,
   keySepWidth = 6,
   keys,
 }: {
-  keyboard: KeyboardInfo;
-  layout: string;
+  keyPositions: { x: number; y: number; h?: number; w?: number }[];
   baseWidth?: number;
   keySepWidth?: number;
   keys?: string[];
 }) => {
-  const keyPositions = keyboard.layouts?.[layout]?.layout;
-
   const height = useMemo(() => {
     if (!keyPositions) {
       return 0;

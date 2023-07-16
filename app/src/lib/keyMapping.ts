@@ -112,80 +112,98 @@ export const KEYS = {
     keys: ['KC_Z'],
     group: 'Alphanum',
   },
-  '0\n)': {
+  ')\n0': {
     keys: ['KC_0'],
     group: 'Alphanum',
   },
-  '1\n!': {
+  '!\n1': {
     keys: ['KC_1'],
     group: 'Alphanum',
   },
-  '2\n@': {
+  '@\n2': {
     keys: ['KC_2'],
     group: 'Alphanum',
   },
-  '3\n#': {
+  '#\n3': {
     keys: ['KC_3'],
     group: 'Alphanum',
   },
-  '4\n$': {
+  '$\n4': {
     keys: ['KC_4'],
     group: 'Alphanum',
   },
-  '5\n%': {
+  '%\n5': {
     keys: ['KC_5'],
     group: 'Alphanum',
   },
-  '6\n^': {
+  '^\n6': {
     keys: ['KC_6'],
     group: 'Alphanum',
   },
-  '7\n&': {
+  '&\n7': {
     keys: ['KC_7'],
     group: 'Alphanum',
   },
-  '8\n*': {
+  '*\n8': {
     keys: ['KC_8'],
     group: 'Alphanum',
   },
-  '9\n(': {
+  '(\n9': {
     keys: ['KC_9'],
     group: 'Alphanum',
   },
   0: {
-    keys: ['KC_KP_0'],
+    keys: ['KC_KP_0', 'KC_P0'],
   },
   1: {
-    keys: ['KC_KP_1'],
+    keys: ['KC_KP_1', 'KC_P1'],
   },
   2: {
-    keys: ['KC_KP_2'],
+    keys: ['KC_KP_2', 'KC_P2'],
   },
   3: {
-    keys: ['KC_KP_3'],
+    keys: ['KC_KP_3', 'KC_P3'],
   },
   4: {
-    keys: ['KC_KP_4'],
+    keys: ['KC_KP_4', 'KC_P4'],
   },
   5: {
-    keys: ['KC_KP_5'],
+    keys: ['KC_KP_5', 'KC_P5'],
   },
   6: {
-    keys: ['KC_KP_6'],
+    keys: ['KC_KP_6', 'KC_P6'],
   },
   7: {
-    keys: ['KC_KP_7'],
+    keys: ['KC_KP_7', 'KC_P7'],
   },
   8: {
-    keys: ['KC_KP_8'],
+    keys: ['KC_KP_8', 'KC_P8'],
   },
   9: {
-    keys: ['KC_KP_9'],
+    keys: ['KC_KP_9', 'KC_P9'],
   },
   '=': {
     keys: ['KC_PEQL', 'KC_KP_EQUAL'],
   },
-  //#endregion
+  '+': {
+    keys: ['KC_PPLS'],
+  },
+  '.': {
+    keys: ['KC_PDOT'],
+  },
+  ',': {
+    keys: ['KC_PCMM'],
+  },
+  '/': {
+    keys: ['KC_PSLS'],
+  },
+  '*': {
+    keys: ['KC_PAST'],
+  },
+  '-': {
+    keys: ['KC_PMNS'],
+  },
+  // #endregion
 
   //#region Function keys
   F0: {
@@ -304,7 +322,7 @@ export const KEYS = {
   Power: {
     keys: ['KC_KB_POWER'],
   },
-  Window: {
+  APP: {
     keys: ['KC_APP', 'KC_APPLICATION'],
   },
   Execute: {
@@ -413,7 +431,7 @@ export const KEYS = {
     keys: ['KC_SPC', 'KC_SPACE'],
   },
   Enter: {
-    keys: ['KC_ENT', 'KC_ENTER'],
+    keys: ['KC_ENT', 'KC_ENTER', 'KC_PENT'],
   },
   Escape: {
     keys: ['KC_ESC', 'KC_ESCAPE'],
@@ -421,10 +439,10 @@ export const KEYS = {
   Tab: {
     keys: ['KC_TAB'],
   },
-  'Left Ctrl': {
+  'Left\nCtrl': {
     keys: ['KC_LCTL'],
   },
-  'Right Crl': {
+  'Right\nCtrl': {
     keys: ['KC_RCTL'],
   },
   'Left Alt': {
@@ -433,10 +451,10 @@ export const KEYS = {
   'Right Alt': {
     keys: ['KC_RALT'],
   },
-  'Right GUI': {
+  'Right\nOpt/Win': {
     keys: ['KC_RGUI'],
   },
-  'Left GUI': {
+  'Left\nOpt/Win': {
     keys: ['KC_LGUI'],
   },
   'Left Shift': {
