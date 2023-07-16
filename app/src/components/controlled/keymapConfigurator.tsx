@@ -9,6 +9,7 @@ import { Item } from 'react-stately';
 import { getExistingKeymap } from '@/actions/getExisingKeymap';
 import { Button } from '../base/button';
 import clsx from 'clsx';
+import { KeysPicker } from './keysPicker';
 
 export const KeymapConfigurator = ({
   keyboardId,
@@ -120,6 +121,9 @@ export const KeymapConfigurator = ({
           layout={layout}
           keys={keymap?.layers?.[layerIdx]?.keys}
         />
+      </div>
+      <div className="rounded bg-primary w-full h-full">
+        <KeysPicker />
       </div>
     </div>
   );

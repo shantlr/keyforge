@@ -3,7 +3,7 @@
 import { KEY_TO_TEXT } from '@/lib/keyMapping';
 import { KeyboardInfo } from '@/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 export const Keymap = ({
   keyboard,
@@ -18,13 +18,28 @@ export const Keymap = ({
   keySepWidth?: number;
   keys?: string[];
 }) => {
-  if (!keyboard.layouts?.[layout]) {
+  const keyPositions = keyboard.layouts?.[layout]?.layout;
+
+  const height = useMemo(() => {
+    if (!keyPositions) {
+      return 0;
+    }
+    const height = Math.max(
+      0,
+      ...keyPositions.map(
+        (k) => k.y * baseWidth + k.y * keySepWidth + (k.h || 1) * baseWidth + 10 // padding + border-b
+      )
+    );
+    return height;
+  }, [baseWidth, keyPositions, keySepWidth]);
+
+  if (!keyPositions) {
     return null;
   }
 
   return (
-    <div className="relative">
-      {keyboard.layouts[layout].layout.map((l, idx) => {
+    <div className="relative w-full" style={{ height }}>
+      {keyPositions.map((l, idx) => {
         let key: string | ReactNode = keys?.[idx] ?? 'N/A';
         if (typeof key === 'string' && key in KEY_TO_TEXT) {
           const m = KEY_TO_TEXT[key as keyof typeof KEY_TO_TEXT];
