@@ -114,6 +114,32 @@ describe('parseKeybardsFolders', () => {
     });
   });
 
+  it('should use rev parent keymaps folder', async () => {
+    vol.fromNestedJSON({
+      '/keyboards': {
+        kb_1: {
+          keymaps: {},
+          rev1: {
+            'info.json': JSON.stringify({ name: 'kb_1/rev1' }),
+            'rules.mk': '',
+          },
+          // 'config.h': '',
+          // 'info.json': JSON.stringify(info),
+          // 'rules.mk': '',
+        },
+      },
+    });
+
+    const onKBFolder = jest.fn();
+    await parseKeyboardsFolder({ dir: '/keyboards' }, onKBFolder);
+    expect(onKBFolder).toHaveBeenCalledTimes(1);
+    expect(onKBFolder).toHaveBeenCalledWith({
+      dir: '/keyboards/kb_1/rev1',
+      infoJson: { name: 'kb_1/rev1' },
+      keymapsDir: '/keyboards/kb_1/keymaps',
+    });
+  });
+
   it('should use rev keymaps folder instead of parent', async () => {
     const info = { name: 'kb_1' };
 

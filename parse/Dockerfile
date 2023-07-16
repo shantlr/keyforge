@@ -13,8 +13,8 @@ COPY ./package.json .
 COPY ./yarn.lock .
 RUN yarn install
 COPY ./tsconfig.json .
-COPY ./jest.config.js .
-COPY ./src .
+COPY ./tsconfig.build.json .
+COPY ./src ./src
 COPY ./cli ./cli
 
 RUN yarn build

@@ -73,6 +73,8 @@ prog
       totalKeyboards: 0,
       totalKeymaps: 0,
       parsedKeymaps: 0,
+      started_at: new Date(),
+      ended_at: null,
     };
 
     const keyboardList = [];
@@ -96,35 +98,42 @@ prog
         await mkdir(outputKeyboardDir, { recursive: true });
 
         const keymaps: string[] = [];
-        await parseKeymaps(
-          keymapsDir,
-          async ({ dir: keymapDir, keymapPath }) => {
-            stats.totalKeymaps += 1;
+        if (!keymapsDir) {
+          console.warn(`${keyboardPath} has no keymaps`);
+        } else {
+          await parseKeymaps(
+            keymapsDir,
+            async ({ dir: keymapDir, keymapPath }) => {
+              stats.totalKeymaps += 1;
 
-            const { name: keymapName } = path.parse(keymapDir);
-            const outputKeymapDir = path.resolve(outputKeyboardDir, keymapName);
-
-            try {
-              const res = await parseFileToContext(
-                keymapPath,
-                cloneDeep(context),
+              const { name: keymapName } = path.parse(keymapDir);
+              const outputKeymapDir = path.resolve(
+                outputKeyboardDir,
+                keymapName,
               );
-              const layers = parseKeyboardLayouts(res);
-              if (layers.length) {
-                await mkdir(outputKeymapDir, { recursive: true });
-                await writeFile(
-                  path.resolve(outputKeymapDir, 'layout.json'),
-                  JSON.stringify({ name: keymapName, layers }),
+
+              try {
+                const res = await parseFileToContext(
+                  keymapPath,
+                  cloneDeep(context),
                 );
-                stats.parsedKeymaps += 1;
-                keymaps.push(keymapName);
-                console.log(`keymap ${mappedKBName}/${keymapName} parsed`);
+                const layers = parseKeyboardLayouts(res);
+                if (layers.length) {
+                  await mkdir(outputKeymapDir, { recursive: true });
+                  await writeFile(
+                    path.resolve(outputKeymapDir, 'layout.json'),
+                    JSON.stringify({ name: keymapName, layers }),
+                  );
+                  stats.parsedKeymaps += 1;
+                  keymaps.push(keymapName);
+                  console.log(`keymap ${mappedKBName}/${keymapName} parsed`);
+                }
+              } catch (err) {
+                console.error(`failed to parse ${keymapPath}`);
               }
-            } catch (err) {
-              console.error(`failed to parse ${keymapPath}`);
-            }
-          },
-        );
+            },
+          );
+        }
 
         infoJson.keymaps = keymaps;
         await writeFile(
@@ -141,6 +150,7 @@ prog
       path.resolve(outputDir, 'list.json'),
       JSON.stringify(uniq(keyboardList)),
     );
+    stats.ended_at = new Date();
 
     console.log('Total keyboards', stats.totalKeyboards);
     console.log(
@@ -149,5 +159,14 @@ prog
       '/',
       stats.totalKeymaps,
       `(${((stats.parsedKeymaps / stats.totalKeymaps) * 100).toFixed(2)}%)`,
+    );
+    console.log(
+      'duration',
+      (
+        (stats.ended_at.valueOf() - stats.started_at.valueOf()) /
+        1000 /
+        60
+      ).toFixed(1),
+      'min',
     );
   });

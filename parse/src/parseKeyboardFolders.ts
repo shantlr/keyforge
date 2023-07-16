@@ -1,6 +1,8 @@
 import { readFile, readdir } from 'fs/promises';
 import path from 'path';
 
+import pMap from 'p-map';
+
 const parseFileToJson = async (filePath: string) => {
   const content = (await readFile(filePath)).toString();
 
@@ -96,20 +98,24 @@ export const parseKeyboardsFolder = async (
       keyboardParsed: true,
     };
   } else {
+    const keymapsFolder = files.find(
+      (f) => f.isDirectory() && f.name === 'keymaps',
+    );
     // look for keyboard folder in subfolders
-    const res = await Promise.all(
-      files
-        .filter((f) => f.isDirectory())
-        .map((f) =>
-          parseKeyboardsFolder(
-            {
-              dir: path.resolve(dir, f.name),
-              parentInfoJson,
-              parentKeymapsDir,
-            },
-            onKeyboardFolder,
-          ),
+    const res = await pMap(
+      files.filter((f) => f.isDirectory() && f.name !== 'keymaps'),
+      (f) =>
+        parseKeyboardsFolder(
+          {
+            dir: path.resolve(dir, f.name),
+            parentInfoJson,
+            parentKeymapsDir: keymapsFolder
+              ? path.resolve(dir, keymapsFolder.name)
+              : parentKeymapsDir,
+          },
+          onKeyboardFolder,
         ),
+      { concurrency: 20 },
     );
     return {
       keyboardParsed: res.some((r) => r.keyboardParsed),
