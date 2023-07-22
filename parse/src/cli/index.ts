@@ -11,7 +11,13 @@ import { parseKeymaps } from '../parseKeymaps';
 
 export const prog = new Command();
 
-const parseKeyboardLayouts = (context: AstContext) => {
+const parseKeyboardLayouts = (
+  context: AstContext,
+  keybardInfo: {
+    layouts: Record<string, any>;
+    layout_aliases?: Record<string, string>;
+  },
+) => {
   const keymaps = context.identifiers.keymaps;
 
   if (!keymaps) {
@@ -36,8 +42,26 @@ const parseKeyboardLayouts = (context: AstContext) => {
     name: string;
     keys: string[];
   }[] = [];
+  let layout = null;
+
   forEach(keymaps.value.values, (v, key) => {
     if (typeof v === 'object' && v.type === 'postCall' && v.calls.length == 1) {
+      if (typeof v.fn === 'string') {
+        if (typeof layout === 'string') {
+          if (layout !== v.fn) {
+            throw new Error(`keymap seems to be using several layout ?`);
+          }
+        } else {
+          layout = v.fn;
+          if (
+            keybardInfo.layout_aliases &&
+            v.fn in keybardInfo.layout_aliases
+          ) {
+            layout = keybardInfo.layout_aliases[v.fn];
+          }
+        }
+      }
+
       const keys = v.calls[0];
       layers.push({
         name: key,
@@ -55,7 +79,14 @@ const parseKeyboardLayouts = (context: AstContext) => {
     }
   });
 
-  return layers;
+  if (!layout) {
+    throw new Error('Failed to find used layout');
+  }
+
+  return {
+    layout,
+    layers,
+  };
 };
 
 prog
@@ -117,12 +148,12 @@ prog
                   keymapPath,
                   cloneDeep(context),
                 );
-                const layers = parseKeyboardLayouts(res);
+                const { layout, layers } = parseKeyboardLayouts(res, infoJson);
                 if (layers.length) {
                   await mkdir(outputKeymapDir, { recursive: true });
                   await writeFile(
                     path.resolve(outputKeymapDir, 'layout.json'),
-                    JSON.stringify({ name: keymapName, layers }),
+                    JSON.stringify({ name: keymapName, layout, layers }),
                   );
                   stats.parsedKeymaps += 1;
                   keymaps.push(keymapName);
