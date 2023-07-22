@@ -9,12 +9,19 @@ module.exports = {
   ],
   theme: {
     extend: {
+      height: {
+        'input-md': 24,
+      },
       colors: {
         mainbg: colors.slate[900],
         secondarybg: colors.slate[700],
         primary: colors.amber[400],
         'primary-darker': colors.amber[600],
         'primary-lighter': colors.amber[300],
+
+        secondary: colors.slate[400],
+        'secondary-darker': colors.slate[600],
+        'secondary-lighter': colors.slate[300],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

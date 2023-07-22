@@ -42,9 +42,9 @@ export function ComboBox<Option extends object>({
     >
       <label {...labelProps}>{props.label}</label>
       <div>
-        <div>
-          <Input {...inputProps} ref={inputRef} />
-          <Button {...buttonProps} ref={buttonRef}>
+        <div className="group h-input-md overflow-hidden flex">
+          <Input {...inputProps} ref={inputRef} className="rounded-r-none" />
+          <Button className="rounded-l-none" {...buttonProps} ref={buttonRef}>
             <FontAwesomeIcon icon={faCaretDown} />
           </Button>
         </div>

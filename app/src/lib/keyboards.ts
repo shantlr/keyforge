@@ -45,20 +45,19 @@ export const keyboardInfo = createCache<string, KeyboardInfo>(
   }
 );
 
-export const existingKeymap = createCache<
-  string,
-  {
+export type ExistingKeymap = {
+  name: string;
+  layout: string;
+  layers: {
     name: string;
-    layers: {
-      name: string;
-      keys: string[];
-    }[];
-  }
->(
+    keys: string[];
+  }[];
+};
+
+export const existingKeymap = createCache<string, ExistingKeymap>(
   async (key: string) => {
     try {
       const res = await readFile(path.resolve(baseDir, key, 'layout.json'));
-      console.log(res.toString());
       return JSON.parse(res.toString());
     } catch (err) {
       if ((err as any)?.code === 'ENOENT') {

@@ -1,3 +1,4 @@
+'use client';
 import clsx from 'clsx';
 import { CSSProperties, ForwardedRef, forwardRef, useRef } from 'react';
 import { AriaButtonProps, useButton } from 'react-aria';
@@ -6,8 +7,10 @@ export const Button = forwardRef(
   (
     {
       className,
+      colorScheme,
       ...props
     }: AriaButtonProps & {
+      colorScheme?: 'primary' | 'default' | 'text' | 'dashed';
       className?: string;
       style?: CSSProperties;
     },
@@ -21,7 +24,8 @@ export const Button = forwardRef(
       <button
         {...buttonProps}
         className={clsx(
-          'px-4 rounded-sm bg-primary text-slate-900 outline-none hover:bg-primary-darker active:bg-primary-darker',
+          'h-input-md button px-4 rounded-sm outline-none flex items-center justify-center',
+          colorScheme || 'default',
           className
         )}
         ref={(r) => {

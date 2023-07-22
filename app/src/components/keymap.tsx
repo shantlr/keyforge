@@ -2,6 +2,7 @@
 
 import { KEY_TO_TEXT } from '@/lib/keyMapping';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import clsx from 'clsx';
 import { ReactNode, useMemo } from 'react';
 
 export const Keymap = ({
@@ -9,11 +10,20 @@ export const Keymap = ({
   baseWidth = 36,
   keySepWidth = 6,
   keys,
+
+  keyColorScheme: { bg: keyBg = 'bg-slate-400', hoverbg = 'bg-slate-500' } = {},
 }: {
   keyPositions: { x: number; y: number; h?: number; w?: number }[];
   baseWidth?: number;
   keySepWidth?: number;
   keys?: string[];
+
+  keyColorScheme?: {
+    bg?: string;
+    border?: string;
+    color?: string;
+    hoverbg?: string;
+  };
 }) => {
   const height = useMemo(() => {
     if (!keyPositions) {
@@ -28,12 +38,32 @@ export const Keymap = ({
     return height;
   }, [baseWidth, keyPositions, keySepWidth]);
 
+  const width = useMemo(() => {
+    if (!keyPositions) {
+      return 0;
+    }
+    const w = Math.max(
+      0,
+      ...keyPositions.map(
+        (k) => k.x * baseWidth + k.x * keySepWidth + (k.w || 1) * baseWidth + 10 // padding + border-b
+      )
+    );
+    return w;
+  }, [baseWidth, keyPositions, keySepWidth]);
+
+  const textSize = useMemo(() => {
+    if (baseWidth < 26) {
+      return 'text-[8px]';
+    }
+    return 'text-[10px]';
+  }, [baseWidth]);
+
   if (!keyPositions) {
     return null;
   }
 
   return (
-    <div className="relative w-full" style={{ height }}>
+    <div className="relative w-full" style={{ width, height }}>
       {keyPositions.map((l, idx) => {
         let key: string | ReactNode = keys?.[idx] ?? 'N/A';
         if (typeof key === 'string' && key in KEY_TO_TEXT) {
@@ -57,7 +87,12 @@ export const Keymap = ({
             }}
             key={`${l.x}-${l.y}`}
           >
-            <div className="text-[9px] bg-slate-400 whitespace-pre group-hover:bg-slate-500 text-center rounded-sm w-full h-full flex items-center justify-center transition">
+            <div
+              className={clsx(
+                `text-mainbg ${keyBg} whitespace-pre group-hover:${hoverbg} text-center rounded-sm w-full h-full flex items-center justify-center transition`,
+                textSize
+              )}
+            >
               {key}
             </div>
           </div>
