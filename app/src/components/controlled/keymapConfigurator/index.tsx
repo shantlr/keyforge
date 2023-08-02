@@ -16,6 +16,7 @@ import { KeymapWithLayers } from '../keymapWithLayers';
 import { viewSlice } from '@/components/providers/redux/slices/view';
 import { ExistingKeymap } from '@/lib/keyboards';
 import clsx from 'clsx';
+import { MAX_LAYERS } from '@/constants';
 
 export const KeymapConfigurator = ({
   keyboardId,
@@ -228,15 +229,21 @@ export const KeymapConfigurator = ({
               onChangeLayer={(layerIdx) => {
                 setSelectedLayerIdx(layerIdx);
               }}
-              onAddLayer={({ name }) => {
-                dispatch(
-                  keymapSlice.actions.addKeymapLayer({
-                    id: selectedKeymap.id,
-                    name,
-                    keys: selectedKeymap.layers[0].keys.map(() => '_____'),
-                  })
-                );
-              }}
+              onAddLayer={
+                selectedKeymap.layers.length < MAX_LAYERS
+                  ? ({ name }) => {
+                      dispatch(
+                        keymapSlice.actions.addKeymapLayer({
+                          id: selectedKeymap.id,
+                          name,
+                          keys: selectedKeymap.layers[0].keys.map(
+                            () => '_____'
+                          ),
+                        })
+                      );
+                    }
+                  : undefined
+              }
             />
           )}
         </div>
