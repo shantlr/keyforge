@@ -15,13 +15,22 @@ module.exports = {
       colors: {
         mainbg: colors.slate[900],
         secondarybg: colors.slate[700],
+
         primary: colors.amber[400],
         'primary-darker': colors.amber[600],
         'primary-lighter': colors.amber[300],
 
-        secondary: colors.slate[400],
-        'secondary-darker': colors.slate[600],
-        'secondary-lighter': colors.slate[300],
+        secondary: colors.emerald[300],
+        'secondary-darker': colors.emerald[500],
+        'secondary-lighter': colors.emerald[200],
+
+        default: colors.slate[400],
+        'default-darker': colors.slate[600],
+        'default-lighter': colors.slate[300],
+
+        // 'secondary-accent': colors.emerald[400],
+        // 'secondary-darker': colors.emerald[600],
+        // 'secondary-lighter': colors.emerald[300],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

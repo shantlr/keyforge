@@ -10,7 +10,13 @@ export const Button = forwardRef(
       colorScheme,
       ...props
     }: AriaButtonProps & {
-      colorScheme?: 'primary' | 'default' | 'text' | 'dashed';
+      colorScheme?:
+        | 'primary'
+        | 'secondary'
+        | 'default'
+        | 'text'
+        | 'dashed'
+        | 'secondary-text';
       className?: string;
       style?: CSSProperties;
     },

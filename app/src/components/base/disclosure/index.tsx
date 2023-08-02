@@ -7,11 +7,17 @@ export const Disclosure = ({
   titleClassName,
   title,
   children,
+
+  show: controlledShow,
+  onVisibilityChange,
 }: {
   defaultOpen?: boolean;
   titleClassName?: string;
   title: ReactNode;
   children?: ReactNode;
+
+  show?: boolean;
+  onVisibilityChange?: (visible: boolean) => void;
 }) => {
   const [show, setShow] = useState(defaultOpen);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -26,26 +32,39 @@ export const Disclosure = ({
     [height]
   );
 
+  const actualShow =
+    typeof controlledShow === 'boolean' ? controlledShow : show;
+
   useLayoutEffect(() => {
-    if (!show || !contentRef.current) {
+    if (!actualShow || !contentRef.current) {
       setHeight(0);
       return;
     }
     setHeight(contentRef.current.clientHeight);
-  }, [show]);
+
+    const obs = new ResizeObserver((changes) => {
+      if (changes.length && contentRef.current) {
+        setHeight(contentRef.current.clientHeight);
+      }
+    });
+    obs.observe(contentRef.current);
+    return () => {
+      obs.disconnect();
+    };
+  }, [actualShow]);
 
   return (
     <>
       <button
         className={clsx(
-          'w-full px-2 shrink-0 text-mainbg truncate text-start bg-secondary rounded hover:bg-secondary-lighter transition',
-          titleClassName,
-          {
-            'mb-2': show,
-          }
+          'w-full px-2 shrink-0 text-mainbg truncate text-start bg-default rounded hover:bg-default-lighter transition',
+          titleClassName
         )}
         onClick={() => {
-          setShow(!show);
+          if (typeof controlledShow !== 'boolean') {
+            setShow(!actualShow);
+          }
+          onVisibilityChange?.(!actualShow);
         }}
       >
         {title}

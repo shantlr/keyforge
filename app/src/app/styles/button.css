@@ -4,7 +4,7 @@
 
 @layer components {
   .button.default {
-    @apply border border-secondary text-secondary hover:text-primary hover:border-primary transition;
+    @apply border border-default text-default hover:text-primary hover:border-primary transition;
     @apply active:text-primary-darker active:border-primary-darker;
   }
   .button.primary {
@@ -13,11 +13,21 @@
     @apply active:border-primary-lighter active:bg-primary-lighter;
   }
   .button.text {
-    @apply border border-transparent text-secondary transition;
+    @apply border border-transparent text-default transition;
+    @apply hover:bg-default hover:text-mainbg hover:border-transparent;
+    @apply active:bg-default-darker;
+  }
+  .button.secondary-text {
+    @apply border border-transparent text-default transition;
     @apply hover:bg-secondary hover:text-mainbg;
     @apply active:bg-secondary-darker;
   }
   .button.dashed {
+    @apply border border-dashed border-default text-default transition;
+    @apply hover:border-primary hover:text-primary;
+    @apply active:border-primary-darker active:text-primary-darker;
+  }
+  .button.secondary {
     @apply border border-dashed border-secondary text-secondary transition;
     @apply hover:border-primary hover:text-primary;
     @apply active:border-primary-darker active:text-primary-darker;

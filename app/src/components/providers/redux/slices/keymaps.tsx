@@ -34,7 +34,11 @@ const removeKeymap = (state: Draft<State>, keymapId: string) => {
   const keymap = state.keymaps[keymapId];
   delete state.keymaps[keymapId];
 
-  // remove keympa from keyboard
+  if (state.currentTempKeymap === keymapId) {
+    state.currentTempKeymap = null;
+  }
+
+  // remove keymap from keyboard
   if (keymap.keyboard in state.keyboards) {
     state.keyboards[keymap.keyboard].keymaps = state.keyboards[
       keymap.keyboard
@@ -99,6 +103,57 @@ export const keymapSlice = createSlice({
       { payload: { id } }: PayloadAction<{ id: string }>
     ) => {
       removeKeymap(state, id);
+    },
+
+    updateKeymapName: (
+      state,
+      { payload: { id, name } }: PayloadAction<{ id: string; name: string }>
+    ) => {
+      const keymap = state.keymaps[id];
+      if (keymap) {
+        keymap.name = name;
+        if (keymap.temp) {
+          delete keymap.temp;
+          state.currentTempKeymap = null;
+        }
+      }
+    },
+    updateKeymapLayerName: (
+      state,
+      {
+        payload: { id, layerIdx, name },
+      }: PayloadAction<{ id: string; layerIdx: number; name: string }>
+    ) => {
+      const layer = state.keymaps[id]?.layers[layerIdx];
+      if (layer) {
+        layer.name = name;
+        if (state.keymaps[id].temp) {
+          delete state.keymaps[id].temp;
+          state.currentTempKeymap = null;
+        }
+      }
+    },
+    updateKeymapLayerKey: (
+      state,
+      {
+        payload: { id, layerIdx, key, keyIdx },
+      }: PayloadAction<{
+        id: string;
+        layerIdx: number;
+        keyIdx: number;
+        key: string;
+      }>
+    ) => {
+      const layer = state.keymaps[id]?.layers[layerIdx];
+      if (layer) {
+        if (keyIdx >= 0 && keyIdx < layer.keys.length) {
+          layer.keys[keyIdx] = key;
+          if (state.keymaps[id].temp) {
+            delete state.keymaps[id].temp;
+            state.currentTempKeymap = null;
+          }
+        }
+      }
     },
   },
 });
