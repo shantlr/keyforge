@@ -126,7 +126,7 @@ export const keymapSlice = createSlice({
     ) => {
       const keymap = state.keymaps[id];
       if (keymap) {
-        keymap.layers.unshift({
+        keymap.layers.push({
           name,
           keys,
         });

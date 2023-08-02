@@ -1,7 +1,7 @@
 'use client';
 
 import { KeyboardInfo } from '@/types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isEqual, map } from 'lodash';
 import { getExistingKeymap } from '@/actions/getExisingKeymap';
 import { Button } from '../../base/button';
@@ -20,6 +20,7 @@ import { MAX_LAYERS } from '@/constants';
 import { useListenKeyboardEvent } from './useListenKeyboardEvent';
 import { useEffectEvent } from '@react-aria/utils';
 import { useWindowBlur } from './useWindowBlur';
+import { useClickOutside } from './useClickOutside';
 
 export const KeymapConfigurator = ({
   keyboardId,
@@ -132,10 +133,21 @@ export const KeymapConfigurator = ({
     [dispatch, keyIdxToEdit, selectedKeymap, selectedLayerIdx]
   );
 
+  const keymapRef = useRef<HTMLDivElement>(null);
+  // reset down key when click outside
+  useClickOutside(
+    keymapRef,
+    useCallback(() => {
+      setKeyIdxToEdit(null);
+    }, [])
+  );
+
+  // update key using keyboard
   useListenKeyboardEvent(
     updateKey,
     Boolean(selectedKeymap && selectedLayerIdx != null && keyIdxToEdit != null)
   );
+  // reset down key on window blur
   useWindowBlur(
     useCallback(() => {
       setKeyIdxToEdit(null);
@@ -257,7 +269,7 @@ export const KeymapConfigurator = ({
             </div>
           </Disclosure>
         </div>
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center" ref={keymapRef}>
           {Boolean(keyboard) && selectedKeymap != null && (
             <KeymapWithLayers
               keyboard={keyboard}
@@ -269,7 +281,11 @@ export const KeymapConfigurator = ({
                   : undefined
               }
               onKeyClick={({ index }) => {
-                setKeyIdxToEdit(index);
+                if (index === keyIdxToEdit) {
+                  setKeyIdxToEdit(null);
+                } else {
+                  setKeyIdxToEdit(index);
+                }
               }}
               layerIdx={selectedLayerIdx}
               onChangeLayer={(layerIdx) => {
