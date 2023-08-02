@@ -17,6 +17,9 @@ import { viewSlice } from '@/components/providers/redux/slices/view';
 import { ExistingKeymap } from '@/lib/keyboards';
 import clsx from 'clsx';
 import { MAX_LAYERS } from '@/constants';
+import { useListenKeyboardEvent } from './useListenKeyboardEvent';
+import { useEffectEvent } from '@react-aria/utils';
+import { useWindowBlur } from './useWindowBlur';
 
 export const KeymapConfigurator = ({
   keyboardId,
@@ -95,6 +98,49 @@ export const KeymapConfigurator = ({
       setSelectedLayerIdx(0);
     }
   }, [selectedKeymap, selectedLayerIdx]);
+
+  useEffect(() => {
+    if (!selectedKeymap || selectedLayerIdx == null || keyIdxToEdit == null) {
+      return;
+    }
+  }, [keyIdxToEdit, selectedKeymap, selectedLayerIdx]);
+
+  const updateKey = useCallback(
+    (key: string) => {
+      if (!selectedKeymap || selectedLayerIdx == null || keyIdxToEdit == null) {
+        return;
+      }
+
+      dispatch(
+        keymapSlice.actions.updateKeymapLayerKey({
+          id: selectedKeymap?.id,
+          keyIdx: keyIdxToEdit,
+          key,
+          layerIdx: selectedLayerIdx,
+        })
+      );
+
+      if (
+        keyIdxToEdit <
+        selectedKeymap.layers[selectedLayerIdx].keys.length - 1
+      ) {
+        setKeyIdxToEdit(keyIdxToEdit + 1);
+      } else {
+        setKeyIdxToEdit(null);
+      }
+    },
+    [dispatch, keyIdxToEdit, selectedKeymap, selectedLayerIdx]
+  );
+
+  useListenKeyboardEvent(
+    updateKey,
+    Boolean(selectedKeymap && selectedLayerIdx != null && keyIdxToEdit != null)
+  );
+  useWindowBlur(
+    useCallback(() => {
+      setKeyIdxToEdit(null);
+    }, [])
+  );
 
   return (
     <div className="expanded-container overflow-hiddden px-4">
@@ -252,30 +298,8 @@ export const KeymapConfigurator = ({
       <div className="mt-4 expanded-container rounded bg-secondarybg w-full h-full flex items-center justify-center">
         <KeysPicker
           onKeyClick={({ key }) => {
-            if (
-              !key ||
-              !selectedKeymap ||
-              keyIdxToEdit == null ||
-              selectedLayerIdx == null
-            ) {
-              return;
-            }
-
-            dispatch(
-              keymapSlice.actions.updateKeymapLayerKey({
-                id: selectedKeymap?.id,
-                key,
-                keyIdx: keyIdxToEdit,
-                layerIdx: selectedLayerIdx,
-              })
-            );
-            if (
-              keyIdxToEdit <
-              selectedKeymap.layers[selectedLayerIdx].keys.length - 1
-            ) {
-              setKeyIdxToEdit(keyIdxToEdit + 1);
-            } else {
-              setKeyIdxToEdit(null);
+            if (key) {
+              updateKey(key);
             }
           }}
         />
