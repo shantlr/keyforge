@@ -1,4 +1,5 @@
-import { Keymap } from '../keymap';
+import { ComponentProps } from 'react';
+import { Keymap } from '../domain/keymap';
 
 const BASIC_KEYS_POSITION = [
   { x: 0, y: 0, key: 'KC_ESC' },
@@ -129,20 +130,28 @@ const BASIC_KEYS_POSITION = [
 
 const BASIC_KEYS = BASIC_KEYS_POSITION.map((k) => k.key || 'KC_NOOP');
 
-const BasicKeys = () => {
+const BasicKeys = (
+  props: Omit<
+    ComponentProps<typeof Keymap>,
+    'keyPositions' | 'baseWidth' | 'keys'
+  >
+) => {
   return (
     <Keymap
       keyPositions={BASIC_KEYS_POSITION}
       baseWidth={25}
       keys={BASIC_KEYS}
+      {...props}
     />
   );
 };
 
-export const KeysPicker = () => {
+export const KeysPicker = ({
+  onKeyClick,
+}: Pick<ComponentProps<typeof Keymap>, 'onKeyClick'>) => {
   return (
     <div className="p-4">
-      <BasicKeys />
+      <BasicKeys onKeyClick={onKeyClick} />
     </div>
   );
 };

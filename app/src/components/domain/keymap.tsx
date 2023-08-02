@@ -3,7 +3,7 @@
 import { KEY_TO_TEXT } from '@/lib/keyMapping';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from 'clsx';
-import { ReactNode, useMemo } from 'react';
+import { CSSProperties, ReactNode, useMemo } from 'react';
 
 export const Keymap = ({
   keyPositions,
@@ -11,12 +11,18 @@ export const Keymap = ({
   keySepWidth = 6,
   keys,
 
+  onKeyClick,
+  isKeyDown,
+
   keyColorScheme: { bg: keyBg = 'bg-slate-400', hoverbg = 'bg-slate-500' } = {},
 }: {
   keyPositions: { x: number; y: number; h?: number; w?: number }[];
   baseWidth?: number;
   keySepWidth?: number;
   keys?: string[];
+
+  onKeyClick?: (arg: { key: string | null; index: number }) => void;
+  isKeyDown?: (arg: { key: string | null; index: number }) => boolean;
 
   keyColorScheme?: {
     bg?: string;
@@ -75,22 +81,48 @@ export const Keymap = ({
           }
         }
 
+        const isDown =
+          isKeyDown?.({ key: keys?.[idx] ?? null, index: idx }) ?? false;
+
+        const style: CSSProperties = {
+          width: (l.w || 1) * baseWidth + ((l.w || 1) - 1) * keySepWidth,
+          height: baseWidth * (l.h || 1),
+          boxSizing: 'content-box',
+          top: l.y * baseWidth + l.y * keySepWidth,
+          left: l.x * baseWidth + l.x * keySepWidth,
+        };
+
+        if (isDown) {
+          style.marginTop = 6;
+          style.paddingBottom = 2;
+        }
+
         return (
           <div
-            className="group absolute select-none cursor-pointer rounded bg-slate-600 p-[2px] pb-[8px] transition-all hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]"
-            style={{
-              width: (l.w || 1) * baseWidth + ((l.w || 1) - 1) * keySepWidth,
-              height: baseWidth * (l.h || 1),
-              boxSizing: 'content-box',
-              top: l.y * baseWidth + l.y * keySepWidth,
-              left: l.x * baseWidth + l.x * keySepWidth,
-            }}
+            className={clsx(
+              'group absolute select-none cursor-pointer rounded bg-slate-600 p-[2px] pb-[8px] transition-all hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]'
+            )}
+            style={style}
             key={`${l.x}-${l.y}`}
+            onClick={
+              onKeyClick
+                ? () => {
+                    onKeyClick({
+                      key: keys?.[idx] ?? null,
+                      index: idx,
+                    });
+                  }
+                : undefined
+            }
           >
             <div
               className={clsx(
                 `text-mainbg ${keyBg} whitespace-pre group-hover:${hoverbg} text-center rounded-sm w-full h-full flex items-center justify-center transition`,
-                textSize
+                textSize,
+                {
+                  '': isDown,
+                  '': !isDown,
+                }
               )}
             >
               {key}

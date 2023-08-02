@@ -1,5 +1,5 @@
 import { Button } from '@/components/base/button';
-import { Keymap } from '@/components/keymap';
+import { Keymap } from '@/components/domain/keymap';
 import { Keymap as KM } from '@/components/providers/redux';
 import { KeyboardInfo } from '@/types';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -10,30 +10,36 @@ export const KeymapWithLayers = ({
   keyboard,
   usedLayout,
   layers,
-  baseWidth,
-  keySepWidth,
+  onChangeLayer,
+  onAddLayer,
+  ...props
 }: Omit<ComponentProps<typeof Keymap>, 'keyPositions' | 'keys'> & {
   editable?: boolean;
   keyboard: KeyboardInfo;
   usedLayout: string;
   layers: KM['layers'];
-  onChangeLayer?: () => void;
-  onKeyChanges?: () => void;
+  onChangeLayer?: (layerIdx: number) => void;
+  onAddLayer?: () => void;
 }) => {
   const [layerIndex, setLayerIndex] = useState(0);
+  const [showNewLayerInput, setShowNewLayerInput] = useState(false);
 
   return (
     <div className="flex">
       <div className="mr-8 space-y-2">
-        <Button
-          onPress={() => {
-            //
-          }}
-          colorScheme="dashed"
-          className="w-full"
-        >
-          <FontAwesomeIcon icon={faPlus} />
-        </Button>
+        {Boolean(onAddLayer && showNewLayerInput) && <input />}
+        {Boolean(onAddLayer) && !showNewLayerInput && (
+          <Button
+            onPress={() => {
+              setShowNewLayerInput(true);
+              //
+            }}
+            colorScheme="dashed"
+            className="w-full"
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </Button>
+        )}
         {[...layers].reverse().map((l, idx) => {
           const actualIdx = layers.length - idx - 1;
           return (
@@ -43,6 +49,7 @@ export const KeymapWithLayers = ({
               key={idx}
               onPress={() => {
                 setLayerIndex(actualIdx);
+                onChangeLayer?.(actualIdx);
               }}
             >
               {l.name}
@@ -51,11 +58,9 @@ export const KeymapWithLayers = ({
         })}
       </div>
       <Keymap
-        // keyPositions={keyPositions}
         keyPositions={keyboard.layouts?.[usedLayout]?.layout}
-        baseWidth={baseWidth}
-        keySepWidth={keySepWidth}
         keys={layers[layerIndex]?.keys}
+        {...props}
       />
     </div>
   );

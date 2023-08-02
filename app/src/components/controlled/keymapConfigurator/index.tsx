@@ -84,6 +84,17 @@ export const KeymapConfigurator = ({
   const [showUserKeymaps, setShowUserKeymaps] = useState(false);
   const [showLayouts, setShowLayouts] = useState(true);
 
+  const [keyIdxToEdit, setKeyIdxToEdit] = useState<number | null>(null);
+  const [selectedLayerIdx, setSelectedLayerIdx] = useState<number | null>(0);
+
+  useEffect(() => {
+    if (!selectedKeymap) {
+      setSelectedLayerIdx(null);
+    } else if (selectedLayerIdx == null) {
+      setSelectedLayerIdx(0);
+    }
+  }, [selectedKeymap, selectedLayerIdx]);
+
   return (
     <div className="expanded-container overflow-hiddden px-4">
       <div className="h-full flex overflow-hidden h-full flex">
@@ -193,6 +204,9 @@ export const KeymapConfigurator = ({
                   {k.name}
                 </Button>
               ))}
+              {!keymaps.length && (
+                <div className="text-sm">No known keymaps</div>
+              )}
             </div>
           </Disclosure>
         </div>
@@ -202,13 +216,49 @@ export const KeymapConfigurator = ({
               keyboard={keyboard}
               usedLayout={selectedKeymap.layout}
               layers={selectedKeymap.layers}
+              isKeyDown={
+                keyIdxToEdit != null
+                  ? ({ index }) => index === keyIdxToEdit
+                  : undefined
+              }
+              onKeyClick={({ index }) => {
+                setKeyIdxToEdit(index);
+              }}
             />
           )}
         </div>
       </div>
 
       <div className="mt-4 expanded-container rounded bg-secondarybg w-full h-full flex items-center justify-center">
-        <KeysPicker />
+        <KeysPicker
+          onKeyClick={({ key }) => {
+            if (
+              !key ||
+              !selectedKeymap ||
+              keyIdxToEdit == null ||
+              selectedLayerIdx == null
+            ) {
+              return;
+            }
+
+            dispatch(
+              keymapSlice.actions.updateKeymapLayerKey({
+                id: selectedKeymap?.id,
+                key,
+                keyIdx: keyIdxToEdit,
+                layerIdx: selectedLayerIdx,
+              })
+            );
+            if (
+              keyIdxToEdit <
+              selectedKeymap.layers[selectedLayerIdx].keys.length - 1
+            ) {
+              setKeyIdxToEdit(keyIdxToEdit + 1);
+            } else {
+              setKeyIdxToEdit(null);
+            }
+          }}
+        />
       </div>
     </div>
   );
