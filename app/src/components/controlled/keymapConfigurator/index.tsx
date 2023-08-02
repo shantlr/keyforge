@@ -103,6 +103,7 @@ export const KeymapConfigurator = ({
                       'bg-primary': k.id === selectedKeymap?.id,
                       'bg-transparent text-default placeholder:text-secondarybg':
                         k.id !== selectedKeymap?.id,
+                      italic: k.temp,
                     }
                   )}
                   placeholder="<unamed-keymap>"
