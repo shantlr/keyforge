@@ -224,6 +224,19 @@ export const KeymapConfigurator = ({
               onKeyClick={({ index }) => {
                 setKeyIdxToEdit(index);
               }}
+              layerIdx={selectedLayerIdx}
+              onChangeLayer={(layerIdx) => {
+                setSelectedLayerIdx(layerIdx);
+              }}
+              onAddLayer={({ name }) => {
+                dispatch(
+                  keymapSlice.actions.addKeymapLayer({
+                    id: selectedKeymap.id,
+                    name,
+                    keys: selectedKeymap.layers[0].keys.map(() => '_____'),
+                  })
+                );
+              }}
             />
           )}
         </div>

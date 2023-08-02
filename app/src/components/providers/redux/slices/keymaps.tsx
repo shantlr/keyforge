@@ -118,6 +118,25 @@ export const keymapSlice = createSlice({
         }
       }
     },
+    addKeymapLayer: (
+      state,
+      {
+        payload: { id, name, keys },
+      }: PayloadAction<{ id: string; name: string; keys: string[] }>
+    ) => {
+      const keymap = state.keymaps[id];
+      if (keymap) {
+        keymap.layers.unshift({
+          name,
+          keys,
+        });
+
+        if (keymap.temp) {
+          delete keymap.temp;
+          state.currentTempKeymap = null;
+        }
+      }
+    },
     updateKeymapLayerName: (
       state,
       {

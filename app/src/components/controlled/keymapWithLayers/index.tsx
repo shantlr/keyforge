@@ -1,4 +1,6 @@
 import { Button } from '@/components/base/button';
+import { Input } from '@/components/base/input';
+import { InputFit } from '@/components/base/inputFit';
 import { Keymap } from '@/components/domain/keymap';
 import { Keymap as KM } from '@/components/providers/redux';
 import { KeyboardInfo } from '@/types';
@@ -10,6 +12,7 @@ export const KeymapWithLayers = ({
   keyboard,
   usedLayout,
   layers,
+  layerIdx: controllerLayerIdx,
   onChangeLayer,
   onAddLayer,
   ...props
@@ -18,21 +21,45 @@ export const KeymapWithLayers = ({
   keyboard: KeyboardInfo;
   usedLayout: string;
   layers: KM['layers'];
+  layerIdx?: number | null;
   onChangeLayer?: (layerIdx: number) => void;
-  onAddLayer?: () => void;
+  onAddLayer?: (arg: { name: string }) => void;
 }) => {
   const [layerIndex, setLayerIndex] = useState(0);
   const [showNewLayerInput, setShowNewLayerInput] = useState(false);
 
+  const [newLayerName, setNewLayerName] = useState('');
+
+  const currentLayerIdx =
+    typeof controllerLayerIdx === 'number' ? controllerLayerIdx : layerIndex;
+
   return (
     <div className="flex">
       <div className="mr-8 space-y-2">
-        {Boolean(onAddLayer && showNewLayerInput) && <input />}
+        {Boolean(onAddLayer && showNewLayerInput) && (
+          <InputFit
+            value={newLayerName}
+            size={8}
+            onChange={(e) => {
+              setNewLayerName(e.target.value);
+            }}
+            autoFocus
+            onKeyUp={(e) => {
+              if (e.code === 'Enter') {
+                onAddLayer?.({ name: newLayerName });
+                setShowNewLayerInput(false);
+              }
+            }}
+            onBlur={() => {
+              setShowNewLayerInput(false);
+            }}
+          />
+        )}
         {Boolean(onAddLayer) && !showNewLayerInput && (
           <Button
             onPress={() => {
+              setNewLayerName('');
               setShowNewLayerInput(true);
-              //
             }}
             colorScheme="dashed"
             className="w-full"
@@ -44,11 +71,15 @@ export const KeymapWithLayers = ({
           const actualIdx = layers.length - idx - 1;
           return (
             <Button
-              colorScheme={actualIdx === layerIndex ? 'primary' : 'default'}
-              className="w-full"
+              colorScheme={
+                currentLayerIdx === actualIdx ? 'primary' : 'default'
+              }
+              className="w-full text-sm"
               key={idx}
               onPress={() => {
-                setLayerIndex(actualIdx);
+                if (typeof controllerLayerIdx != 'number') {
+                  setLayerIndex(actualIdx);
+                }
                 onChangeLayer?.(actualIdx);
               }}
             >
@@ -59,7 +90,7 @@ export const KeymapWithLayers = ({
       </div>
       <Keymap
         keyPositions={keyboard.layouts?.[usedLayout]?.layout}
-        keys={layers[layerIndex]?.keys}
+        keys={layers[currentLayerIdx]?.keys}
         {...props}
       />
     </div>
