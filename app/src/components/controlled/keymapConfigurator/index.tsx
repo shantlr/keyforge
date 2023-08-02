@@ -303,6 +303,7 @@ export const KeymapConfigurator = ({
                           ),
                         })
                       );
+                      setSelectedLayerIdx(selectedKeymap.layers.length);
                     }
                   : undefined
               }
