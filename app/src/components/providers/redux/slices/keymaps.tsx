@@ -128,6 +128,24 @@ export const keymapSlice = createSlice({
         }
       }
     },
+    removeLayer: (
+      state,
+      {
+        payload: { id, layerId },
+      }: PayloadAction<{ id: string; layerId: string }>
+    ) => {
+      const keymap = state.keymaps[id];
+      if (keymap) {
+        const idx = keymap.layers.findIndex((l) => l.id === layerId);
+        if (idx !== -1) {
+          keymap.layers.splice(idx, 1);
+        }
+        if (keymap.temp) {
+          delete keymap.temp;
+          state.currentTempKeymap = null;
+        }
+      }
+    },
     addKeymapLayer: (
       state,
       {

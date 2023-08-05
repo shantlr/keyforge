@@ -4,6 +4,10 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Keymap } from '@/components/providers/redux';
 import clsx from 'clsx';
 import { ComponentProps, forwardRef, useMemo } from 'react';
+import { Tooltip } from '@/components/base/tooltips';
+import { Button } from '@/components/base/button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const LayerItem = forwardRef<
   HTMLDivElement,
@@ -11,21 +15,42 @@ const LayerItem = forwardRef<
     layer: Keymap['layers'][number];
     active?: boolean;
     onPress?: () => void;
+    onDelete?: () => void;
   } & ComponentProps<'div'>
->(({ layer, active, onPress, ...props }, ref) => {
+>(({ layer, active, onPress, onDelete, ...props }, ref) => {
   return (
-    <div
-      ref={ref}
-      className={clsx('w-full text-sm rounded-sm text-center transition', {
-        'bg-default text-mainbg hover:bg-default-lighter active:default-darker':
-          !active,
-        'bg-primary text-white ': active,
-      })}
-      onClick={onPress}
-      {...props}
+    <Tooltip
+      delay={0}
+      disableHideOnClick
+      tooltip={
+        onDelete ? (
+          <Button
+            onPress={() => {
+              onDelete?.();
+            }}
+            className="px-[6px] text-[10px]"
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
+        ) : null
+      }
     >
-      {layer.name}
-    </div>
+      <div
+        ref={ref}
+        className={clsx(
+          'flex items-center justify-center h-input-md w-full text-sm rounded-sm text-center transition',
+          {
+            'bg-default text-mainbg hover:bg-default-lighter active:default-darker':
+              !active,
+            'bg-primary text-white ': active,
+          }
+        )}
+        onClick={onPress}
+        {...props}
+      >
+        {layer.name}
+      </div>
+    </Tooltip>
   );
 });
 LayerItem.displayName = 'LayerItem';
@@ -35,11 +60,13 @@ export const Layers = ({
   layers,
   onSelectLayer,
   onLayerMove,
+  onLayerDelete,
 }: {
   selectedLayerId: string;
   layers: Keymap['layers'];
   onSelectLayer?: (layerId: string) => void;
   onLayerMove?: (arg: { srcIdx: number; dstIdx: number }) => void;
+  onLayerDelete?: (layer: Keymap['layers'][number]) => void;
 }) => {
   const items = useMemo(() => [...layers].reverse(), [layers]);
 
@@ -81,6 +108,13 @@ export const Layers = ({
                       onPress={() => {
                         onSelectLayer?.(l.id);
                       }}
+                      onDelete={
+                        onLayerDelete
+                          ? () => {
+                              onLayerDelete(l);
+                            }
+                          : undefined
+                      }
                     />
                   )}
                 </Draggable>

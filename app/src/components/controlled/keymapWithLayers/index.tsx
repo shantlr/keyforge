@@ -17,6 +17,7 @@ export const KeymapWithLayers = ({
   onChangeLayer,
   onAddLayer,
   onLayerMove,
+  onLayerDelete,
   ...props
 }: Omit<ComponentProps<typeof Keymap>, 'keyPositions' | 'keys'> & {
   editable?: boolean;
@@ -27,6 +28,7 @@ export const KeymapWithLayers = ({
   onChangeLayer?: (layerId: string) => void;
   onAddLayer?: (arg: { name: string }) => void;
   onLayerMove?: (arg: { srcIdx: number; dstIdx: number }) => void;
+  onLayerDelete?: (layer: KM['layers'][number]) => void;
 }) => {
   const [localSelectedLayerId, setLocalSelectedLayerId] = useState<string>(
     layers[0].id
@@ -84,6 +86,7 @@ export const KeymapWithLayers = ({
             }
             onChangeLayer?.(layerId);
           }}
+          onLayerDelete={onLayerDelete}
         />
       </div>
       <Keymap

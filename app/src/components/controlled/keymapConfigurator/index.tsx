@@ -299,6 +299,18 @@ export const KeymapConfigurator = ({
                   })
                 );
               }}
+              onLayerDelete={
+                selectedKeymap.layers.length > 1
+                  ? (layer) => {
+                      dispatch(
+                        keymapSlice.actions.removeLayer({
+                          id: selectedKeymap.id,
+                          layerId: layer.id,
+                        })
+                      );
+                    }
+                  : undefined
+              }
               onAddLayer={
                 selectedKeymap.layers.length < MAX_LAYERS
                   ? ({ name }) => {
