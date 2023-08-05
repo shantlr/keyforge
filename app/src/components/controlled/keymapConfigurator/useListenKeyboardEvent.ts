@@ -176,14 +176,14 @@ export const useListenKeyboardEvent = (
     }
 
     const listener = (e: KeyboardEvent) => {
-      console.log(e);
       const kc = toKeycode(e);
       if (kc) {
         e.preventDefault();
         e.stopPropagation();
         cb(kc);
+      } else {
+        console.log(e);
       }
-      console.log(kc);
     };
     window.addEventListener('keyup', listener);
     return () => {

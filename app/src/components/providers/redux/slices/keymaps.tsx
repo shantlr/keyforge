@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice, original } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 import type { Draft } from 'immer';
 
@@ -8,6 +8,7 @@ export type Keymap = {
   keyboard: string;
   layout: string;
   layers: {
+    id: string;
     name: string;
     keys: string[];
   }[];
@@ -89,11 +90,20 @@ export const keymapSlice = createSlice({
           state.currentTempKeymap = keymap.id;
         }
       },
-      prepare: (keymap: Omit<Keymap, 'id'> & { replaceTemp?: boolean }) => {
+      prepare: (
+        keymap: Omit<Keymap, 'id' | 'layers'> & {
+          replaceTemp?: boolean;
+          layers: { name: string; keys: string[] }[];
+        }
+      ) => {
         return {
           payload: {
             id: nanoid(),
             ...keymap,
+            layers: keymap.layers.map((l) => ({
+              ...l,
+              id: nanoid(),
+            })),
           },
         };
       },
@@ -121,12 +131,18 @@ export const keymapSlice = createSlice({
     addKeymapLayer: (
       state,
       {
-        payload: { id, name, keys },
-      }: PayloadAction<{ id: string; name: string; keys: string[] }>
+        payload: { id, layerId = nanoid(), name, keys },
+      }: PayloadAction<{
+        id: string;
+        layerId?: string;
+        name: string;
+        keys: string[];
+      }>
     ) => {
       const keymap = state.keymaps[id];
       if (keymap) {
         keymap.layers.push({
+          id: layerId,
           name,
           keys,
         });
@@ -137,13 +153,29 @@ export const keymapSlice = createSlice({
         }
       }
     },
+    moveKeymapLayer: (
+      state,
+      {
+        payload: { id, srcIdx, dstIdx },
+      }: PayloadAction<{ id: string; srcIdx: number; dstIdx: number }>
+    ) => {
+      const keymap = state.keymaps[id];
+      if (keymap) {
+        const [layer] = keymap.layers.splice(srcIdx, 1);
+        keymap.layers.splice(dstIdx, 0, layer);
+        if (keymap.temp) {
+          delete keymap.temp;
+          state.currentTempKeymap = null;
+        }
+      }
+    },
     updateKeymapLayerName: (
       state,
       {
-        payload: { id, layerIdx, name },
-      }: PayloadAction<{ id: string; layerIdx: number; name: string }>
+        payload: { id, layerId, name },
+      }: PayloadAction<{ id: string; layerId: string; name: string }>
     ) => {
-      const layer = state.keymaps[id]?.layers[layerIdx];
+      const layer = state.keymaps[id]?.layers.find((l) => l.id === layerId);
       if (layer) {
         layer.name = name;
         if (state.keymaps[id].temp) {
@@ -155,15 +187,15 @@ export const keymapSlice = createSlice({
     updateKeymapLayerKey: (
       state,
       {
-        payload: { id, layerIdx, key, keyIdx },
+        payload: { id, layerId, key, keyIdx },
       }: PayloadAction<{
         id: string;
-        layerIdx: number;
+        layerId: string;
         keyIdx: number;
         key: string;
       }>
     ) => {
-      const layer = state.keymaps[id]?.layers[layerIdx];
+      const layer = state.keymaps[id]?.layers.find((l) => l.id === layerId);
       if (layer) {
         if (keyIdx >= 0 && keyIdx < layer.keys.length) {
           layer.keys[keyIdx] = key;

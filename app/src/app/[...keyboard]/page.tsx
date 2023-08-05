@@ -36,8 +36,8 @@ export default async function Keyboard({
 
   return (
     <main className="expanded-container overflow-hidden">
-      <div className="flex justify-center py-8">
-        <KeyforgeSteps className="mb-4" current="customize" />
+      <div className="flex justify-center pt-8">
+        <KeyforgeSteps current="customize" />
       </div>
       <div className="expanded-container mt-8">
         <KeymapConfigurator

@@ -21,6 +21,7 @@ import { useListenKeyboardEvent } from './useListenKeyboardEvent';
 import { useEffectEvent } from '@react-aria/utils';
 import { useWindowBlur } from './useWindowBlur';
 import { useClickOutside } from './useClickOutside';
+import { nanoid } from 'nanoid';
 
 export const KeymapConfigurator = ({
   keyboardId,
@@ -90,25 +91,25 @@ export const KeymapConfigurator = ({
   const [showLayouts, setShowLayouts] = useState(true);
 
   const [keyIdxToEdit, setKeyIdxToEdit] = useState<number | null>(null);
-  const [selectedLayerIdx, setSelectedLayerIdx] = useState<number | null>(0);
+  const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!selectedKeymap) {
-      setSelectedLayerIdx(null);
-    } else if (selectedLayerIdx == null) {
-      setSelectedLayerIdx(0);
+      setSelectedLayerId(null);
+    } else if (selectedLayerId == null) {
+      setSelectedLayerId(selectedKeymap.layers[0].id);
     }
-  }, [selectedKeymap, selectedLayerIdx]);
+  }, [selectedKeymap, selectedLayerId]);
 
   useEffect(() => {
-    if (!selectedKeymap || selectedLayerIdx == null || keyIdxToEdit == null) {
+    if (!selectedKeymap || selectedLayerId == null || keyIdxToEdit == null) {
       return;
     }
-  }, [keyIdxToEdit, selectedKeymap, selectedLayerIdx]);
+  }, [keyIdxToEdit, selectedKeymap, selectedLayerId]);
 
   const updateKey = useCallback(
     (key: string) => {
-      if (!selectedKeymap || selectedLayerIdx == null || keyIdxToEdit == null) {
+      if (!selectedKeymap || selectedLayerId == null || keyIdxToEdit == null) {
         return;
       }
 
@@ -117,20 +118,17 @@ export const KeymapConfigurator = ({
           id: selectedKeymap?.id,
           keyIdx: keyIdxToEdit,
           key,
-          layerIdx: selectedLayerIdx,
+          layerId: selectedLayerId,
         })
       );
 
-      if (
-        keyIdxToEdit <
-        selectedKeymap.layers[selectedLayerIdx].keys.length - 1
-      ) {
+      if (keyIdxToEdit < selectedKeymap.layers[0].keys.length - 1) {
         setKeyIdxToEdit(keyIdxToEdit + 1);
       } else {
         setKeyIdxToEdit(null);
       }
     },
-    [dispatch, keyIdxToEdit, selectedKeymap, selectedLayerIdx]
+    [dispatch, keyIdxToEdit, selectedKeymap, selectedLayerId]
   );
 
   const keymapRef = useRef<HTMLDivElement>(null);
@@ -145,7 +143,7 @@ export const KeymapConfigurator = ({
   // update key using keyboard
   useListenKeyboardEvent(
     updateKey,
-    Boolean(selectedKeymap && selectedLayerIdx != null && keyIdxToEdit != null)
+    Boolean(selectedKeymap && selectedLayerId != null && keyIdxToEdit != null)
   );
   // reset down key on window blur
   useWindowBlur(
@@ -170,7 +168,8 @@ export const KeymapConfigurator = ({
                   className={clsx(
                     'outline-none px-2 h-input-md rounded text-sm hover:bg-primary-lighter transition',
                     {
-                      'bg-primary': k.id === selectedKeymap?.id,
+                      'bg-primary text-mainbg placeholder:text-secondarybg':
+                        k.id === selectedKeymap?.id,
                       'bg-transparent text-default placeholder:text-secondarybg':
                         k.id !== selectedKeymap?.id,
                       italic: k.temp,
@@ -269,7 +268,7 @@ export const KeymapConfigurator = ({
             </div>
           </Disclosure>
         </div>
-        <div className="w-full flex justify-center" ref={keymapRef}>
+        <div className="w-full flex" ref={keymapRef}>
           {Boolean(keyboard) && selectedKeymap != null && (
             <KeymapWithLayers
               keyboard={keyboard}
@@ -287,23 +286,34 @@ export const KeymapConfigurator = ({
                   setKeyIdxToEdit(index);
                 }
               }}
-              layerIdx={selectedLayerIdx}
-              onChangeLayer={(layerIdx) => {
-                setSelectedLayerIdx(layerIdx);
+              layerId={selectedLayerId}
+              onChangeLayer={(layerId) => {
+                setSelectedLayerId(layerId);
+              }}
+              onLayerMove={({ srcIdx, dstIdx }) => {
+                dispatch(
+                  keymapSlice.actions.moveKeymapLayer({
+                    id: selectedKeymap.id,
+                    srcIdx,
+                    dstIdx,
+                  })
+                );
               }}
               onAddLayer={
                 selectedKeymap.layers.length < MAX_LAYERS
                   ? ({ name }) => {
+                      const id = nanoid();
                       dispatch(
                         keymapSlice.actions.addKeymapLayer({
                           id: selectedKeymap.id,
                           name,
+                          layerId: id,
                           keys: selectedKeymap.layers[0].keys.map(
                             () => '_____'
                           ),
                         })
                       );
-                      setSelectedLayerIdx(selectedKeymap.layers.length);
+                      setSelectedLayerId(id);
                     }
                   : undefined
               }
