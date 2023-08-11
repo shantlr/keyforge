@@ -1,59 +1,90 @@
 'use client';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import { Keymap } from '@/components/providers/redux';
 import clsx from 'clsx';
-import { ComponentProps, forwardRef, useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import { Tooltip } from '@/components/base/tooltips';
 import { Button } from '@/components/base/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { mergeProps } from 'react-aria';
 
-const LayerItem = forwardRef<
-  HTMLDivElement,
-  {
-    layer: Keymap['layers'][number];
-    active?: boolean;
-    onPress?: () => void;
-    onDelete?: () => void;
-  } & ComponentProps<'div'>
->(({ layer, active, onPress, onDelete, ...props }, ref) => {
+const LayerItem = ({
+  layer,
+  active,
+  onDelete,
+  ...props
+}: {
+  layer: Keymap['layers'][number];
+  active?: boolean;
+  onDelete?: () => void;
+} & ComponentProps<'div'>) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: layer.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
     <Tooltip
+      ref={setNodeRef}
       delay={0}
-      disableHideOnClick
+      isDisabled={isDragging || !onDelete}
+      placement="right"
+      {...listeners}
+      {...attributes}
       tooltip={
-        onDelete ? (
-          <Button
-            onPress={() => {
-              onDelete?.();
-            }}
-            className="px-[6px] text-[10px]"
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </Button>
-        ) : null
+        <Button
+          onPress={() => {
+            onDelete?.();
+          }}
+          className="px-[6px] text-[10px]"
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </Button>
       }
     >
       <div
-        ref={ref}
-        className={clsx(
-          'flex items-center justify-center h-input-md w-full text-sm rounded-sm text-center transition',
-          {
-            'bg-default text-mainbg hover:bg-default-lighter active:default-darker':
-              !active,
-            'bg-primary text-white ': active,
-          }
-        )}
-        onClick={onPress}
-        {...props}
+        style={style}
+        {...mergeProps(props, {
+          className: clsx(
+            'flex cursor-pointer items-center justify-center h-input-md w-full text-sm rounded-sm text-center transition',
+            {
+              'bg-default text-mainbg hover:bg-default-lighter active:default-darker':
+                !active,
+              'bg-primary text-white ': active,
+            }
+          ),
+        })}
       >
         {layer.name}
       </div>
     </Tooltip>
   );
-});
-LayerItem.displayName = 'LayerItem';
+};
 
 export const Layers = ({
   selectedLayerId,
@@ -69,61 +100,102 @@ export const Layers = ({
   onLayerDelete?: (layer: Keymap['layers'][number]) => void;
 }) => {
   const items = useMemo(() => [...layers].reverse(), [layers]);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   return (
-    <DragDropContext
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
       onDragEnd={(e) => {
-        if (e.destination) {
-          onLayerMove?.({
-            srcIdx: items.length - e.source.index - 1,
-            dstIdx: items.length - e.destination.index - 1,
-          });
-        }
+        onLayerMove?.({
+          srcIdx: layers.findIndex((l) => l.id === e.active.id) as number,
+          dstIdx: layers.findIndex((l) => l.id === e.over?.id) as number,
+        });
       }}
     >
-      <Droppable droppableId="layers">
-        {(provided) => (
-          <div
-            className="space-y-1"
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
-            {items.map((l, idx) => {
-              return (
-                <Draggable
-                  isDragDisabled={!onLayerMove}
-                  key={l.id}
-                  draggableId={l.id}
-                  index={idx}
-                >
-                  {(provided, snapshot) => (
-                    <LayerItem
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={provided.draggableProps.style}
-                      layer={l}
-                      key={idx}
-                      active={selectedLayerId === l.id}
-                      onPress={() => {
-                        onSelectLayer?.(l.id);
-                      }}
-                      onDelete={
-                        onLayerDelete
-                          ? () => {
-                              onLayerDelete(l);
-                            }
-                          : undefined
-                      }
-                    />
-                  )}
-                </Draggable>
-              );
-            })}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+      <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        <div className="space-y-1">
+          {items.map((l, idx) => (
+            <LayerItem
+              layer={l}
+              key={idx}
+              active={selectedLayerId === l.id}
+              onPointerDown={() => {
+                onSelectLayer?.(l.id);
+              }}
+              onDelete={
+                onLayerDelete
+                  ? () => {
+                      onLayerDelete(l);
+                    }
+                  : undefined
+              }
+            />
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
   );
+  // return (
+  //   <DragDropContext
+  //     onDragEnd={(e) => {
+  //       if (e.destination) {
+  //         onLayerMove?.({
+  //           srcIdx: items.length - e.source.index - 1,
+  //           dstIdx: items.length - e.destination.index - 1,
+  //         });
+  //       }
+  //     }}
+  //   >
+  //     <Droppable droppableId="layers">
+  //       {(provided) => (
+  //         <div
+  //           className="space-y-1"
+  //           {...provided.droppableProps}
+  //           ref={provided.innerRef}
+  //         >
+  //           {items.map((l, idx) => {
+  //             return (
+  //               <Draggable
+  //                 isDragDisabled={!onLayerMove}
+  //                 key={l.id}
+  //                 draggableId={l.id}
+  //                 index={idx}
+  //               >
+  //                 {(provided, snapshot) => (
+  //                   <LayerItem
+  //                     ref={provided.innerRef}
+  //                     {...provided.draggableProps}
+  //                     {...provided.dragHandleProps}
+  //                     style={provided.draggableProps.style}
+  //                     layer={l}
+  //                     key={idx}
+  //                     isDragging={snapshot.isDragging}
+  //                     active={selectedLayerId === l.id}
+  //                     onPress={() => {
+  //                       onSelectLayer?.(l.id);
+  //                     }}
+  //                     onDelete={
+  //                       onLayerDelete
+  //                         ? () => {
+  //                             onLayerDelete(l);
+  //                           }
+  //                         : undefined
+  //                     }
+  //                   />
+  //                 )}
+  //               </Draggable>
+  //             );
+  //           })}
+  //           {provided.placeholder}
+  //         </div>
+  //       )}
+  //     </Droppable>
+  //   </DragDropContext>
+  // );
 };

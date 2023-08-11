@@ -22,6 +22,9 @@ import { useEffectEvent } from '@react-aria/utils';
 import { useWindowBlur } from './useWindowBlur';
 import { useClickOutside } from './useClickOutside';
 import { nanoid } from 'nanoid';
+import { Tooltip } from '@/components/base/tooltips';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export const KeymapConfigurator = ({
   keyboardId,
@@ -164,37 +167,58 @@ export const KeymapConfigurator = ({
           >
             <div className="pl-2 space-y-1">
               {userKeymaps?.map((k) => (
-                <input
-                  className={clsx(
-                    'outline-none px-2 h-input-md rounded text-sm hover:bg-primary-lighter transition',
-                    {
-                      'bg-primary text-mainbg placeholder:text-secondarybg':
-                        k.id === selectedKeymap?.id,
-                      'bg-transparent text-default placeholder:text-secondarybg':
-                        k.id !== selectedKeymap?.id,
-                      italic: k.temp,
-                    }
-                  )}
-                  placeholder="<unamed-keymap>"
+                <Tooltip
                   key={k.id}
-                  value={k.name}
-                  onClick={() => {
-                    dispatch(
-                      viewSlice.actions.selectKeymap({
-                        keyboard: keyboardId,
-                        keymapId: k.id,
-                      })
-                    );
-                  }}
-                  onChange={(e) => {
-                    dispatch(
-                      keymapSlice.actions.updateKeymapName({
-                        id: k.id,
-                        name: e.target.value,
-                      })
-                    );
-                  }}
-                />
+                  delay={0}
+                  closeDelay={200}
+                  placement="right"
+                  tooltip={
+                    <Button
+                      className="text-[10px] px-[6px]"
+                      onPress={() => {
+                        dispatch(
+                          keymapSlice.actions.removeKeymap({
+                            id: k.id,
+                            keyboard: keyboardId,
+                          })
+                        );
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                  }
+                >
+                  <input
+                    className={clsx(
+                      'outline-none px-2 h-input-md rounded text-sm hover:bg-primary-lighter transition',
+                      {
+                        'bg-primary text-mainbg placeholder:text-secondarybg':
+                          k.id === selectedKeymap?.id,
+                        'bg-transparent text-default placeholder:text-secondarybg':
+                          k.id !== selectedKeymap?.id,
+                        italic: k.temp,
+                      }
+                    )}
+                    placeholder="<unamed-keymap>"
+                    value={k.name}
+                    onClick={() => {
+                      dispatch(
+                        viewSlice.actions.selectKeymap({
+                          keyboard: keyboardId,
+                          keymapId: k.id,
+                        })
+                      );
+                    }}
+                    onChange={(e) => {
+                      dispatch(
+                        keymapSlice.actions.updateKeymapName({
+                          id: k.id,
+                          name: e.target.value,
+                        })
+                      );
+                    }}
+                  />
+                </Tooltip>
               ))}
             </div>
           </Disclosure>

@@ -25,14 +25,23 @@ export const viewSlice = createSlice({
     },
   },
   extraReducers: (build) => {
-    build.addCase(
-      keymapSlice.actions.addKeymap,
-      (state, { payload: { keyboard, id } }) => {
-        if (!(keyboard in state.selectedKeymap)) {
-          state.selectedKeymap[keyboard] = { lastSelectedKeymap: null };
+    build
+      .addCase(
+        keymapSlice.actions.addKeymap,
+        (state, { payload: { keyboard, id } }) => {
+          if (!(keyboard in state.selectedKeymap)) {
+            state.selectedKeymap[keyboard] = { lastSelectedKeymap: null };
+          }
+          state.selectedKeymap[keyboard].lastSelectedKeymap = id;
         }
-        state.selectedKeymap[keyboard].lastSelectedKeymap = id;
-      }
-    );
+      )
+      .addCase(
+        keymapSlice.actions.removeKeymap,
+        (state, { payload: { keyboard, id } }) => {
+          if (state.selectedKeymap[keyboard]?.lastSelectedKeymap === id) {
+            delete state.selectedKeymap[keyboard].lastSelectedKeymap;
+          }
+        }
+      );
   },
 });

@@ -110,7 +110,7 @@ export const keymapSlice = createSlice({
     },
     removeKeymap: (
       state,
-      { payload: { id } }: PayloadAction<{ id: string }>
+      { payload: { id } }: PayloadAction<{ id: string; keyboard: string }>
     ) => {
       removeKeymap(state, id);
     },

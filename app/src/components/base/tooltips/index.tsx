@@ -1,57 +1,164 @@
-import { ReactElement, ReactNode, cloneElement, useRef } from 'react';
-import { AriaTooltipProps, useTooltip, useTooltipTrigger } from 'react-aria';
 import {
+  ComponentElement,
+  ComponentProps,
+  ReactNode,
+  cloneElement,
+  forwardRef,
+  useCallback,
+  useRef,
+} from 'react';
+import {
+  AriaPopoverProps,
+  Overlay,
+  mergeProps,
+  useHover,
+  usePopover,
+} from 'react-aria';
+import {
+  OverlayTriggerState,
   TooltipTriggerProps,
-  TooltipTriggerState,
   useTooltipTriggerState,
 } from 'react-stately';
 
 const TooltipPopover = ({
   children,
   state,
-  ...props
-}: { state?: TooltipTriggerState; children: ReactNode } & AriaTooltipProps) => {
-  const { tooltipProps } = useTooltip(props, state);
-  return (
-    <div className="absolute top-0 right-[-26px] z-100" {...tooltipProps}>
-      {children}
-    </div>
-  );
-};
-
-export const Tooltip = ({
-  children,
-  tooltip,
-  disableHideOnClick,
+  offset = 8,
+  onPointerEnter,
+  onPointerLeave,
   ...props
 }: {
-  children: ReactElement;
-  tooltip?: ReactNode;
-  disableHideOnClick?: boolean;
-} & TooltipTriggerProps) => {
-  const state = useTooltipTriggerState(props);
-  let ref = useRef(null);
-
-  const { triggerProps, tooltipProps } = useTooltipTrigger(props, state, ref);
+  state: OverlayTriggerState;
+  children: ReactNode;
+} & Omit<AriaPopoverProps, 'popoverRef'> &
+  ComponentProps<'div'>) => {
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+  const { popoverProps, underlayProps } = usePopover(
+    {
+      ...props,
+      offset,
+      popoverRef,
+    },
+    state
+  );
 
   return (
-    <div className="relative">
-      {cloneElement(children, {
-        ...children.props,
-        ...triggerProps,
-        onClick: (e: any) => {
-          children.props.onClick?.(e);
-          if (!disableHideOnClick) {
-            triggerProps.onClick?.(e);
-          }
-        },
-      })}
-      {state.isOpen && (
-        <TooltipPopover {...tooltipProps} state={state}>
-          {tooltip}
-        </TooltipPopover>
-      )}
-      <div />
-    </div>
+    <Overlay>
+      <div {...underlayProps} className="underlay" />
+      <div
+        {...popoverProps}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        ref={popoverRef}
+      >
+        {children}
+      </div>
+    </Overlay>
   );
 };
+
+const useTooltipStateAsOverlayState = (props: TooltipTriggerProps) => {
+  const { isOpen, open, close } = useTooltipTriggerState(props);
+  return {
+    isOpen,
+    open,
+    close,
+    setOpen: useCallback(
+      (value: boolean) => {
+        if (value) {
+          open();
+        } else {
+          close();
+        }
+      },
+      [close, open]
+    ),
+    toggle: useCallback(() => {
+      if (isOpen) {
+        close();
+      } else {
+        open();
+      }
+    }, [open, close, isOpen]),
+  };
+};
+
+export const Tooltip = forwardRef<
+  HTMLDivElement,
+  {
+    children: ComponentElement<any, any>;
+    tooltip?: ReactNode;
+  } & TooltipTriggerProps &
+    Pick<AriaPopoverProps, 'placement'>
+>(
+  (
+    {
+      children,
+      tooltip,
+      delay,
+      closeDelay,
+      defaultOpen,
+      isDisabled,
+      isOpen,
+      onOpenChange,
+      trigger,
+      placement,
+      ...props
+    },
+    r
+  ) => {
+    const state = useTooltipStateAsOverlayState({
+      delay,
+      closeDelay,
+      defaultOpen,
+      isDisabled,
+      isOpen,
+      onOpenChange,
+      trigger,
+    });
+    const ref = useRef<Element | null>(null);
+
+    const { hoverProps: childrenHoverProps, isHovered: isChildrenHovered } =
+      useHover({
+        onHoverChange: (c) => state.setOpen(c || isOverlayHovered),
+      });
+    const { hoverProps: overlayHoverProps, isHovered: isOverlayHovered } =
+      useHover({
+        onHoverChange: (c) => state.setOpen(c || isChildrenHovered),
+      });
+
+    return (
+      <div ref={r} {...mergeProps(props, childrenHoverProps)}>
+        {cloneElement(children, {
+          ...children.props,
+          ref: (r: Element) => {
+            ref.current = r;
+
+            if (typeof children.ref === 'function') {
+              children.ref(r);
+            } else if (
+              children.ref &&
+              typeof children.ref === 'object' &&
+              'current' in children.ref
+            ) {
+              // @ts-ignore
+              children.ref.current = r;
+            }
+          },
+        })}
+        {state.isOpen && (
+          <TooltipPopover
+            state={state}
+            triggerRef={ref}
+            isNonModal
+            placement={placement}
+            {...overlayHoverProps}
+          >
+            {tooltip}
+          </TooltipPopover>
+        )}
+      </div>
+    );
+  }
+);
+Tooltip.displayName = 'Tooltip';
