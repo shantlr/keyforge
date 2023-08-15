@@ -123,9 +123,6 @@ describe('parseKeybardsFolders', () => {
             'info.json': JSON.stringify({ name: 'kb_1/rev1' }),
             'rules.mk': '',
           },
-          // 'config.h': '',
-          // 'info.json': JSON.stringify(info),
-          // 'rules.mk': '',
         },
       },
     });

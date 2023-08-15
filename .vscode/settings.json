@@ -1,6 +1,7 @@
 {
   "eslint.workingDirectories": [
     "./app",
+    "./compile-keymap",
     "./parse",
   ]
 }
