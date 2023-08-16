@@ -245,7 +245,7 @@ export const KeymapConfigurator = ({
                         keyboard: keyboardId,
                         layout: l.name,
                         layers: [
-                          { name: '1', keys: l.layout.map(() => 'KC_NOOP') },
+                          { name: '1', keys: l.layout.map(() => 'KC_NO') },
                         ],
                         temp: true,
                         replaceTemp: true,
@@ -345,7 +345,7 @@ export const KeymapConfigurator = ({
                           name,
                           layerId: id,
                           keys: selectedKeymap.layers[0].keys.map(
-                            () => '_____'
+                            () => '_______'
                           ),
                         })
                       );

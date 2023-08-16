@@ -1,3 +1,4 @@
+import { toLower } from 'lodash';
 import { formatNode } from './core/formatNode';
 import { StatementsNode, ValueExprNode } from './core/types';
 
@@ -26,10 +27,11 @@ export const formatKeymap = ({
       },
       {
         type: 'enum',
-        name: `${keyboardName}_layers`,
+        name: `${toLower(keyboardName).replace(/\//g, '_')}_layers`,
         values: layers.map((l, idx) => ({
           name: `LAYER_${l.name}`,
-          value: idx === 0 ? 'SAFE_RANGE' : undefined,
+          value: undefined,
+          // value: idx === 0 ? 'SAFE_RANGE' : undefined,
         })),
       },
       {

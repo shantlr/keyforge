@@ -27,19 +27,21 @@ export const formatNode = (
       }`;
     }
     case 'define': {
-      return `#define ${node.name} ${formatNode(node.value)}`;
+      return `#define ${node.name} ${formatNode(node.value)};`;
     }
     case 'enum': {
-      return [
-        `enum ${node.name || ''} {`,
-        ...node.values.map((v) => {
-          if (v.name && v.value) {
-            return `  ${v.name} = ${v.value},`;
-          }
-          return `  ${v.name},`;
-        }),
-        '}',
-      ].join('\n');
+      return (
+        [
+          `enum ${node.name || ''} {`,
+          ...node.values.map((v) => {
+            if (v.name && v.value) {
+              return `  ${v.name} = ${v.value},`;
+            }
+            return `  ${v.name},`;
+          }),
+          '}',
+        ].join('\n') + ';'
+      );
     }
 
     case 'var': {
@@ -53,7 +55,6 @@ export const formatNode = (
       if (node.modifier) {
         res.push(node.modifier);
       }
-      res.push(node.name);
       if (node.arrayDim?.length) {
         const dim: string[] = [];
         node.arrayDim?.forEach((d) => {
@@ -63,10 +64,12 @@ export const formatNode = (
             dim.push(`[${formatNode(d.value)}]`);
           }
         });
-        res.push(dim.join(''));
+        res.push(`${node.name}${dim.join('')}`);
+      } else {
+        res.push(node.name);
       }
       res.push('=', formatNode(node.value));
-      return res.join(' ');
+      return `${res.join(' ')};`;
     }
     case 'array': {
       return [

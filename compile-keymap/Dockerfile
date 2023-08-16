@@ -1,6 +1,5 @@
 FROM node:18-alpine3.18 as base
 
-
 FROM base as with_qmk
 RUN apk add git py3-pip
 
@@ -22,6 +21,7 @@ COPY ./tsconfig.build.json .
 COPY ./src ./src
 
 RUN yarn build
+COPY cli cli
 
 CMD sleep 5000000
 

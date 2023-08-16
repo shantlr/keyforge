@@ -2,9 +2,14 @@ import { mkdir, unlink, writeFile } from 'fs/promises';
 import { KeyboardInfo, KeymapInput } from '../types';
 import path from 'path';
 import { formatKeymap } from './formatKeymap';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import { getKeyboardInfo } from './getKeyboardInfo';
-import { execa } from 'execa';
+import execa from 'execa';
+import { deleteDir } from '../lib/deleteDir';
+
+const randomKemapId = customAlphabet(
+  '0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSUVWXYZ',
+);
 
 const assertKeymap = ({
   keyboardInfo,
@@ -44,7 +49,7 @@ const generateKeymap = async ({
     keyboardName,
     ...keymap,
   });
-  const id = nanoid();
+  const id = randomKemapId();
 
   const dir = path.resolve(keymapsPath, id);
   await mkdir(dir);
@@ -66,7 +71,8 @@ const compileFirmwareFromKeymapFolder = async ({
   keymapName: string;
   cwd: string;
 }) => {
-  await execa(`make ${keyboardRev}:${keymapName}`, {
+  console.log(`[compile-keymap] make ${keyboardRev}:${keymapName}`);
+  await execa('make', [`${keyboardRev}:${keymapName}`], {
     stdio: 'inherit',
     cwd,
   });
@@ -76,17 +82,17 @@ const compileFirmwareFromKeymapFolder = async ({
 
 export const compileKeymap = async ({
   keyboard,
-  cwd,
-  keyboardsDir = path.resolve(cwd, 'keyboards'),
+  qmkCwd,
+  keyboardsDir = path.resolve(qmkCwd, 'keyboards'),
   keymap,
 
-  cleanBin,
-  cleanKeymap,
+  cleanBin = true,
+  cleanKeymap = true,
 }: {
   keymap: KeymapInput;
   keyboard: string;
   keyboardsDir?: string;
-  cwd: string;
+  qmkCwd: string;
 
   cleanKeymap?: boolean;
   cleanBin?: boolean;
@@ -96,24 +102,27 @@ export const compileKeymap = async ({
     revPath: keyboard,
   });
   assertKeymap({ keymap, keyboardInfo });
+  console.log(`[compile-qmk] keymap input verified.`);
 
   const generatedKeymap = await generateKeymap({
     keyboardName: keyboardInfo.keyboard_name,
     keymap,
     keymapsPath,
   });
+  console.log(`[compile-qmk] keymap generated at ${generatedKeymap.dir}.`);
 
   let binPath: string = null;
   try {
     const { binName } = await compileFirmwareFromKeymapFolder({
-      cwd,
+      cwd: qmkCwd,
       keyboardRev: keyboard,
       keymapName: generatedKeymap.keymapName,
     });
-    binPath = path.resolve(cwd, binName);
+    console.log(`[compile-qmk]`);
+    binPath = path.resolve(qmkCwd, binName);
   } finally {
     if (cleanKeymap) {
-      await unlink(generatedKeymap.dir);
+      await deleteDir(generatedKeymap.dir);
     }
     if (cleanBin && binPath) {
       await unlink(binPath);
