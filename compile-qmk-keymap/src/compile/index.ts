@@ -63,43 +63,46 @@ const generateKeymap = async ({
 };
 
 const compileFirmwareFromKeymapFolder = async ({
-  keyboardRev,
+  keyboardQMKPath,
   keymapName,
   cwd,
 }: {
-  keyboardRev: string;
+  keyboardQMKPath: string;
   keymapName: string;
   cwd: string;
 }) => {
-  console.log(`[compile-keymap] make ${keyboardRev}:${keymapName}`);
-  await execa('make', [`${keyboardRev}:${keymapName}`], {
+  console.log(`[compile-keymap] make ${keyboardQMKPath}:${keymapName}`);
+  await execa('make', [`${keyboardQMKPath}:${keymapName}`], {
     stdio: 'inherit',
     cwd,
   });
-  const binName = `${keyboardRev.replace(/\//g, '_')}_${keymapName}.bin`;
+  const binName = `${keyboardQMKPath.replace(/\//g, '_')}_${keymapName}.bin`;
   return { binName };
 };
 
 export const compileKeymap = async ({
-  keyboard,
   qmkCwd,
   keyboardsDir = path.resolve(qmkCwd, 'keyboards'),
   keymap,
+
+  onBin,
 
   cleanBin = true,
   cleanKeymap = true,
 }: {
   keymap: KeymapInput;
-  keyboard: string;
   keyboardsDir?: string;
   qmkCwd: string;
+
+  onKeymap?: () => Promise<void>;
+  onBin?: (input: { binPath: string }) => Promise<void>;
 
   cleanKeymap?: boolean;
   cleanBin?: boolean;
 }) => {
   const { info: keyboardInfo, keymapsPath } = await getKeyboardInfo({
     keyboardsDir,
-    revPath: keyboard,
+    revPath: keymap.keyboardQMKPath,
   });
   assertKeymap({ keymap, keyboardInfo });
   console.log(`[compile-qmk] keymap input verified.`);
@@ -115,11 +118,14 @@ export const compileKeymap = async ({
   try {
     const { binName } = await compileFirmwareFromKeymapFolder({
       cwd: qmkCwd,
-      keyboardRev: keyboard,
+      keyboardQMKPath: keymap.keyboardQMKPath,
       keymapName: generatedKeymap.keymapName,
     });
     console.log(`[compile-qmk]`);
     binPath = path.resolve(qmkCwd, binName);
+    if (onBin) {
+      onBin({ binPath });
+    }
   } finally {
     if (cleanKeymap) {
       await deleteDir(generatedKeymap.dir);

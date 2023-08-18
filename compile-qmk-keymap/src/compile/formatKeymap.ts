@@ -28,10 +28,9 @@ export const formatKeymap = ({
       {
         type: 'enum',
         name: `${toLower(keyboardName).replace(/\//g, '_')}_layers`,
-        values: layers.map((l, idx) => ({
+        values: layers.map((l) => ({
           name: `LAYER_${l.name}`,
           value: undefined,
-          // value: idx === 0 ? 'SAFE_RANGE' : undefined,
         })),
       },
       {

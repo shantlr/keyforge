@@ -3,5 +3,6 @@
     "./app",
     "./compile-keymap",
     "./parse",
-  ]
+  ],
+  "git.autoRepositoryDetection": "openEditors"
 }
