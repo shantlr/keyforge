@@ -2,7 +2,7 @@ import path from 'path';
 import { mkdir, writeFile } from 'fs/promises';
 
 import { Command } from 'commander';
-import { cloneDeep, forEach, uniq } from 'lodash';
+import { cloneDeep, forEach } from 'lodash';
 
 import { AstContext, Context } from '../parser/astToContext';
 import { parseFileToContext } from '../parser';
@@ -95,6 +95,7 @@ prog
   })
   .option('-i, --include <file>', 'include file')
   .action(async (keyboardsFolder: string, outputDir: string, options) => {
+    const USE_INTIAL_AS_SUBFOLDER = true;
     const context: Context = { identifiers: {} };
     if (typeof options.include === 'string') {
       await parseFileToContext(options.include, context);
@@ -121,11 +122,9 @@ prog
 
         // for easier navigation we put use keyboard name first character as parent directory
         // planck/rev7 => p/planck_rev7
-        const outputKeyboardDir = path.resolve(
-          outputDir,
-          mappedKBName[0],
-          mappedKBName,
-        );
+        const outputKeyboardDir = USE_INTIAL_AS_SUBFOLDER
+          ? path.resolve(outputDir, mappedKBName[0], mappedKBName)
+          : path.resolve(outputDir, mappedKBName);
         await mkdir(outputKeyboardDir, { recursive: true });
 
         const keymaps: string[] = [];
@@ -173,13 +172,17 @@ prog
         );
         keyboardList.push({
           name: infoJson.keyboard_name || keyboardPath,
-          path: path.relative(outputDir, outputKeyboardDir),
+          key: mappedKBName,
+          qmkpath: keyboardPath,
         });
       },
     );
     await writeFile(
       path.resolve(outputDir, 'list.json'),
-      JSON.stringify(uniq(keyboardList)),
+      JSON.stringify({
+        use_path_initial_prefix: USE_INTIAL_AS_SUBFOLDER,
+        list: keyboardList,
+      }),
     );
     stats.ended_at = new Date();
 

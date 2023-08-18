@@ -139,7 +139,7 @@ const BasicKeys = (
   return (
     <Keymap
       keyPositions={BASIC_KEYS_POSITION}
-      baseWidth={25}
+      baseWidth={40}
       keys={BASIC_KEYS}
       {...props}
     />

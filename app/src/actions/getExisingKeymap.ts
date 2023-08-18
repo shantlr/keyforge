@@ -2,7 +2,7 @@
 
 import { existingKeymap } from '@/lib/keyboards';
 
-export const getExistingKeymap = async ({
+export const $$getExistingKeymap = async ({
   keyboard,
   keymap,
 }: {

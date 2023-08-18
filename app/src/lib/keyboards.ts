@@ -2,18 +2,30 @@ import path from 'path';
 import { createCache, createSingleValueCache } from './ttlCache';
 import { readFile } from 'fs/promises';
 import { KeyboardInfo } from '@/types';
+import { keyBy } from 'lodash';
 
 const baseDir = './keyboards';
 
-export const keyboards = createSingleValueCache(async () => {
+export const keyboardList = createSingleValueCache(async () => {
   try {
     const content = await readFile(path.resolve(baseDir, 'list.json'));
-    return JSON.parse(content.toString()) as {
-      name: string;
-      path: string;
-    }[];
+
+    const res = JSON.parse(content.toString()) as {
+      use_path_initial_prefix: boolean;
+      list: {
+        name: string;
+        key: string;
+        qmkpath: string;
+      }[];
+    };
+
+    return res.list.map((l) => ({
+      name: l.name,
+      key: l.key,
+      qmkpath: l.qmkpath,
+      path: res.use_path_initial_prefix ? `${l.key[0]}/${l.key}` : l.key,
+    }));
   } catch (err) {
-    console.log(process.cwd());
     if ((err as any)?.code === 'ENOENT') {
       console.log(err);
       console.warn(`dir '${path.resolve(baseDir)}' not found`);
@@ -23,12 +35,41 @@ export const keyboards = createSingleValueCache(async () => {
   }
 });
 
-export const keyboardInfo = createCache<string, KeyboardInfo>(
+export const keyboardMap = createSingleValueCache(async () => {
+  const list = await keyboardList.get();
+  return keyBy(list, 'key');
+});
+
+export const keyboardOptions = createSingleValueCache(async () => {
+  const list = await keyboardList.get();
+  return list.map((item) => ({
+    name: item.name,
+    key: item.key,
+    qmkpath: item.qmkpath,
+  }));
+});
+
+export const keyboardInfo = createCache<
+  string,
+  KeyboardInfo & { path: string }
+>(
   // @ts-ignore
   async (key: string) => {
     try {
-      const res = await readFile(path.resolve(baseDir, key, 'info.json'));
-      return JSON.parse(res.toString());
+      const m = await keyboardMap.get();
+
+      const kb = m[key];
+      if (!kb) {
+        console.warn(`keyboard key '${key}' unknown`);
+        return null;
+      }
+
+      const res = await readFile(path.resolve(baseDir, kb.path, 'info.json'));
+      const info = JSON.parse(res.toString());
+      return {
+        ...info,
+        path: kb.path,
+      };
     } catch (err) {
       if ((err as any)?.code === 'ENOENT') {
         console.warn(`keyboard not found '${key}'`);
@@ -41,7 +82,7 @@ export const keyboardInfo = createCache<string, KeyboardInfo>(
     }
   },
   {
-    max: 100,
+    max: 300,
   }
 );
 

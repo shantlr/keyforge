@@ -11,7 +11,7 @@ export const SelectKeyboard = ({
 }: {
   value?: string | null;
   className?: string;
-  keyboards: { name: string; path: string }[];
+  keyboards: { name: string; key: string; qmkpath: string }[];
 }) => {
   const router = useRouter();
   return (
@@ -25,9 +25,9 @@ export const SelectKeyboard = ({
       defaultItems={keyboards}
     >
       {(item) => (
-        <Item key={item.path} textValue={`${item.name} (${item.path})`}>
+        <Item key={item.key} textValue={`${item.name} (${item.qmkpath})`}>
           <span className="text-sm">
-            {item.name} <span className="text-gray-400">({item.path})</span>
+            {item.name} <span className="text-gray-400">({item.qmkpath})</span>
           </span>
         </Item>
       )}

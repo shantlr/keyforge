@@ -9,12 +9,11 @@ import Link from 'next/link';
 export default async function Keyboard({
   params,
 }: {
-  params: { keyboard: string[] };
+  params: { keyboard: string };
   searchParams: any;
 }) {
-  const keyboardPath = params.keyboard.join('/');
-
-  const keyboard = await keyboardInfo.get(keyboardPath);
+  const kbKey = params.keyboard;
+  const keyboard = await keyboardInfo.get(kbKey);
 
   if (!keyboard) {
     return (
@@ -31,7 +30,7 @@ export default async function Keyboard({
   }
 
   const keymaps = await Promise.all(
-    keyboard.keymaps.map((key) => existingKeymap.get(`${keyboardPath}/${key}`))
+    keyboard.keymaps.map((key) => existingKeymap.get(`${keyboard.path}/${key}`))
   );
 
   return (
@@ -41,7 +40,7 @@ export default async function Keyboard({
       </div>
       <div className="expanded-container mt-8">
         <KeymapConfigurator
-          keyboardId={keyboardPath}
+          keyboardId={kbKey}
           keyboard={keyboard}
           keymaps={keymaps}
         />

@@ -3,7 +3,7 @@
 import { KeyboardInfo } from '@/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isEqual, map } from 'lodash';
-import { getExistingKeymap } from '@/actions/getExisingKeymap';
+import { $$getExistingKeymap } from '@/actions/getExisingKeymap';
 import { Button } from '../../base/button';
 import { KeysPicker } from '../keysPicker';
 import { Disclosure } from '@/components/base/disclosure';
@@ -54,7 +54,7 @@ export const KeymapConfigurator = ({
 
   const onSelectKeymap = useCallback(
     async (key: string) => {
-      const keymap = await getExistingKeymap({
+      const keymap = await $$getExistingKeymap({
         keyboard: keyboardId,
         keymap: key as string,
       });

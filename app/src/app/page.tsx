@@ -1,9 +1,9 @@
-import { keyboards } from '@/lib/keyboards';
+import { keyboardOptions } from '@/lib/keyboards';
 import { SelectKeyboard } from '@/components/controlled/selectKeyboard';
 import { KeyforgeSteps } from '@/components/base/keyforgeSteps';
 
 export default async function Home() {
-  const res = await keyboards.get();
+  const res = await keyboardOptions.get();
 
   return (
     <main className="expanded-container overflow-hidden">
