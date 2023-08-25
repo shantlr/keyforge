@@ -18,7 +18,6 @@ import { ExistingKeymap } from '@/lib/keyboards';
 import clsx from 'clsx';
 import { MAX_LAYERS } from '@/constants';
 import { useListenKeyboardEvent } from './useListenKeyboardEvent';
-import { useEffectEvent } from '@react-aria/utils';
 import { useWindowBlur } from './useWindowBlur';
 import { useClickOutside } from './useClickOutside';
 import { nanoid } from 'nanoid';
@@ -27,13 +26,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export const KeymapConfigurator = ({
-  keyboardId,
+  keyboardKey,
   keyboard,
   keymaps,
+  onSelectKeymap,
 }: {
-  keyboardId: string;
+  keyboardKey: string;
   keyboard: KeyboardInfo;
   keymaps: ExistingKeymap[];
+  onSelectKeymap?: (keymapId: string | null) => void;
 }) => {
   const layouts = useMemo(
     () =>
@@ -52,37 +53,41 @@ export const KeymapConfigurator = ({
     }[];
   } | null>(null);
 
-  const onSelectKeymap = useCallback(
+  const handleSelectKeymap = useCallback(
     async (key: string) => {
       const keymap = await $$getExistingKeymap({
-        keyboard: keyboardId,
+        keyboardKey,
         keymap: key as string,
       });
       setKeymap(keymap);
     },
-    [keyboardId]
+    [keyboardKey]
   );
 
   useEffect(() => {
     if (!keymap && keyboard.keymaps.length) {
-      onSelectKeymap(keyboard.keymaps[0]);
+      handleSelectKeymap(keyboard.keymaps[0]);
     }
-  }, [keymap, keyboard, onSelectKeymap]);
+  }, [keymap, keyboard, handleSelectKeymap]);
 
   const dispatch = useDispatch();
 
   const selectedKeymap = useSelector((state) => {
     const keymapId =
-      state.view.selectedKeymap?.[keyboardId]?.lastSelectedKeymap;
+      state.view.selectedKeymap?.[keyboardKey]?.lastSelectedKeymap;
     if (keymapId && state.keymaps.keymaps[keymapId]) {
       return state.keymaps.keymaps[keymapId];
     }
     return null;
   });
 
+  useEffect(() => {
+    onSelectKeymap?.(selectedKeymap?.id ?? null);
+  }, [onSelectKeymap, selectedKeymap?.id]);
+
   const userKeymaps = useSelector(
     (state) =>
-      state.keymaps.keyboards[keyboardId]?.keymaps.map(
+      state.keymaps.keyboards[keyboardKey]?.keymaps.map(
         (k) => state.keymaps.keymaps[k]
       ),
     (prev, next) => {
@@ -90,8 +95,10 @@ export const KeymapConfigurator = ({
     }
   );
 
-  const [showUserKeymaps, setShowUserKeymaps] = useState(false);
-  const [showLayouts, setShowLayouts] = useState(true);
+  const [showUserKeymaps, setShowUserKeymaps] = useState(
+    Boolean(selectedKeymap)
+  );
+  const [showLayouts, setShowLayouts] = useState(!Boolean(selectedKeymap));
 
   const [keyIdxToEdit, setKeyIdxToEdit] = useState<number | null>(null);
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
@@ -179,7 +186,7 @@ export const KeymapConfigurator = ({
                         dispatch(
                           keymapSlice.actions.removeKeymap({
                             id: k.id,
-                            keyboard: keyboardId,
+                            keyboard: keyboardKey,
                           })
                         );
                       }}
@@ -204,7 +211,7 @@ export const KeymapConfigurator = ({
                     onClick={() => {
                       dispatch(
                         viewSlice.actions.selectKeymap({
-                          keyboard: keyboardId,
+                          keyboard: keyboardKey,
                           keymapId: k.id,
                         })
                       );
@@ -242,7 +249,7 @@ export const KeymapConfigurator = ({
                     dispatch(
                       keymapSlice.actions.addKeymap({
                         name: '',
-                        keyboard: keyboardId,
+                        keyboard: keyboardKey,
                         layout: l.name,
                         layers: [
                           { name: '1', keys: l.layout.map(() => 'KC_NO') },
@@ -272,7 +279,7 @@ export const KeymapConfigurator = ({
                   onPress={() => {
                     dispatch(
                       keymapSlice.actions.addKeymap({
-                        keyboard: keyboardId,
+                        keyboard: keyboardKey,
                         layout: k.layout,
                         layers: k.layers,
                         name: `Copy ${k.name}`,

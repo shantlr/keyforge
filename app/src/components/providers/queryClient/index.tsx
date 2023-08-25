@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { QueryClientProvider, QueryClient } from 'react-query';
-// import { ReactQueryDevtools } from 'react-query-devtools';
 
-function Providers({ children }: React.PropsWithChildren) {
-  const [client] = React.useState(
+export const QueryProvider = ({ children }: PropsWithChildren) => {
+  const [client] = useState(
     new QueryClient({ defaultOptions: { queries: { staleTime: 5000 } } })
   );
 
@@ -15,6 +14,4 @@ function Providers({ children }: React.PropsWithChildren) {
       {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   );
-}
-
-export default Providers;
+};

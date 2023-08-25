@@ -1,6 +1,12 @@
 import clsx from 'clsx';
 import Link from 'next/link';
-import { ReactNode, useMemo, isValidElement, ComponentProps } from 'react';
+import {
+  ReactNode,
+  useMemo,
+  isValidElement,
+  ComponentProps,
+  Fragment,
+} from 'react';
 
 export const Step = (props: { title: ReactNode; href?: string }) => {
   return null;
@@ -49,7 +55,9 @@ export const Steps = ({
   return (
     <div className={clsx('flex items-center', className)}>
       {steps.map((s, index) => {
-        let elem = (
+        const elem = isValidElement(s) ? (
+          s
+        ) : (
           <div
             key={s.key}
             className={clsx('transition', {
@@ -61,17 +69,14 @@ export const Steps = ({
             {s.title}
           </div>
         );
-        if (s.href && index < currentIdx) {
-          elem = <Link href={s.href}>{elem}</Link>;
-        }
 
         return (
-          <>
+          <Fragment key={index}>
             {elem}
             {index < steps.length - 1 && (
               <div className="mx-8 w-[50px] border-b-2" />
             )}
-          </>
+          </Fragment>
         );
       })}
     </div>

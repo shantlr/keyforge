@@ -32,4 +32,9 @@
     @apply hover:border-primary hover:text-primary;
     @apply active:border-primary-darker active:text-primary-darker;
   }
+
+  .button:disabled {
+    cursor: not-allowed;
+    @apply border-gray-500 text-gray-500 hover:border-gray-500 hover:text-gray-500;
+  }
 }

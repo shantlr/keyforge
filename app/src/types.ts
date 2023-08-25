@@ -21,3 +21,9 @@ export type KeyboardInfo = {
   >;
   keymaps: string[];
 };
+
+export type CompileKeymapInput = {
+  keyboardQmkPath: string;
+  layout: string;
+  layers: { name: string; keys: string[] }[];
+};

@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import { ReduxProvider } from '@/components/providers/redux';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
+import { QueryProvider } from '@/components/providers/queryClient';
 
 config.autoAddCss = false;
 
@@ -22,17 +23,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ReduxProvider>
-      <html lang="en" className="expanded-container">
-        <body
-          className={clsx(
-            inter.className,
-            'bg-mainbg text-slate-400 expanded-container'
-          )}
-        >
-          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-        </body>
-      </html>
-    </ReduxProvider>
+    <html lang="en" className="expanded-container">
+      <body
+        className={clsx(
+          inter.className,
+          'bg-mainbg text-slate-400 expanded-container'
+        )}
+      >
+        <QueryProvider>
+          <ReduxProvider>
+            <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          </ReduxProvider>
+        </QueryProvider>
+      </body>
+    </html>
   );
 }

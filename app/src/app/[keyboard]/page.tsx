@@ -1,7 +1,6 @@
 import { Button } from '@/components/base/button';
-import { KeyforgeSteps } from '@/components/base/keyforgeSteps';
-import { KeymapConfigurator } from '@/components/controlled/keymapConfigurator';
 import { existingKeymap, keyboardInfo } from '@/lib/keyboards';
+import { CustomizeKeymapPage } from '@/components/pages/customizeKeymapPage';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
@@ -35,16 +34,11 @@ export default async function Keyboard({
 
   return (
     <main className="expanded-container overflow-hidden">
-      <div className="flex justify-center pt-8">
-        <KeyforgeSteps current="customize" />
-      </div>
-      <div className="expanded-container mt-8">
-        <KeymapConfigurator
-          keyboardId={kbKey}
-          keyboard={keyboard}
-          keymaps={keymaps}
-        />
-      </div>
+      <CustomizeKeymapPage
+        keyboardKey={kbKey}
+        keyboard={keyboard}
+        keymaps={keymaps}
+      />
     </main>
   );
 }

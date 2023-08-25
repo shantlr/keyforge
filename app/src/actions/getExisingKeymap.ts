@@ -1,14 +1,17 @@
 'use server';
 
-import { existingKeymap } from '@/lib/keyboards';
+import { existingKeymap, keyboardInfo } from '@/lib/keyboards';
 
 export const $$getExistingKeymap = async ({
-  keyboard,
+  keyboardKey,
   keymap,
 }: {
-  keyboard: string;
+  keyboardKey: string;
   keymap: string;
 }) => {
-  console.log(keyboard, keymap);
-  return existingKeymap.get(`${keyboard}/${keymap}`);
+  const kb = await keyboardInfo.get(keyboardKey);
+  if (!kb) {
+    return null;
+  }
+  return existingKeymap.get(`${kb.path}/${keymap}`);
 };

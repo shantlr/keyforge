@@ -51,7 +51,7 @@ export const keyboardOptions = createSingleValueCache(async () => {
 
 export const keyboardInfo = createCache<
   string,
-  KeyboardInfo & { path: string }
+  KeyboardInfo & { path: string; qmkpath: string }
 >(
   // @ts-ignore
   async (key: string) => {
@@ -69,6 +69,7 @@ export const keyboardInfo = createCache<
       return {
         ...info,
         path: kb.path,
+        qmkpath: kb.qmkpath,
       };
     } catch (err) {
       if ((err as any)?.code === 'ENOENT') {
