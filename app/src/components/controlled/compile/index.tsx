@@ -2,12 +2,14 @@
 
 import { useSelector } from '@/components/providers/redux';
 import { KeyboardInfo } from '@/types';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { useQuery } from 'react-query';
 import { Button } from '@/components/base/button';
 import { Step, VerticalSteps } from '@/components/base/verticalSteps';
 import { useDownloadBlob } from './useDownloadBlob';
 import { toLower } from 'lodash';
+import { useSteps } from './useSteps';
+import { stat } from 'fs';
 
 const DisabledStep = ({ children }: PropsWithChildren) => {
   return <span className="text-gray-500">{children}</span>;
@@ -33,6 +35,14 @@ export const Compile = ({
     return state.keymaps.keymaps[id];
   });
 
+  const [state, setState] = useState({
+    current: 'wait',
+    jobCreated: false,
+    jobReady: false,
+    compileStarted: false,
+    compileDone: false,
+  });
+
   const { data: jobId, error: createJobError } = useQuery(
     ['createJob', keyboardKey, selectedKeymap],
     async () => {
@@ -54,7 +64,9 @@ export const Compile = ({
       return job.id;
     },
     {
-      // enabled: false,
+      onSuccess() {
+        setState((s) => ({ ...s, current: 'wait', jobCreated: true }));
+      },
       enabled: Boolean(keyboardKey && selectedKeymap),
       refetchOnMount: false,
       retry: false,
@@ -76,6 +88,11 @@ export const Compile = ({
       return job;
     },
     {
+      onSuccess(res) {
+        if (res?.state === 'ready') {
+          setState((s) => ({ ...s, jobReady: true }));
+        }
+      },
       refetchInterval: 5000,
       enabled: Boolean(jobId),
     }
@@ -88,12 +105,25 @@ export const Compile = ({
         return;
       }
 
+      setState((s) => ({
+        ...s,
+        compileStarted: true,
+        current: 'compile',
+      }));
+
       const res = await fetch(`/api/compile/job/${jobId}/run`, {
         method: 'POST',
       });
       return await res.blob();
     },
     {
+      onSuccess() {
+        setState((s) => ({
+          ...s,
+          compileDone: true,
+          current: 'download',
+        }));
+      },
       enabled: Boolean(job && job.state === 'ready'),
       refetchOnMount: false,
       retry: false,
@@ -116,9 +146,12 @@ export const Compile = ({
         <span className="text-sm">{keyboardInfo.qmkpath}</span>)
       </div>
       <div className="mt-8 mx-[120px]">
-        <VerticalSteps current="wait">
-          <Step name="wait">
+        <VerticalSteps current={state.current}>
+          <Step name="wait" done={state.jobReady}>
             {() => {
+              if (state.jobReady) {
+                return <span>Runner ready</span>;
+              }
               if (createJobError) {
                 return (
                   <span>
@@ -126,35 +159,29 @@ export const Compile = ({
                   </span>
                 );
               }
-              if (!jobId || !job) {
-                return <span>Creating job...</span>;
-              }
-              if (job.state === 'pending') {
-                return <span>Waiting for runner...</span>;
-              }
-              return <span>Runner ready</span>;
+              return <div>Waiting for runner...</div>;
             }}
           </Step>
-          <Step name="compile">
+          <Step name="compile" done={state.compileDone}>
             {() => {
               if (runError) {
                 return <span>{(runError as Error).message}</span>;
               }
-              if (!jobId || !job || job.state === 'pending') {
-                return <DisabledStep>Compile</DisabledStep>;
+
+              if (firmware) {
+                return <span>Compiled !</span>;
               }
 
-              if (job.state === 'ongoing') {
+              if (state.compileStarted) {
                 return <span>Compiling...</span>;
               }
-              if (job.state === 'ready') {
-                return <span>Starting compilation...</span>;
-              }
-              return <span>Compiled</span>;
+
+              return <DisabledStep>Compilation step</DisabledStep>;
             }}
           </Step>
-          <Step name="ready">
-            {({ active }) => {
+
+          <Step name="download">
+            {() => {
               return (
                 <Button
                   isDisabled={!firmware}

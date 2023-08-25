@@ -7,6 +7,7 @@ import { faCheck, faHourglass } from '@fortawesome/free-solid-svg-icons';
 
 export const Step = ({}: {
   name: string;
+  done?: boolean;
   children: (arg: { active?: boolean }) => ReactNode;
 }) => {
   return null;
@@ -25,7 +26,8 @@ const StepState = ({
         'w-[36px] h-[36px] rounded-xl flex items-center justify-center border',
         {
           'border-primary': state === 'loading',
-          'border-gray-500': state !== 'loading',
+          'border-emerald-500': state === 'done',
+          'border-gray-500': state === 'pending',
         },
         className
       )}
@@ -64,15 +66,18 @@ export const VerticalSteps = ({
       active: props.name === current,
     });
     if (typeof elem === 'string' || isValidElement(elem)) {
+      const done = Boolean(props.done);
       steps.push(
         <div className="flex" key={props.name}>
           <div className="flex flex-col">
             <StepState
-              state={current === props.name ? 'loading' : 'pending'}
+              state={
+                done ? 'done' : current === props.name ? 'loading' : 'pending'
+              }
               className="mr-2 shrink-0"
             />
             {!last && (
-              <div className="ml-[17px] w-[2px] min-h-[20px] h-full bg-gray-500 transition"></div>
+              <div className="ml-[17px] w-[2px] min-h-[25px] h-full bg-gray-500 transition"></div>
             )}
           </div>
           <div className="p-2">{elem}</div>

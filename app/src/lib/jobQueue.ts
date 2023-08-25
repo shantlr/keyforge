@@ -133,7 +133,6 @@ export const createJobQueue = <Data = any, Result = void>({
       }
     },
     getJob: (jobId: string) => {
-      console.log(jobId, state.jobs);
       return state.jobs[jobId];
     },
     canceJob: (jobId: string) => {
