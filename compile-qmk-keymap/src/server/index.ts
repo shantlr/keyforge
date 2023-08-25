@@ -7,20 +7,16 @@ import { compileKeymap } from '../compile';
 import { createReadStream } from 'fs';
 import { pipeline } from 'stream/promises';
 
-const validateKeymap = z
-  .object({
-    keyboardQmkPath: z.string().nonempty(),
-    layout: z.string(),
-    layers: z
-      .object({
-        name: z.string(),
-        keys: z.string().array(),
-      })
-      .array(),
-  })
-  .required({
-    keyboardQmkPath: true,
-  });
+const validateKeymap = z.strictObject({
+  keyboardQmkPath: z.string().nonempty(),
+  layout: z.string(),
+  layers: z
+    .object({
+      name: z.string(),
+      keys: z.string().array(),
+    })
+    .array(),
+});
 
 export const main = async () => {
   console.log('qmk folder:', QMK_FOLDER);
@@ -31,6 +27,10 @@ export const main = async () => {
   const app = express();
 
   app.use(bodyParser.json());
+
+  app.get('/api/health/ready', (req, res) => {
+    return res.send('OK');
+  });
 
   app.post('/api/compile', async (req, res) => {
     try {

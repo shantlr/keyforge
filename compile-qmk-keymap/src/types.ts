@@ -1,6 +1,5 @@
 export type KeymapInput = {
-  keyboardQMKPath: string;
-  // keyboardName: string;
+  keyboardQmkPath: string;
   layout: string;
   layers: {
     name: string;

@@ -25,8 +25,7 @@ const assertKeymap = ({
     throw new Error(`INVALID_INPUT_LAYOUT: ${keymap.layout} not found`);
   }
 
-  const expectedNbKeys =
-    keyboardInfo.layouts[Object.keys(keyboardInfo.layouts)[0]].layout.length;
+  const expectedNbKeys = keyboardInfo.layouts[keymap.layout].layout.length;
   for (const l of keymap.layers) {
     if (l.keys.length !== expectedNbKeys) {
       throw new Error(
@@ -63,20 +62,20 @@ const generateKeymap = async ({
 };
 
 const compileFirmwareFromKeymapFolder = async ({
-  keyboardQMKPath,
+  keyboardQmkPath,
   keymapName,
   cwd,
 }: {
-  keyboardQMKPath: string;
+  keyboardQmkPath: string;
   keymapName: string;
   cwd: string;
 }) => {
-  console.log(`[compile-keymap] make ${keyboardQMKPath}:${keymapName}`);
-  await execa('make', [`${keyboardQMKPath}:${keymapName}`], {
+  console.log(`[compile-keymap] make ${keyboardQmkPath}:${keymapName}`);
+  await execa('make', [`${keyboardQmkPath}:${keymapName}`], {
     stdio: 'inherit',
     cwd,
   });
-  const binName = `${keyboardQMKPath.replace(/\//g, '_')}_${keymapName}.bin`;
+  const binName = `${keyboardQmkPath.replace(/\//g, '_')}_${keymapName}.bin`;
   return { binName };
 };
 
@@ -102,7 +101,7 @@ export const compileKeymap = async ({
 }) => {
   const { info: keyboardInfo, keymapsPath } = await getKeyboardInfo({
     keyboardsDir,
-    revPath: keymap.keyboardQMKPath,
+    revPath: keymap.keyboardQmkPath,
   });
   assertKeymap({ keymap, keyboardInfo });
   console.log(`[compile-qmk] keymap input verified.`);
@@ -118,7 +117,7 @@ export const compileKeymap = async ({
   try {
     const { binName } = await compileFirmwareFromKeymapFolder({
       cwd: qmkCwd,
-      keyboardQMKPath: keymap.keyboardQMKPath,
+      keyboardQmkPath: keymap.keyboardQmkPath,
       keymapName: generatedKeymap.keymapName,
     });
     console.log(`[compile-qmk]`);
