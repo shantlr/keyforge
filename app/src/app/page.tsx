@@ -1,6 +1,6 @@
 import { keyboardOptions } from '@/lib/keyboards';
-import { SelectKeyboard } from '@/components/controlled/selectKeyboard';
-import { KeyforgeSteps } from '@/components/controlled/keyforgeSteps';
+import { SelectKeyboard } from '@/components/2_controlled/selectKeyboard';
+import { KeyforgeSteps } from '@/components/2_controlled/keyforgeSteps';
 
 export default async function Home() {
   const res = await keyboardOptions.get();

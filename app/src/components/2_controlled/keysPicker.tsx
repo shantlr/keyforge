@@ -1,5 +1,5 @@
 import { ComponentProps } from 'react';
-import { Keymap } from '../domain/keymap';
+import { Keymap } from '../1_domain/keymap';
 
 const BASIC_KEYS_POSITION = [
   { x: 0, y: 0, key: 'KC_ESC' },

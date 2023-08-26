@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Step, Steps } from '../../base/steps';
+import { Step, Steps } from '../../0_base/steps';
 import { ReactNode } from 'react';
 
 export const KeyforgeSteps = ({

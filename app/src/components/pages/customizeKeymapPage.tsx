@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/base/button';
-import { KeyforgeSteps } from '@/components/controlled/keyforgeSteps';
-import { KeymapConfigurator } from '@/components/controlled/keymapConfigurator';
+import { Button } from '@/components/0_base/button';
+import { KeyforgeSteps } from '@/components/2_controlled/keyforgeSteps';
+import { KeymapConfigurator } from '@/components/2_controlled/keymapConfigurator';
 import { ExistingKeymap } from '@/lib/keyboards';
 import { KeyboardInfo } from '@/types';
 import Link from 'next/link';

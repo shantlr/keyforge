@@ -1,5 +1,5 @@
-import { Compile } from '@/components/controlled/compile';
-import { KeyforgeSteps } from '@/components/controlled/keyforgeSteps';
+import { Compile } from '@/components/2_controlled/compile';
+import { KeyforgeSteps } from '@/components/2_controlled/keyforgeSteps';
 import { keyboardInfo } from '@/lib/keyboards';
 import Link from 'next/link';
 

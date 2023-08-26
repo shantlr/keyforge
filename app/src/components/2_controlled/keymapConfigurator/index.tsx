@@ -4,9 +4,9 @@ import { KeyboardInfo } from '@/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isEqual, map } from 'lodash';
 import { $$getExistingKeymap } from '@/actions/getExisingKeymap';
-import { Button } from '../../base/button';
+import { Button } from '../../0_base/button';
 import { KeysPicker } from '../keysPicker';
-import { Disclosure } from '@/components/base/disclosure';
+import { Disclosure } from '@/components/0_base/disclosure';
 import {
   keymapSlice,
   useDispatch,
@@ -21,7 +21,7 @@ import { useListenKeyboardEvent } from './useListenKeyboardEvent';
 import { useWindowBlur } from './useWindowBlur';
 import { useClickOutside } from './useClickOutside';
 import { nanoid } from 'nanoid';
-import { Tooltip } from '@/components/base/tooltips';
+import { Tooltip } from '@/components/0_base/tooltips';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 

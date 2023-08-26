@@ -3,8 +3,8 @@
 import { Keymap } from '@/components/providers/redux';
 import clsx from 'clsx';
 import { ComponentProps, useMemo } from 'react';
-import { Tooltip } from '@/components/base/tooltips';
-import { Button } from '@/components/base/button';
+import { Tooltip } from '@/components/0_base/tooltips';
+import { Button } from '@/components/0_base/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import {

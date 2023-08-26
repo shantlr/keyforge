@@ -4,12 +4,10 @@ import { useSelector } from '@/components/providers/redux';
 import { KeyboardInfo } from '@/types';
 import { PropsWithChildren, useState } from 'react';
 import { useQuery } from 'react-query';
-import { Button } from '@/components/base/button';
-import { Step, VerticalSteps } from '@/components/base/verticalSteps';
+import { Button } from '@/components/0_base/button';
+import { Step, VerticalSteps } from '@/components/0_base/verticalSteps';
 import { useDownloadBlob } from './useDownloadBlob';
 import { toLower } from 'lodash';
-import { useSteps } from './useSteps';
-import { stat } from 'fs';
 
 const DisabledStep = ({ children }: PropsWithChildren) => {
   return <span className="text-gray-500">{children}</span>;

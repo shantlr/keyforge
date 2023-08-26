@@ -1,7 +1,7 @@
-import { Button } from '@/components/base/button';
-import { Input } from '@/components/base/input';
-import { InputFit } from '@/components/base/inputFit';
-import { Keymap } from '@/components/domain/keymap';
+import { Button } from '@/components/0_base/button';
+import { Input } from '@/components/0_base/input';
+import { InputFit } from '@/components/0_base/inputFit';
+import { Keymap } from '@/components/1_domain/keymap';
 import { Keymap as KM } from '@/components/providers/redux';
 import { KeyboardInfo } from '@/types';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';

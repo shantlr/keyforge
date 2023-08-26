@@ -2,7 +2,7 @@
 
 import { Item } from 'react-stately';
 import { useRouter } from 'next/navigation';
-import { ComboBox } from '../base/comboBox';
+import { ComboBox } from '../0_base/comboBox';
 
 export const SelectKeyboard = ({
   value,

@@ -1,4 +1,4 @@
-import { Button } from '@/components/base/button';
+import { Button } from '@/components/0_base/button';
 import { existingKeymap, keyboardInfo } from '@/lib/keyboards';
 import { CustomizeKeymapPage } from '@/components/pages/customizeKeymapPage';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
