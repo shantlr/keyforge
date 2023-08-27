@@ -6,20 +6,20 @@ import { KEYS } from '@/constants';
 const BASIC_KEYS_POSITION = [
   { x: 0, y: 0, key: 'KC_ESC' },
 
-  { x: 2, y: 0, key: 'F1' },
-  { x: 3, y: 0, key: 'F2' },
-  { x: 4, y: 0, key: 'F3' },
-  { x: 5, y: 0, key: 'F4' },
+  { x: 2, y: 0, key: 'KC_F1' },
+  { x: 3, y: 0, key: 'KC_F2' },
+  { x: 4, y: 0, key: 'KC_F3' },
+  { x: 5, y: 0, key: 'KC_F4' },
 
-  { x: 6.5, y: 0, key: 'F5' },
-  { x: 7.5, y: 0, key: 'F6' },
-  { x: 8.5, y: 0, key: 'F7' },
-  { x: 9.5, y: 0, key: 'F8' },
+  { x: 6.5, y: 0, key: 'KC_F5' },
+  { x: 7.5, y: 0, key: 'KC_F6' },
+  { x: 8.5, y: 0, key: 'KC_F7' },
+  { x: 9.5, y: 0, key: 'KC_F8' },
 
-  { x: 11, y: 0, key: 'F9' },
-  { x: 12, y: 0, key: 'F10' },
-  { x: 13, y: 0, key: 'F11' },
-  { x: 14, y: 0, key: 'F12' },
+  { x: 11, y: 0, key: 'KC_F9' },
+  { x: 12, y: 0, key: 'KC_F10' },
+  { x: 13, y: 0, key: 'KC_F11' },
+  { x: 14, y: 0, key: 'KC_F12' },
 
   { x: 15.25, y: 0, key: 'KC_PSCR' },
   { x: 16.25, y: 0, key: 'KC_SCRL' },
