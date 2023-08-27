@@ -12,6 +12,11 @@
     @apply hover:border-primary-darker hover:bg-primary-darker;
     @apply active:border-primary-lighter active:bg-primary-lighter;
   }
+  .button.success {
+    @apply border border-success bg-success text-white transition;
+    @apply hover:border-success-darker hover:bg-success-darker;
+    @apply active:border-success-lighter active:bg-success-lighter;
+  }
   .button.text {
     @apply border border-transparent text-default transition;
     @apply hover:bg-default hover:text-mainbg hover:border-transparent;

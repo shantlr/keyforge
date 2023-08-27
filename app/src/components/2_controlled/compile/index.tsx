@@ -8,6 +8,8 @@ import { Button } from '@/components/0_base/button';
 import { Step, VerticalSteps } from '@/components/0_base/verticalSteps';
 import { useDownloadBlob } from './useDownloadBlob';
 import { toLower } from 'lodash';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 const DisabledStep = ({ children }: PropsWithChildren) => {
   return <span className="text-gray-500">{children}</span>;
@@ -39,6 +41,7 @@ export const Compile = ({
     jobReady: false,
     compileStarted: false,
     compileDone: false,
+    hasDownloaded: false,
   });
 
   const { data: jobId, error: createJobError } = useQuery(
@@ -179,15 +182,29 @@ export const Compile = ({
             }}
           </Step>
 
-          <Step name="download">
+          <Step
+            loadingIcon={
+              <FontAwesomeIcon className="text-primary" icon={faDownload} />
+            }
+            doneIcon={
+              <FontAwesomeIcon className="text-success" icon={faDownload} />
+            }
+            name="download"
+            done={state.hasDownloaded}
+          >
             {() => {
               return (
                 <Button
                   isDisabled={!firmware}
+                  colorScheme={state.hasDownloaded ? 'success' : 'primary'}
                   onPress={() => {
                     if (!firmware) {
                       return;
                     }
+                    setState((s) => ({
+                      ...s,
+                      hasDownloaded: true,
+                    }));
 
                     downloadBlob(firmware, {
                       fileName: `${keyboardKey}_${toLower(

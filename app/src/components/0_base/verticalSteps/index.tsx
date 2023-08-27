@@ -1,5 +1,5 @@
 import { isArray } from 'lodash';
-import { Fragment, ReactNode, isValidElement } from 'react';
+import { Fragment, ReactElement, ReactNode, isValidElement } from 'react';
 import { Spinner } from '../spinner';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,6 +8,9 @@ import { faCheck, faHourglass } from '@fortawesome/free-solid-svg-icons';
 export const Step = ({}: {
   name: string;
   done?: boolean;
+  doneIcon?: ReactNode;
+  pendingIcon?: ReactNode;
+  loadingIcon?: ReactNode;
   children: (arg: { active?: boolean }) => ReactNode;
 }) => {
   return null;
@@ -16,8 +19,14 @@ export const Step = ({}: {
 const StepState = ({
   className,
   state,
+  doneIcon,
+  pendingIcon,
+  loadingIcon,
 }: {
   className?: string;
+  doneIcon?: ReactNode;
+  pendingIcon?: ReactNode;
+  loadingIcon?: ReactNode;
   state: 'loading' | 'pending' | 'done';
 }) => {
   return (
@@ -26,19 +35,22 @@ const StepState = ({
         'w-[36px] h-[36px] rounded-xl flex items-center justify-center border',
         {
           'border-primary': state === 'loading',
-          'border-emerald-500': state === 'done',
-          'border-gray-500': state === 'pending',
+          'border-success': state === 'done',
+          'border-default': state === 'pending',
         },
         className
       )}
     >
-      {state === 'loading' && <Spinner className="text-primary" />}
-      {state === 'pending' && (
-        <FontAwesomeIcon className="text-gray-500" icon={faHourglass} />
-      )}
-      {state === 'done' && (
-        <FontAwesomeIcon className="text-emerald-500" icon={faCheck} />
-      )}
+      {state === 'loading' &&
+        (loadingIcon || <Spinner className="text-primary" />)}
+      {state === 'pending' &&
+        (pendingIcon || (
+          <FontAwesomeIcon className="text-default" icon={faHourglass} />
+        ))}
+      {state === 'done' &&
+        (doneIcon || (
+          <FontAwesomeIcon className="text-success" icon={faCheck} />
+        ))}
     </div>
   );
 };
@@ -74,10 +86,13 @@ export const VerticalSteps = ({
               state={
                 done ? 'done' : current === props.name ? 'loading' : 'pending'
               }
+              loadingIcon={props.loadingIcon}
+              pendingIcon={props.pendingIcon}
+              doneIcon={props.doneIcon}
               className="mr-2 shrink-0"
             />
             {!last && (
-              <div className="ml-[17px] w-[2px] min-h-[25px] h-full bg-gray-500 transition"></div>
+              <div className="ml-[17px] w-[2px] min-h-[25px] h-full bg-default transition"></div>
             )}
           </div>
           <div className="p-2">{elem}</div>

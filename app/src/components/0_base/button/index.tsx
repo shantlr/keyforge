@@ -19,6 +19,7 @@ export const Button = forwardRef(
       colorScheme?:
         | 'primary'
         | 'secondary'
+        | 'success'
         | 'default'
         | 'text'
         | 'dashed'

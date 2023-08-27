@@ -232,7 +232,7 @@ export const KeymapConfigurator = ({
           <Disclosure
             titleClassName="sticky top-[0px]"
             title="From scratch - Layouts"
-            contentClassName="pl-2"
+            contentClassName="py-2 pl-2 space-y-1"
             show={showLayouts}
             onVisibilityChange={setShowLayouts}
           >
@@ -267,7 +267,7 @@ export const KeymapConfigurator = ({
           <Disclosure
             title="From existing keymap"
             titleClassName="sticky top-[0px]"
-            contentClassName="pl-2"
+            contentClassName="py-2 pl-2"
           >
             {keymaps.map((k, idx) => (
               <Button

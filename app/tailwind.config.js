@@ -13,6 +13,14 @@ module.exports = {
         'input-md': 24,
       },
       colors: {
+        danger: colors.red[500],
+        'danger-lighter': colors.red[300],
+        'danger-darker': colors.red[600],
+
+        success: colors.emerald[500],
+        'success-lighter': colors.emerald[300],
+        'success-darker': colors.emerald[600],
+
         mainbg: colors.slate[900],
         secondarybg: colors.slate[700],
         'secondarybg-lighter': colors.slate[600],
