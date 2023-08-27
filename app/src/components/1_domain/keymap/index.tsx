@@ -1,16 +1,25 @@
 'use client';
 
 import { KEYS_MAP } from '@/constants';
-import { KEY_TO_TEXT } from '@/lib/keyMapping';
 import { KeymapKeyDef } from '@/types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from 'clsx';
-import { CSSProperties, ReactNode, useMemo } from 'react';
+import { CSSProperties, useMemo } from 'react';
 import { MOKey } from './customKeys/MO';
 import { CustomKeyComponent } from './customKeys/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCaretDown,
+  faCaretLeft,
+  faCaretRight,
+  faCaretUp,
+} from '@fortawesome/free-solid-svg-icons';
 
 const CUSTOM_KEYS_COMPONENTS: Record<string, CustomKeyComponent> = {
   MO: MOKey,
+  KC_UP: () => <FontAwesomeIcon icon={faCaretUp} />,
+  KC_DOWN: () => <FontAwesomeIcon icon={faCaretDown} />,
+  KC_LEFT: () => <FontAwesomeIcon icon={faCaretLeft} />,
+  KC_RGHT: () => <FontAwesomeIcon icon={faCaretRight} />,
 };
 
 export const Keymap = ({
@@ -89,68 +98,40 @@ export const Keymap = ({
     return null;
   }
 
+  const renderKey = (kDef: KeymapKeyDef | null | undefined, index: number) => {
+    const params = typeof kDef === 'object' ? kDef?.params : null ?? null;
+    const key = typeof kDef === 'string' ? kDef : kDef?.key ?? null;
+
+    const kConf = key ? KEYS_MAP[key] : null;
+
+    const C = kConf?.key ? CUSTOM_KEYS_COMPONENTS[kConf.key] : null;
+
+    if (C) {
+      return (
+        <C
+          params={params}
+          layers={layers}
+          onUpdate={(v) =>
+            onKeyUpdate?.({
+              index,
+              prev: kDef ?? null,
+              value: v,
+            })
+          }
+        />
+      );
+    }
+
+    if (kConf?.title) {
+      return kConf?.title;
+    }
+    return 'N/A';
+  };
+
   return (
     <div className="relative w-full" style={{ width, height }}>
       {keyPositions.map((l, idx) => {
-        let kDef = keys?.[idx];
-        let renderedKey: ReactNode;
-
-        if (typeof kDef === 'string') {
-          if (kDef in CUSTOM_KEYS_COMPONENTS) {
-            const C = CUSTOM_KEYS_COMPONENTS[kDef];
-            renderedKey = (
-              <C
-                params={null}
-                layers={layers}
-                onUpdate={(v) =>
-                  onKeyUpdate?.({
-                    index: idx,
-                    prev: kDef ?? null,
-                    value: v,
-                  })
-                }
-              />
-            );
-          } else if (kDef in KEY_TO_TEXT) {
-            const m = KEY_TO_TEXT[kDef as keyof typeof KEY_TO_TEXT];
-            if (typeof m === 'object' && 'icon' in m) {
-              renderedKey = <FontAwesomeIcon icon={m.icon} />;
-            } else {
-              renderedKey = m;
-            }
-          } else if (kDef in KEYS_MAP) {
-            const m = KEYS_MAP[kDef];
-            renderedKey = m.title;
-          } else {
-            renderedKey = kDef;
-          }
-        } else if (typeof kDef === 'object') {
-          if (kDef.key in CUSTOM_KEYS_COMPONENTS) {
-            const C = CUSTOM_KEYS_COMPONENTS[kDef.key];
-            renderedKey = (
-              <C
-                params={kDef.params}
-                layers={layers}
-                onUpdate={(v) =>
-                  onKeyUpdate?.({
-                    index: idx,
-                    prev: kDef ?? null,
-                    value: v,
-                  })
-                }
-              />
-            );
-          } else {
-            const m = KEYS_MAP[kDef.key];
-            if (m) {
-              renderedKey = m.title;
-            }
-          }
-        }
-
-        if (!renderedKey) {
-          renderedKey = 'N/A';
-        }
+        const kDef = keys?.[idx];
 
         const isDown =
           isKeyDown?.({ key: keys?.[idx] ?? null, index: idx }) ?? false;
@@ -196,7 +177,7 @@ export const Keymap = ({
                 }
               )}
             >
-              {renderedKey}
+              {renderKey(kDef, idx)}
             </div>
           </div>
         );
