@@ -141,6 +141,18 @@ export const keymapSlice = createSlice({
         if (idx !== -1) {
           keymap.layers.splice(idx, 1);
         }
+        keymap.layers.forEach((layer) => {
+          layer.keys.forEach((key) => {
+            if (typeof key === 'object') {
+              key.params?.forEach((param) => {
+                if (param.type === 'layer' && param.value === layerId) {
+                  param.value = null;
+                }
+              });
+            }
+          });
+        });
+
         if (keymap.temp) {
           delete keymap.temp;
           state.currentTempKeymap = null;

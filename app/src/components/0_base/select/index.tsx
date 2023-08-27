@@ -19,9 +19,15 @@ import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 export function Select<T extends object>({
   className,
   colorScheme,
+  inputClassName,
   size,
   ...props
-}: AriaSelectProps<T> & { className?: string; colorScheme: any; size?: any }) {
+}: AriaSelectProps<T> & {
+  className?: string;
+  inputClassName?: string;
+  colorScheme: any;
+  size?: any;
+}) {
   const state = useSelectState(props);
   const ref = useRef(null);
   const { labelProps, triggerProps, valueProps, menuProps } = useSelect(
@@ -42,6 +48,7 @@ export function Select<T extends object>({
       />
       <Button
         colorScheme={colorScheme}
+        className={inputClassName}
         size={size}
         {...triggerProps}
         ref={ref}

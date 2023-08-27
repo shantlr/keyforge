@@ -25,11 +25,11 @@ export type KeyboardInfo = {
 export type KeymapKeyParam =
   | {
       type: 'layer';
-      value: string;
+      value: string | null;
     }
   | {
       type: 'key';
-      value: string;
+      value: string | null;
     };
 
 export type KeymapKeyDef =

@@ -22,6 +22,7 @@ export const LayerKey: CustomKeyComponent = ({
           placeholder="Layer"
           size="sm"
           selectedKey={params?.[0]?.value ?? null}
+          inputClassName="text-[8px]"
           onSelectionChange={(k) => {
             onUpdate?.({
               key: keyConf.key,
