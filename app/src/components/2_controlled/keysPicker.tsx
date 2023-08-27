@@ -1,7 +1,7 @@
 import { ComponentProps, useMemo } from 'react';
 import { Keymap } from '../1_domain/keymap';
 import { Tab, TabsCard } from '../0_base/tabsCard';
-import { KEYS } from '@/constants';
+import { KEYS, KeyConfig } from '@/constants';
 
 const BASIC_KEYS_POSITION = [
   { x: 0, y: 0, key: 'KC_ESC' },
@@ -132,6 +132,8 @@ const BASIC_KEYS_POSITION = [
 
 const BASIC_KEYS = BASIC_KEYS_POSITION.map((k) => k.key || 'KC_NOOP');
 
+const MEDIA_KEYS = [{ x: 0, y: 0, key: 'KC_' }];
+
 const BasicKeys = (
   props: Omit<
     ComponentProps<typeof Keymap>,
@@ -148,6 +150,29 @@ const BasicKeys = (
   );
 };
 
+const LineKeys = ({
+  title,
+  keys,
+  ...props
+}: Omit<
+  ComponentProps<typeof Keymap>,
+  'keyPositions' | 'baseWidth' | 'keys'
+> & {
+  title: string;
+  keys: KeyConfig[];
+}) => {
+  return (
+    <div>
+      <div>{title}</div>
+      <Keymap
+        keyPositions={keys.map((_, idx) => ({ x: idx, y: 0 }))}
+        keys={keys.map((k) => ({ key: k.key, params: [] }))}
+        {...props}
+      />
+    </div>
+  );
+};
+
 const QuantumKeys = (
   props: Omit<
     ComponentProps<typeof Keymap>,
@@ -158,16 +183,7 @@ const QuantumKeys = (
     () => KEYS.filter((k) => 'group' in k && k.group === 'layer'),
     []
   );
-  return (
-    <div>
-      <div>Change layers</div>
-      <Keymap
-        keyPositions={keys.map((_, idx) => ({ x: idx, y: 0 }))}
-        keys={keys.map((k) => ({ key: k.key, params: [] }))}
-        {...props}
-      />
-    </div>
-  );
+  return <LineKeys title="Change layers" keys={keys} {...props} />;
 };
 
 export const KeysPicker = ({
@@ -180,6 +196,16 @@ export const KeysPicker = ({
       </Tab>
       <Tab title="Quantum">
         <QuantumKeys onKeyClick={onKeyClick} />
+      </Tab>
+      <Tab title="Media">
+        <LineKeys
+          title="System"
+          keys={KEYS.filter((k) => 'group' in k && k.group === 'media-system')}
+        />
+        <LineKeys
+          title="Audio/Track"
+          keys={KEYS.filter((k) => 'group' in k && k.group === 'media-audio')}
+        />
       </Tab>
     </TabsCard>
   );

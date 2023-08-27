@@ -107,7 +107,9 @@ export const KeymapConfigurator = ({
     if (!selectedKeymap) {
       setSelectedLayerId(null);
     } else if (selectedLayerId == null) {
-      setSelectedLayerId(selectedKeymap.layers[0].id);
+      setSelectedLayerId(selectedKeymap.layers[0]?.id);
+    } else if (!selectedKeymap.layers.find((l) => l.id === selectedLayerId)) {
+      setSelectedLayerId(selectedKeymap.layers[0]?.id);
     }
   }, [selectedKeymap, selectedLayerId]);
 

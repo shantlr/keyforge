@@ -699,6 +699,75 @@ export const KEYS = [
     key: 'QK_GESC',
   },
 
+  //#region Audio
+  {
+    title: 'System\npower\ndown',
+    group: 'media-system',
+    key: 'KC_PWR',
+    aliases: ['KC_SYSTEM_POWER'],
+  },
+  {
+    title: 'System\nsleep',
+    group: 'media-system',
+    key: 'KC_SLEP',
+    aliases: ['KC_SYSTEM_SLEEP'],
+  },
+  {
+    title: 'System\nwake',
+    group: 'media-system',
+    key: 'KC_WAKE',
+    aliases: ['KC_SYSTEM_WAKE'],
+  },
+  {
+    title: 'Mute',
+    group: 'media-audio',
+    key: 'KC_MUTE',
+    aliases: ['KC_AUDIO_MUTE'],
+  },
+  {
+    title: 'Volume\nUp',
+    group: 'media-audio',
+    aliases: ['KC_AUDIO_VOL_UP'],
+    key: 'KC_VOLU',
+  },
+  {
+    title: 'Volume\nDown',
+    group: 'media-audio',
+    aliases: ['KC_AUDIO_VOL_DOWN'],
+    key: 'KC_VOLD',
+  },
+  {
+    title: 'Next\nTrack',
+    group: 'media-audio',
+    aliases: ['KC_MEDIA_NEXT_TRACK'],
+    key: 'KC_MNXT',
+  },
+  {
+    title: 'Previous\nTrack',
+    group: 'media-audio',
+    aliases: ['KC_MEDIA_PREV_TRACK'],
+    key: 'KC_MPRV',
+  },
+  {
+    title: 'Stop\nTrack',
+    group: 'media-audio',
+    aliases: ['KC_MEDIA_STOP'],
+    key: 'KC_MSTP',
+  },
+  {
+    title: 'Play/Pause\nTrack',
+    group: 'media-audio',
+    aliases: ['KC_MEDIA_PLAY_PAUSE'],
+    key: 'KC_MPLY',
+  },
+  {
+    title: 'Launch\nMedia\nPlayer',
+    group: 'media-audio',
+    aliases: ['KC_MEDIA_SELECT'],
+    key: 'KC_MSEL',
+  },
+  //#endregion
+
   {
     title: 'No op',
     key: 'KC_NO',

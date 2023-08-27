@@ -21,7 +21,10 @@ const mapChildrenToTab = (
   elem: ReactElement;
 }[] => {
   if (isValidElement(c)) {
-    if ('children' in c.props && isValidElement(c.props.children)) {
+    if (
+      'children' in c.props &&
+      (isValidElement(c.props.children) || Array.isArray(c.props.children))
+    ) {
       const key = c.key || c.props.title;
       if (typeof key === 'string' || typeof key === 'number') {
         return [
