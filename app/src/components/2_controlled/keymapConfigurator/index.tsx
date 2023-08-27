@@ -360,6 +360,21 @@ export const KeymapConfigurator = ({
                   })
                 );
               }}
+              onDuplicateLayer={(layerId) => {
+                const layer = selectedKeymap?.layers.find(
+                  (l) => l.id === layerId
+                );
+                if (layer) {
+                  dispatch(
+                    keymapSlice.actions.addKeymapLayer({
+                      id: selectedKeymap.id,
+                      keys: layer.keys,
+                      name: `${layer.name} copy`,
+                      layerId: nanoid(),
+                    })
+                  );
+                }
+              }}
               onLayerDelete={
                 selectedKeymap.layers.length > 1
                   ? (layer) => {

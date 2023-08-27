@@ -169,7 +169,7 @@ export const keymapSlice = createSlice({
         id: string;
         layerId?: string;
         name: string;
-        keys: string[];
+        keys: KeymapKeyDef[];
       }>
     ) => {
       const keymap = state.keymaps[id];

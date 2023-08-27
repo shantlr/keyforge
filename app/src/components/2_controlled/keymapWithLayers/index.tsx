@@ -1,5 +1,4 @@
 import { Button } from '@/components/0_base/button';
-import { Input } from '@/components/0_base/input';
 import { InputFit } from '@/components/0_base/inputFit';
 import { Keymap } from '@/components/1_domain/keymap';
 import { Keymap as KM } from '@/components/providers/redux';
@@ -16,6 +15,7 @@ export const KeymapWithLayers = ({
   layerId: controlledLayerId,
   onChangeLayer,
   onAddLayer,
+  onDuplicateLayer,
   onLayerMove,
   onLayerDelete,
   ...props
@@ -27,6 +27,7 @@ export const KeymapWithLayers = ({
   layerId?: string | null;
   onChangeLayer?: (layerId: string) => void;
   onAddLayer?: (arg: { name: string }) => void;
+  onDuplicateLayer?: (layerId: string) => void;
   onLayerMove?: (arg: { srcIdx: number; dstIdx: number }) => void;
   onLayerDelete?: (layer: KM['layers'][number]) => void;
 }) => {
@@ -81,6 +82,7 @@ export const KeymapWithLayers = ({
           layers={layers}
           selectedLayerId={currentLayerId}
           onLayerMove={onLayerMove}
+          onDuplicateLayer={onDuplicateLayer}
           onSelectLayer={(layerId) => {
             if (typeof controlledLayerId != 'number') {
               setLocalSelectedLayerId(layerId);

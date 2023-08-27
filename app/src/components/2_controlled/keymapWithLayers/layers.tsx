@@ -6,7 +6,7 @@ import { ComponentProps, useMemo } from 'react';
 import { Tooltip } from '@/components/0_base/tooltips';
 import { Button } from '@/components/0_base/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {
   DndContext,
   KeyboardSensor,
@@ -28,11 +28,13 @@ const LayerItem = ({
   layer,
   active,
   onDelete,
+  onDuplicateLayer,
   ...props
 }: {
   layer: Keymap['layers'][number];
   active?: boolean;
   onDelete?: () => void;
+  onDuplicateLayer?: () => void;
 } & ComponentProps<'div'>) => {
   const {
     attributes,
@@ -57,14 +59,24 @@ const LayerItem = ({
       {...listeners}
       {...attributes}
       tooltip={
-        <Button
-          onPress={() => {
-            onDelete?.();
-          }}
-          className="px-[6px] text-[10px]"
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </Button>
+        <div className="flex space-x-1">
+          <Button
+            className="px-[6px] text-[10px] bg-mainbg"
+            onPress={() => {
+              onDuplicateLayer?.();
+            }}
+          >
+            <FontAwesomeIcon icon={faCopy} />
+          </Button>
+          <Button
+            onPress={() => {
+              onDelete?.();
+            }}
+            className="px-[6px] text-[10px] bg-mainbg"
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
+        </div>
       }
     >
       <div
@@ -90,12 +102,14 @@ export const Layers = ({
   selectedLayerId,
   layers,
   onSelectLayer,
+  onDuplicateLayer,
   onLayerMove,
   onLayerDelete,
 }: {
   selectedLayerId: string;
   layers: Keymap['layers'];
   onSelectLayer?: (layerId: string) => void;
+  onDuplicateLayer?: (layerId: string) => void;
   onLayerMove?: (arg: { srcIdx: number; dstIdx: number }) => void;
   onLayerDelete?: (layer: Keymap['layers'][number]) => void;
 }) => {
@@ -128,6 +142,9 @@ export const Layers = ({
               onPointerDown={() => {
                 onSelectLayer?.(l.id);
               }}
+              onDuplicateLayer={() => {
+                onDuplicateLayer?.(l.id);
+              }}
               onDelete={
                 onLayerDelete
                   ? () => {
@@ -141,61 +158,4 @@ export const Layers = ({
       </SortableContext>
     </DndContext>
   );
-  // return (
-  //   <DragDropContext
-  //     onDragEnd={(e) => {
-  //       if (e.destination) {
-  //         onLayerMove?.({
-  //           srcIdx: items.length - e.source.index - 1,
-  //           dstIdx: items.length - e.destination.index - 1,
-  //         });
-  //       }
-  //     }}
-  //   >
-  //     <Droppable droppableId="layers">
-  //       {(provided) => (
-  //         <div
-  //           className="space-y-1"
-  //           {...provided.droppableProps}
-  //           ref={provided.innerRef}
-  //         >
-  //           {items.map((l, idx) => {
-  //             return (
-  //               <Draggable
-  //                 isDragDisabled={!onLayerMove}
-  //                 key={l.id}
-  //                 draggableId={l.id}
-  //                 index={idx}
-  //               >
-  //                 {(provided, snapshot) => (
-  //                   <LayerItem
-  //                     ref={provided.innerRef}
-  //                     {...provided.draggableProps}
-  //                     {...provided.dragHandleProps}
-  //                     style={provided.draggableProps.style}
-  //                     layer={l}
-  //                     key={idx}
-  //                     isDragging={snapshot.isDragging}
-  //                     active={selectedLayerId === l.id}
-  //                     onPress={() => {
-  //                       onSelectLayer?.(l.id);
-  //                     }}
-  //                     onDelete={
-  //                       onLayerDelete
-  //                         ? () => {
-  //                             onLayerDelete(l);
-  //                           }
-  //                         : undefined
-  //                     }
-  //                   />
-  //                 )}
-  //               </Draggable>
-  //             );
-  //           })}
-  //           {provided.placeholder}
-  //         </div>
-  //       )}
-  //     </Droppable>
-  //   </DragDropContext>
-  // );
 };
