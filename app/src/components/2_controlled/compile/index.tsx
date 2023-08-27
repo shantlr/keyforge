@@ -52,6 +52,7 @@ export const Compile = ({
         body: JSON.stringify({
           keyboardKey,
           layers: selectedKeymap?.layers.map((l) => ({
+            id: l.id,
             name: l.name,
             keys: l.keys,
           })),

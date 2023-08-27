@@ -1,5 +1,6 @@
 import { ComponentProps } from 'react';
 import { Keymap } from '../1_domain/keymap';
+import { Tab, TabsCard } from '../0_base/tabsCard';
 
 const BASIC_KEYS_POSITION = [
   { x: 0, y: 0, key: 'KC_ESC' },
@@ -146,12 +147,41 @@ const BasicKeys = (
   );
 };
 
+const QuantumKeys = (
+  props: Omit<
+    ComponentProps<typeof Keymap>,
+    'keyPositions' | 'baseWidth' | 'keys'
+  >
+) => {
+  return (
+    <div>
+      <div>Change layers</div>
+      <Keymap
+        keyPositions={[
+          { x: 0, y: 0 },
+          { x: 1, y: 0 },
+        ]}
+        keys={[
+          { key: 'MO', params: [] },
+          { key: 'TT', params: [] },
+        ]}
+        {...props}
+      />
+    </div>
+  );
+};
+
 export const KeysPicker = ({
   onKeyClick,
 }: Pick<ComponentProps<typeof Keymap>, 'onKeyClick'>) => {
   return (
-    <div className="p-4">
-      <BasicKeys onKeyClick={onKeyClick} />
-    </div>
+    <TabsCard contentClassName="p-4">
+      <Tab title="Basic">
+        <BasicKeys onKeyClick={onKeyClick} />
+      </Tab>
+      <Tab title="Quantum">
+        <QuantumKeys onKeyClick={onKeyClick} />
+      </Tab>
+    </TabsCard>
   );
 };

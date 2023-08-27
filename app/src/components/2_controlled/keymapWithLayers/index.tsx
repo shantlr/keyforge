@@ -19,7 +19,7 @@ export const KeymapWithLayers = ({
   onLayerMove,
   onLayerDelete,
   ...props
-}: Omit<ComponentProps<typeof Keymap>, 'keyPositions' | 'keys'> & {
+}: Omit<ComponentProps<typeof Keymap>, 'keyPositions' | 'keys' | 'layers'> & {
   editable?: boolean;
   keyboard: KeyboardInfo;
   usedLayout: string;
@@ -45,6 +45,7 @@ export const KeymapWithLayers = ({
   return (
     <div className="flex">
       <div className="mr-8 min-w-[80px] space-y-2">
+        <div>Layers</div>
         {Boolean(onAddLayer && showNewLayerInput) && (
           <InputFit
             value={newLayerName}
@@ -92,6 +93,7 @@ export const KeymapWithLayers = ({
       <Keymap
         keyPositions={keyboard.layouts?.[usedLayout]?.layout}
         keys={layers.find((l) => l.id === currentLayerId)?.keys}
+        layers={layers}
         {...props}
       />
     </div>

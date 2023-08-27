@@ -3,11 +3,17 @@ import clsx from 'clsx';
 import { CSSProperties, ForwardedRef, forwardRef, useRef } from 'react';
 import { AriaButtonProps, useButton } from 'react-aria';
 
+const SIZE = {
+  sm: 'h-input-sm px-1',
+  md: 'h-input-md px-4',
+};
+
 export const Button = forwardRef(
   (
     {
       className,
       colorScheme,
+      size,
       ...props
     }: AriaButtonProps & {
       colorScheme?:
@@ -17,6 +23,7 @@ export const Button = forwardRef(
         | 'text'
         | 'dashed'
         | 'secondary-text';
+      size?: keyof typeof SIZE;
       className?: string;
       style?: CSSProperties;
     },
@@ -30,7 +37,8 @@ export const Button = forwardRef(
       <button
         {...buttonProps}
         className={clsx(
-          'h-input-md button px-4 rounded-sm outline-none flex items-center justify-center',
+          'button rounded-sm outline-none flex items-center justify-center',
+          SIZE[size || 'md'],
           colorScheme || 'default',
           className
         )}

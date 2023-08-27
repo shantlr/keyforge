@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice, original } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 import type { Draft } from 'immer';
+import { KeymapKeyDef } from '@/types';
 
 export type Keymap = {
   id: string;
@@ -10,7 +11,7 @@ export type Keymap = {
   layers: {
     id: string;
     name: string;
-    keys: string[];
+    keys: KeymapKeyDef[];
   }[];
 
   temp?: boolean;
@@ -210,7 +211,7 @@ export const keymapSlice = createSlice({
         id: string;
         layerId: string;
         keyIdx: number;
-        key: string;
+        key: KeymapKeyDef;
       }>
     ) => {
       const layer = state.keymaps[id]?.layers.find((l) => l.id === layerId);

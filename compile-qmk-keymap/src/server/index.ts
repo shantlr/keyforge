@@ -11,9 +11,29 @@ const validateKeymap = z.strictObject({
   keyboardQmkPath: z.string().nonempty(),
   layout: z.string(),
   layers: z
-    .object({
+    .strictObject({
+      id: z.string(),
       name: z.string(),
-      keys: z.string().array(),
+      keys: z
+        .union([
+          z.string(),
+          z.strictObject({
+            key: z.string(),
+            params: z
+              .union([
+                z.strictObject({
+                  type: z.enum(['layer']),
+                  value: z.string(),
+                }),
+                z.strictObject({
+                  type: z.enum(['key']),
+                  value: z.string(),
+                }),
+              ])
+              .array(),
+          }),
+        ])
+        .array(),
     })
     .array(),
 });

@@ -9,7 +9,7 @@ import {
   useOption,
   useSelect,
 } from 'react-aria';
-import { Item, ListState, Node, useSelectState } from 'react-stately';
+import { ListState, Node, useSelectState } from 'react-stately';
 import { Button } from '../button';
 import { Popover } from '../popover';
 import { ListBox } from '../listBox';
@@ -18,8 +18,10 @@ import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 export function Select<T extends object>({
   className,
+  colorScheme,
+  size,
   ...props
-}: AriaSelectProps<T> & { className?: string }) {
+}: AriaSelectProps<T> & { className?: string; colorScheme: any; size?: any }) {
   const state = useSelectState(props);
   const ref = useRef(null);
   const { labelProps, triggerProps, valueProps, menuProps } = useSelect(
@@ -38,7 +40,13 @@ export function Select<T extends object>({
         label={props.label}
         name={props.name}
       />
-      <Button {...triggerProps} ref={ref} style={{ height: 30, fontSize: 14 }}>
+      <Button
+        colorScheme={colorScheme}
+        size={size}
+        {...triggerProps}
+        ref={ref}
+        style={{ height: 30, fontSize: 14 }}
+      >
         <span {...valueProps}>
           {state.selectedItem
             ? state.selectedItem.rendered

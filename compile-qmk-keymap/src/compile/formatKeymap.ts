@@ -1,6 +1,7 @@
 import { toLower } from 'lodash';
 import { formatNode } from './core/formatNode';
 import { StatementsNode, ValueExprNode } from './core/types';
+import { KeymapInput } from '../types';
 
 export const formatKeymap = ({
   keyboardName,
@@ -9,10 +10,7 @@ export const formatKeymap = ({
 }: {
   keyboardName: string;
   layout: string;
-  layers: {
-    name: string;
-    keys: string[];
-  }[];
+  layers: KeymapInput['layers'];
 }) => {
   if (!layers.length) {
     throw new Error('LAYERS_CANNOT_BE_EMPTY');
@@ -48,7 +46,39 @@ export const formatKeymap = ({
               acc[layerName] = {
                 type: 'postCall',
                 fn: layout,
-                calls: [layer.keys],
+                calls: [
+                  layer.keys.map((k) => {
+                    if (typeof k === 'string') {
+                      return k;
+                    }
+                    if (typeof k === 'object') {
+                      return {
+                        type: 'postCall',
+                        fn: k.key,
+                        calls: [
+                          k.params.map((param) => {
+                            if (param.type === 'layer') {
+                              const layer = layers.find(
+                                (l) => l.id === param.value,
+                              );
+                              return `LAYER_${layer.name}`;
+                            }
+
+                            if (param.type === 'key') {
+                              return param.value;
+                            }
+
+                            throw new Error(
+                              `Unhandled key param: ${JSON.stringify(param)}`,
+                            );
+                          }),
+                        ],
+                      };
+                    }
+
+                    throw new Error(`Unhandled key: ${JSON.stringify(k)}`);
+                  }),
+                ],
               };
               return acc;
             },

@@ -1,6 +1,6 @@
 'use client';
 
-import { KeyboardInfo } from '@/types';
+import { KeyboardInfo, KeymapKeyDef } from '@/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isEqual, map } from 'lodash';
 import { $$getExistingKeymap } from '@/actions/getExisingKeymap';
@@ -118,7 +118,7 @@ export const KeymapConfigurator = ({
   }, [keyIdxToEdit, selectedKeymap, selectedLayerId]);
 
   const updateKey = useCallback(
-    (key: string) => {
+    (key: KeymapKeyDef) => {
       if (!selectedKeymap || selectedLayerId == null || keyIdxToEdit == null) {
         return;
       }
@@ -317,6 +317,21 @@ export const KeymapConfigurator = ({
                   setKeyIdxToEdit(index);
                 }
               }}
+              onKeyUpdate={({ value, index }) => {
+                if (!selectedLayerId) {
+                  return;
+                }
+
+                dispatch(
+                  keymapSlice.actions.updateKeymapLayerKey({
+                    id: selectedKeymap?.id,
+                    keyIdx: index,
+                    key: value || '_______',
+                    layerId: selectedLayerId,
+                  })
+                );
+              }}
+              paramsEditable
               layerId={selectedLayerId}
               onChangeLayer={(layerId) => {
                 setSelectedLayerId(layerId);
@@ -365,7 +380,7 @@ export const KeymapConfigurator = ({
         </div>
       </div>
 
-      <div className="mt-4 expanded-container rounded bg-secondarybg w-full h-full flex items-center justify-center">
+      <div className="mt-4 mb-4 expanded-container w-full h-full flex items-center justify-center">
         <KeysPicker
           onKeyClick={({ key }) => {
             if (key) {

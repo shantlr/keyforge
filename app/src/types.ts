@@ -22,8 +22,24 @@ export type KeyboardInfo = {
   keymaps: string[];
 };
 
+export type KeymapKeyParam =
+  | {
+      type: 'layer';
+      value: string;
+    }
+  | {
+      type: 'key';
+      value: string;
+    };
+
+export type KeymapKeyDef =
+  | string
+  | {
+      key: string;
+      params: KeymapKeyParam[];
+    };
 export type CompileKeymapInput = {
   keyboardQmkPath: string;
   layout: string;
-  layers: { name: string; keys: string[] }[];
+  layers: { id: string; name: string; keys: KeymapKeyDef[] }[];
 };

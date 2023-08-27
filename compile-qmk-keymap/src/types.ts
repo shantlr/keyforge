@@ -2,8 +2,24 @@ export type KeymapInput = {
   keyboardQmkPath: string;
   layout: string;
   layers: {
+    id: string;
     name: string;
-    keys: string[];
+    keys: (
+      | string
+      | {
+          key: string;
+          params: (
+            | {
+                type: 'layer';
+                value: string;
+              }
+            | {
+                type: 'key';
+                value: string;
+              }
+          )[];
+        }
+    )[];
   }[];
 };
 

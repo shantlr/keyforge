@@ -15,6 +15,7 @@ module.exports = {
       colors: {
         mainbg: colors.slate[900],
         secondarybg: colors.slate[700],
+        'secondarybg-lighter': colors.slate[600],
 
         primary: colors.amber[400],
         'primary-darker': colors.amber[600],
