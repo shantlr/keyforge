@@ -2,6 +2,7 @@ import path from 'path';
 import { isDir } from '../lib/isDir';
 import { KeyboardInfo } from '../types';
 import { readFile, readdir } from 'fs/promises';
+import { isSubDir } from '../lib/isSubDir';
 
 export const getKeyboardInfo = async ({
   revPath,
@@ -14,7 +15,10 @@ export const getKeyboardInfo = async ({
   keyboardRevPath: string;
   keymapsPath: string;
 }> => {
-  if (!(await isDir(keyboardsDir))) {
+  if (
+    !(await isDir(keyboardsDir)) ||
+    !isSubDir(keyboardsDir, path.resolve(keyboardsDir, revPath))
+  ) {
     throw new Error(`INVALID_KEYBOARDS_PATH: '${keyboardsDir}'`);
   }
   const paths = revPath.split('/');

@@ -15,6 +15,7 @@ const assertKeymap = ({
   keyboardInfo,
   keymap,
 }: {
+  qmkCwd: string;
   keymap: KeymapInput;
   keyboardInfo: KeyboardInfo;
 }) => {
@@ -103,7 +104,7 @@ export const compileKeymap = async ({
     keyboardsDir,
     revPath: keymap.keyboardQmkPath,
   });
-  assertKeymap({ keymap, keyboardInfo });
+  assertKeymap({ qmkCwd, keymap, keyboardInfo });
   console.log(`[compile-qmk] keymap input verified.`);
 
   const generatedKeymap = await generateKeymap({

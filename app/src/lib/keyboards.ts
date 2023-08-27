@@ -3,6 +3,7 @@ import { createCache, createSingleValueCache } from './ttlCache';
 import { readFile } from 'fs/promises';
 import { KeyboardInfo } from '@/types';
 import { keyBy } from 'lodash';
+import { isSubDir } from './isSubDir';
 
 const baseDir = './keyboards';
 
@@ -64,7 +65,13 @@ export const keyboardInfo = createCache<
         return null;
       }
 
-      const res = await readFile(path.resolve(baseDir, kb.path, 'info.json'));
+      const infoPath = path.resolve(baseDir, kb.path, 'info.json');
+      if (!isSubDir(baseDir, infoPath)) {
+        console.warn(`keyboard key '${key}' has invalid path '${kb.path}'`);
+        return null;
+      }
+
+      const res = await readFile(infoPath);
       const info = JSON.parse(res.toString());
       return {
         ...info,
