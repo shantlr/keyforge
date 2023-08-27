@@ -94,17 +94,19 @@ export const keymapSlice = createSlice({
       prepare: (
         keymap: Omit<Keymap, 'id' | 'layers'> & {
           replaceTemp?: boolean;
-          layers: { name: string; keys: string[] }[];
+          layers: { id?: string; name: string; keys: KeymapKeyDef[] }[];
         }
       ) => {
         return {
           payload: {
             id: nanoid(),
             ...keymap,
-            layers: keymap.layers.map((l) => ({
-              ...l,
-              id: nanoid(),
-            })),
+            layers: keymap.layers.map((l) => {
+              return {
+                ...l,
+                id: l.id || nanoid(),
+              };
+            }),
           },
         };
       },

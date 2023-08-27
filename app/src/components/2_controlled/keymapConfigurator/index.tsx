@@ -23,7 +23,7 @@ import { useClickOutside } from './useClickOutside';
 import { nanoid } from 'nanoid';
 import { Tooltip } from '@/components/0_base/tooltips';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export const KeymapConfigurator = ({
   keyboardKey,
@@ -182,19 +182,37 @@ export const KeymapConfigurator = ({
                 closeDelay={200}
                 placement="right"
                 tooltip={
-                  <Button
-                    className="text-[10px] px-[6px]"
-                    onPress={() => {
-                      dispatch(
-                        keymapSlice.actions.removeKeymap({
-                          id: k.id,
-                          keyboard: keyboardKey,
-                        })
-                      );
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </Button>
+                  <div className="flex space-x-1">
+                    <Button
+                      className="text-[10px] px-[6px] bg-mainbg"
+                      onPress={() => {
+                        dispatch(
+                          keymapSlice.actions.addKeymap({
+                            keyboard: keyboardKey,
+                            layers: k.layers,
+                            layout: k.layout,
+                            name: `${k.name} copy`,
+                            replaceTemp: true,
+                          })
+                        );
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faCopy} />
+                    </Button>
+                    <Button
+                      className="text-[10px] px-[6px] bg-mainbg"
+                      onPress={() => {
+                        dispatch(
+                          keymapSlice.actions.removeKeymap({
+                            id: k.id,
+                            keyboard: keyboardKey,
+                          })
+                        );
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                  </div>
                 }
               >
                 <input
