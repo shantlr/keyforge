@@ -2,10 +2,15 @@ import { Select } from '@/components/0_base/select';
 import { Item } from 'react-stately';
 import { CustomKeyComponent } from './types';
 
-export const MOKey: CustomKeyComponent = ({ params, layers, onUpdate }) => {
+export const LayerKey: CustomKeyComponent = ({
+  keyConf,
+  params,
+  layers,
+  onUpdate,
+}) => {
   return (
     <div className="overflow-hidden flex flex-col items-center">
-      <div className="text-[9px]">Push to</div>
+      <div className="text-[9px]">{keyConf.title || keyConf.key}</div>
       {!layers?.length && (
         <div className="text-[9px] border border-dashed px-1 mx-[1px] rounded-sm border-secondary text-secondary">
           Layer
@@ -19,7 +24,7 @@ export const MOKey: CustomKeyComponent = ({ params, layers, onUpdate }) => {
           selectedKey={params?.[0]?.value ?? null}
           onSelectionChange={(k) => {
             onUpdate?.({
-              key: 'MO',
+              key: keyConf.key,
               params: [{ type: 'layer', value: k as string }],
             });
           }}

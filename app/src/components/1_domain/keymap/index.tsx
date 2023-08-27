@@ -1,10 +1,9 @@
 'use client';
 
-import { KEYS_MAP } from '@/constants';
+import { KEYS, KEYS_MAP } from '@/constants';
 import { KeymapKeyDef } from '@/types';
 import clsx from 'clsx';
 import { CSSProperties, useMemo } from 'react';
-import { MOKey } from './customKeys/MO';
 import { CustomKeyComponent } from './customKeys/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -13,9 +12,16 @@ import {
   faCaretRight,
   faCaretUp,
 } from '@fortawesome/free-solid-svg-icons';
+import { LayerKey } from './customKeys/LayerKey';
 
 const CUSTOM_KEYS_COMPONENTS: Record<string, CustomKeyComponent> = {
-  MO: MOKey,
+  ...KEYS.filter((k) => 'group' in k && k.group === 'layer').reduce(
+    (acc, keyConfig) => {
+      acc[keyConfig.key] = LayerKey;
+      return acc;
+    },
+    {} as Record<string, CustomKeyComponent>
+  ),
   KC_UP: () => <FontAwesomeIcon icon={faCaretUp} />,
   KC_DOWN: () => <FontAwesomeIcon icon={faCaretDown} />,
   KC_LEFT: () => <FontAwesomeIcon icon={faCaretLeft} />,
@@ -106,9 +112,10 @@ export const Keymap = ({
 
     const C = kConf?.key ? CUSTOM_KEYS_COMPONENTS[kConf.key] : null;
 
-    if (C) {
+    if (kConf && C) {
       return (
         <C
+          keyConf={kConf}
           params={params}
           layers={layers}
           onUpdate={(v) =>

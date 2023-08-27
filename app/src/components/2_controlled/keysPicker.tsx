@@ -1,6 +1,7 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import { Keymap } from '../1_domain/keymap';
 import { Tab, TabsCard } from '../0_base/tabsCard';
+import { KEYS } from '@/constants';
 
 const BASIC_KEYS_POSITION = [
   { x: 0, y: 0, key: 'KC_ESC' },
@@ -153,18 +154,16 @@ const QuantumKeys = (
     'keyPositions' | 'baseWidth' | 'keys'
   >
 ) => {
+  const keys = useMemo(
+    () => KEYS.filter((k) => 'group' in k && k.group === 'layer'),
+    []
+  );
   return (
     <div>
       <div>Change layers</div>
       <Keymap
-        keyPositions={[
-          { x: 0, y: 0 },
-          { x: 1, y: 0 },
-        ]}
-        keys={[
-          { key: 'MO', params: [] },
-          { key: 'TT', params: [] },
-        ]}
+        keyPositions={keys.map((_, idx) => ({ x: idx, y: 0 }))}
+        keys={keys.map((k) => ({ key: k.key, params: [] }))}
         {...props}
       />
     </div>

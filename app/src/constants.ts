@@ -6,38 +6,47 @@ export const COMPILE_JOB_ALIVE_TIMEOUT_MS =
   Number(process.env.COMPILE_JOB_ALIVE_TIMEOUT_MS) || 30 * 1000;
 
 export const KEYS = [
+  //#region Layers
   {
     key: 'MO',
-    title: 'Push\nto layer',
+    title: 'Push to',
+    group: 'layer',
     params: [{ type: 'layer' }],
   },
   {
     key: 'TG',
-    title: 'Toggle layer',
+    title: 'Toggle',
+    group: 'layer',
     params: [{ type: 'layer' }],
   },
   {
     key: 'TO',
-    title: 'Turn on layer',
+    title: 'Turn on',
+    group: 'layer',
     params: [{ type: 'layer' }],
   },
   {
     key: 'TT',
     title: 'TT',
+    group: 'layer',
     params: [{ type: 'layer' }],
   },
   {
     key: 'DF',
+    group: 'layer',
     params: [{ type: 'layer' }],
   },
   {
     key: 'OSL',
+    group: 'layer',
     params: [{ type: 'layer' }],
   },
   {
     key: 'LALT',
+    group: 'layer',
     params: [{ type: 'layer' }],
   },
+  //#endregions
 
   //#region Alphanum
   {
@@ -709,6 +718,14 @@ export const KEYS = [
   aliases?: readonly string[];
   params?: readonly any[];
 }[];
+
+export type KeyEnum = (typeof KEYS)[number]['key'];
+
+export type KeyConfig = {
+  key: KeyEnum;
+  title?: string;
+  placeholder?: string;
+};
 
 export const KEYS_MAP = KEYS.reduce(
   (acc, item) => {
