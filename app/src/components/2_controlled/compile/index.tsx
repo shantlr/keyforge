@@ -191,7 +191,12 @@ export const Compile = ({
               }
 
               if (firmware) {
-                return <span>Compiled !</span>;
+                return (
+                  <div>
+                    <span>Compiled !</span>
+                    <Logs logs={job?.logs} />
+                  </div>
+                );
               }
 
               if (state.compileStarted) {

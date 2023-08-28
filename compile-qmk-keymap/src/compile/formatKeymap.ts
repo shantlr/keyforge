@@ -45,7 +45,7 @@ export const formatKeymap = ({
       },
       {
         type: 'var',
-        name: 'keymaps's,
+        name: 'keymaps',
         modifier: 'PROGMEM',
         const: true,
         varType: 'uint16_t',
