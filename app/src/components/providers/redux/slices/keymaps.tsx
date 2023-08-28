@@ -2,6 +2,7 @@ import { PayloadAction, createSlice, original } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 import type { Draft } from 'immer';
 import { KeymapKeyDef } from '@/types';
+import { toLower } from 'lodash';
 
 export type Keymap = {
   id: string;
@@ -122,9 +123,13 @@ export const keymapSlice = createSlice({
       state,
       { payload: { id, name } }: PayloadAction<{ id: string; name: string }>
     ) => {
+      const normalizedName = toLower(name)
+        .replace(/ |-/g, '_')
+        .replace(/[^0-9a-z_]/i, '')
+        .trim();
       const keymap = state.keymaps[id];
       if (keymap) {
-        keymap.name = name;
+        keymap.name = normalizedName;
         if (keymap.temp) {
           delete keymap.temp;
           state.currentTempKeymap = null;
@@ -208,9 +213,12 @@ export const keymapSlice = createSlice({
         payload: { id, layerId, name },
       }: PayloadAction<{ id: string; layerId: string; name: string }>
     ) => {
+      const normalizedName = toLower(name)
+        .replace(/ /g, '_')
+        .replace(/[^0-9a-z_]/gi, '');
       const layer = state.keymaps[id]?.layers.find((l) => l.id === layerId);
       if (layer) {
-        layer.name = name;
+        layer.name = normalizedName;
         if (state.keymaps[id].temp) {
           delete state.keymaps[id].temp;
           state.currentTempKeymap = null;

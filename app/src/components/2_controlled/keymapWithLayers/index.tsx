@@ -15,6 +15,7 @@ export const KeymapWithLayers = ({
   layerId: controlledLayerId,
   onChangeLayer,
   onAddLayer,
+  onRenameLayer,
   onDuplicateLayer,
   onLayerMove,
   onLayerDelete,
@@ -26,6 +27,7 @@ export const KeymapWithLayers = ({
   layers: KM['layers'];
   layerId?: string | null;
   onChangeLayer?: (layerId: string) => void;
+  onRenameLayer?: (arg: { layerId: string; name: string }) => void;
   onAddLayer?: (arg: { name: string }) => void;
   onDuplicateLayer?: (layerId: string) => void;
   onLayerMove?: (arg: { srcIdx: number; dstIdx: number }) => void;
@@ -45,7 +47,7 @@ export const KeymapWithLayers = ({
 
   return (
     <div className="flex">
-      <div className="mr-8 min-w-[80px] space-y-2">
+      <div className="mr-8 min-w-[80px] max-w-[200px] overflow-x-hidden space-y-2">
         <div>Layers</div>
         {Boolean(onAddLayer && showNewLayerInput) && (
           <InputFit
@@ -56,6 +58,10 @@ export const KeymapWithLayers = ({
             }}
             autoFocus
             onKeyUp={(e) => {
+              if (e.code === 'Escape') {
+                setNewLayerName('');
+                setShowNewLayerInput(false);
+              }
               if (e.code === 'Enter') {
                 onAddLayer?.({ name: newLayerName });
                 setShowNewLayerInput(false);
@@ -83,6 +89,7 @@ export const KeymapWithLayers = ({
           selectedLayerId={currentLayerId}
           onLayerMove={onLayerMove}
           onDuplicateLayer={onDuplicateLayer}
+          onRenameLayer={onRenameLayer}
           onSelectLayer={(layerId) => {
             if (typeof controlledLayerId != 'number') {
               setLocalSelectedLayerId(layerId);

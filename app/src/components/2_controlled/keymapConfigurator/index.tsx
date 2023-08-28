@@ -24,6 +24,7 @@ import { nanoid } from 'nanoid';
 import { Tooltip } from '@/components/0_base/tooltips';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { InputButton } from '@/components/0_base/inputButton';
 
 export const KeymapConfigurator = ({
   keyboardKey,
@@ -171,7 +172,7 @@ export const KeymapConfigurator = ({
           <Disclosure
             title="Your keymaps"
             titleClassName="sticky top-[0px]"
-            contentClassName="py-2 pl-2 space-y-1"
+            contentClassName="py-2 px-2 space-y-1"
             show={showUserKeymaps}
             onVisibilityChange={setShowUserKeymaps}
           >
@@ -215,19 +216,9 @@ export const KeymapConfigurator = ({
                   </div>
                 }
               >
-                <input
-                  className={clsx(
-                    'outline-none px-2 h-input-md rounded text-sm hover:bg-primary-lighter transition',
-                    {
-                      'bg-primary text-mainbg placeholder:text-secondarybg':
-                        k.id === selectedKeymap?.id,
-                      'bg-transparent text-default placeholder:text-secondarybg':
-                        k.id !== selectedKeymap?.id,
-                      italic: k.temp,
-                    }
-                  )}
-                  placeholder="<unamed-keymap>"
-                  value={k.name}
+                <InputButton
+                  active={k.id === selectedKeymap?.id}
+                  colorScheme="text"
                   onClick={() => {
                     dispatch(
                       viewSlice.actions.selectKeymap({
@@ -240,10 +231,12 @@ export const KeymapConfigurator = ({
                     dispatch(
                       keymapSlice.actions.updateKeymapName({
                         id: k.id,
-                        name: e.target.value,
+                        name: (e.target as HTMLInputElement).value,
                       })
                     );
                   }}
+                  value={k.name}
+                  placeholder="<unamed-keymap>"
                 />
               </Tooltip>
             ))}
@@ -348,6 +341,15 @@ export const KeymapConfigurator = ({
               }}
               paramsEditable
               layerId={selectedLayerId}
+              onRenameLayer={({ layerId, name }) => {
+                dispatch(
+                  keymapSlice.actions.updateKeymapLayerName({
+                    id: selectedKeymap.id,
+                    layerId,
+                    name,
+                  })
+                );
+              }}
               onChangeLayer={(layerId) => {
                 setSelectedLayerId(layerId);
               }}

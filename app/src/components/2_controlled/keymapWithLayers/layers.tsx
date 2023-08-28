@@ -1,12 +1,11 @@
 'use client';
 
 import { Keymap } from '@/components/providers/redux';
-import clsx from 'clsx';
-import { ComponentProps, useMemo } from 'react';
+import { ChangeEvent, ComponentProps, useMemo, useState } from 'react';
 import { Tooltip } from '@/components/0_base/tooltips';
 import { Button } from '@/components/0_base/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import {
   DndContext,
   KeyboardSensor,
@@ -23,19 +22,23 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { mergeProps } from 'react-aria';
+import { InputButton } from '@/components/0_base/inputButton';
 
 const LayerItem = ({
   layer,
   active,
   onDelete,
   onDuplicateLayer,
+  onNameChange,
   ...props
 }: {
   layer: Keymap['layers'][number];
   active?: boolean;
+  onNameChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onDelete?: () => void;
   onDuplicateLayer?: () => void;
-} & ComponentProps<'div'>) => {
+} & Omit<ComponentProps<'div'>, 'ref'>) => {
+  const [edit, setEdit] = useState(false);
   const {
     attributes,
     listeners,
@@ -43,7 +46,7 @@ const LayerItem = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: layer.id });
+  } = useSortable({ id: layer.id, disabled: edit });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -63,6 +66,14 @@ const LayerItem = ({
           <Button
             className="px-[6px] text-[10px] bg-mainbg"
             onPress={() => {
+              setEdit(true);
+            }}
+          >
+            <FontAwesomeIcon icon={faEdit} />
+          </Button>
+          <Button
+            className="px-[6px] text-[10px] bg-mainbg"
+            onPress={() => {
               onDuplicateLayer?.();
             }}
           >
@@ -79,21 +90,21 @@ const LayerItem = ({
         </div>
       }
     >
-      <div
+      <InputButton
+        value={layer.name}
         style={style}
-        {...mergeProps(props, {
-          className: clsx(
-            'flex cursor-pointer items-center justify-center h-input-md w-full text-sm rounded-sm text-center transition',
-            {
-              'bg-default text-mainbg hover:bg-default-lighter active:default-darker':
-                !active,
-              'bg-primary text-white ': active,
-            }
-          ),
-        })}
-      >
-        {layer.name}
-      </div>
+        colorScheme="default-filled"
+        edit={edit}
+        placeholder="<unamed-layer>"
+        active={active}
+        onChange={onNameChange}
+        onVisibilityChange={(e) => {
+          if (!e) {
+            setEdit(false);
+          }
+        }}
+        {...mergeProps(props)}
+      />
     </Tooltip>
   );
 };
@@ -103,6 +114,7 @@ export const Layers = ({
   layers,
   onSelectLayer,
   onDuplicateLayer,
+  onRenameLayer,
   onLayerMove,
   onLayerDelete,
 }: {
@@ -110,6 +122,7 @@ export const Layers = ({
   layers: Keymap['layers'];
   onSelectLayer?: (layerId: string) => void;
   onDuplicateLayer?: (layerId: string) => void;
+  onRenameLayer?: (arg: { layerId: string; name: string }) => void;
   onLayerMove?: (arg: { srcIdx: number; dstIdx: number }) => void;
   onLayerDelete?: (layer: Keymap['layers'][number]) => void;
 }) => {
@@ -139,6 +152,12 @@ export const Layers = ({
               layer={l}
               key={idx}
               active={selectedLayerId === l.id}
+              onNameChange={(e) => {
+                onRenameLayer?.({
+                  layerId: l.id,
+                  name: e.target.value,
+                });
+              }}
               onPointerDown={() => {
                 onSelectLayer?.(l.id);
               }}

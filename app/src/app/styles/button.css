@@ -7,6 +7,10 @@
     @apply border border-default text-default hover:text-primary hover:border-primary transition;
     @apply active:text-primary-darker active:border-primary-darker;
   }
+  .button.default-filled {
+    @apply border border-default bg-default text-mainbg hover:bg-default-darker hover:border-default-darker transition;
+    @apply active:bg-default-lighter active:border-primary-darker;
+  }
   .button.primary {
     @apply border border-primary bg-primary text-white transition;
     @apply hover:border-primary-darker hover:bg-primary-darker;
