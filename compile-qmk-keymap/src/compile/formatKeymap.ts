@@ -3,6 +3,11 @@ import { formatNode } from './core/formatNode';
 import { StatementsNode, ValueExprNode } from './core/types';
 import { KeymapInput } from '../types';
 
+const formatLayerName = (layerName: string) => {
+  const normalized = layerName.replace(/ /g, '_');
+  return `LAYER_${normalized}`;
+};
+
 export const formatKeymap = ({
   keyboardName,
   layers,
@@ -42,7 +47,7 @@ export const formatKeymap = ({
           type: 'array',
           values: layers.reduce(
             (acc, layer) => {
-              const layerName = `LAYER_${layer.name}`;
+              const layerName = formatLayerName(layer.name);
               acc[layerName] = {
                 type: 'postCall',
                 fn: layout,
@@ -61,7 +66,7 @@ export const formatKeymap = ({
                               const layer = layers.find(
                                 (l) => l.id === param.value,
                               );
-                              return `LAYER_${layer.name}`;
+                              return formatLayerName(layer.name);
                             }
 
                             if (param.type === 'key') {

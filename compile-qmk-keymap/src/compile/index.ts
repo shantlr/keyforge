@@ -33,6 +33,20 @@ const assertKeymap = ({
         `INVALID_LAYER_KEYS_COUNT: layer '${l.name}' has invalid number of keys, expected ${expectedNbKeys} keys but received ${l.keys.length} keys`,
       );
     }
+    l.keys.forEach((key) => {
+      if (typeof key === 'object') {
+        key?.params.forEach((param) => {
+          if (
+            param.type === 'layer' &&
+            !keymap.layers.some((l) => l.id === param.value)
+          ) {
+            throw new Error(
+              `INVALID_LAYER_REF: unknown layer '${l.id}' used in key`,
+            );
+          }
+        });
+      }
+    });
   }
 };
 
