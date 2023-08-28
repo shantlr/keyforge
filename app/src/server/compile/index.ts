@@ -3,7 +3,7 @@ import { CompileRunner } from './runner';
 import { CompileKeymapInput } from '@/types';
 import { LocalCompileRunner } from './runner/local';
 import { ApiCompileRunner } from './runner/api';
-import { createJobQueue } from '@/lib/jobQueue';
+import { Job, createJobQueue } from '@/lib/jobQueue';
 
 let runner: CompileRunner;
 
@@ -25,12 +25,22 @@ if (process.env.RUNNER_MODE === 'local') {
   console.log(`[runner] missing configuration`);
 }
 
-const compile = async (data: CompileKeymapInput) => {
+const compile = async (
+  data: CompileKeymapInput,
+  job: Job<CompileKeymapInput, ArrayBuffer>
+) => {
   if (!runner) {
     throw new Error('No runner available');
   }
 
-  return await runner.run(data);
+  return await runner.run(data, {
+    onStdout(data) {
+      job.logs.push(data);
+    },
+    onStderr(data) {
+      job.logs.push(data);
+    },
+  });
 };
 
 export const COMPILE = createJobQueue({

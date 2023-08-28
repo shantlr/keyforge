@@ -3,10 +3,15 @@ import { Fragment, ReactElement, ReactNode, isValidElement } from 'react';
 import { Spinner } from '../spinner';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faHourglass } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faHourglass,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 
 export const Step = ({}: {
   name: string;
+  failed?: boolean;
   done?: boolean;
   doneIcon?: ReactNode;
   pendingIcon?: ReactNode;
@@ -27,7 +32,7 @@ const StepState = ({
   doneIcon?: ReactNode;
   pendingIcon?: ReactNode;
   loadingIcon?: ReactNode;
-  state: 'loading' | 'pending' | 'done';
+  state: 'failed' | 'loading' | 'pending' | 'done';
 }) => {
   return (
     <div
@@ -37,10 +42,14 @@ const StepState = ({
           'border-primary': state === 'loading',
           'border-success': state === 'done',
           'border-default': state === 'pending',
+          'border-danger': state === 'failed',
         },
         className
       )}
     >
+      {state === 'failed' && (
+        <FontAwesomeIcon className="text-danger" icon={faXmark} />
+      )}
       {state === 'loading' &&
         (loadingIcon || <Spinner className="text-primary" />)}
       {state === 'pending' &&
@@ -79,12 +88,20 @@ export const VerticalSteps = ({
     });
     if (typeof elem === 'string' || isValidElement(elem)) {
       const done = Boolean(props.done);
+      const failed = Boolean(props.failed);
+
       steps.push(
         <div className="flex" key={props.name}>
           <div className="flex flex-col">
             <StepState
               state={
-                done ? 'done' : current === props.name ? 'loading' : 'pending'
+                failed
+                  ? 'failed'
+                  : done
+                  ? 'done'
+                  : current === props.name
+                  ? 'loading'
+                  : 'pending'
               }
               loadingIcon={props.loadingIcon}
               pendingIcon={props.pendingIcon}
@@ -95,7 +112,7 @@ export const VerticalSteps = ({
               <div className="ml-[17px] w-[2px] min-h-[25px] h-full bg-default transition"></div>
             )}
           </div>
-          <div className="p-2">{elem}</div>
+          <div className="w-full p-2">{elem}</div>
         </div>
       );
     }
@@ -107,5 +124,5 @@ export const VerticalSteps = ({
     renderStep(children, true);
   }
 
-  return <div>{steps}</div>;
+  return <div className="">{steps}</div>;
 };

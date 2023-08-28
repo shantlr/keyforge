@@ -21,19 +21,35 @@ const serverIsReady = async (url: string) => {
 export class LocalCompileRunner implements CompileRunner {
   constructor(public config: { path: string; command: string[] }) {}
 
-  async run(input: CompileKeymapInput) {
+  async run(
+    input: CompileKeymapInput,
+    opt?: {
+      onStdout?: (data: string) => void;
+      onStderr?: (data: string) => void;
+    }
+  ) {
     const port = await getPort();
 
     console.log(`[runner] {local}: starting server...`);
     const p = spawn(this.config.command[0], this.config.command.slice(1), {
       cwd: this.config.path,
-      stdio: 'inherit',
       env: {
         PATH: process.env.PATH,
         NODE_ENV: process.env.NODE_ENV,
         TZ: process.env.TZ,
         SERVER_PORT: port.toString(),
       },
+    });
+
+    p.stdout?.on('data', (data: Buffer) => {
+      const str = data.toString();
+      console.log(`[runner] {local}`, str);
+      opt?.onStdout?.(str);
+    });
+    p.stderr?.on('data', (data: Buffer) => {
+      const str = data.toString();
+      console.error(`[runner] {local}`, str);
+      opt?.onStderr?.(str);
     });
 
     try {

@@ -6,6 +6,7 @@ export type Job<Data, Result = void> = {
   lastPinged: Date;
 
   data: Data;
+  logs: string[];
 
   result?: Result;
 
@@ -17,7 +18,7 @@ export const createJobQueue = <Data = any, Result = void>({
   maxParallel = 1,
   jobTimeoutMs = 30 * 1000,
 }: {
-  handler: (data: Data) => Promise<Result>;
+  handler: (data: Data, job: Job<Data, Result>) => Promise<Result>;
   maxParallel?: number;
 
   jobTimeoutMs?: number;
@@ -94,6 +95,7 @@ export const createJobQueue = <Data = any, Result = void>({
       state.jobs[jobId] = {
         id: jobId,
         data,
+        logs: [],
         state: 'pending',
         lastPinged: new Date(),
       };
@@ -120,7 +122,7 @@ export const createJobQueue = <Data = any, Result = void>({
       }
       try {
         job.state = 'ongoing';
-        const res = await handler(job.data);
+        const res = await handler(job.data, job);
         job.state = 'done';
         return res;
       } finally {

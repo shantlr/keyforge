@@ -10,6 +10,7 @@ import { useDownloadBlob } from './useDownloadBlob';
 import { toLower } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { Logs } from './logs';
 
 const DisabledStep = ({ children }: PropsWithChildren) => {
   return <span className="text-gray-500">{children}</span>;
@@ -18,6 +19,7 @@ const DisabledStep = ({ children }: PropsWithChildren) => {
 type CompileJob = {
   id: string;
   state: 'pending' | 'ready' | 'ongoing' | 'done';
+  logs: string[];
 };
 
 export const Compile = ({
@@ -78,7 +80,8 @@ export const Compile = ({
     }
   );
 
-  const { data: job, error: pingJobError } = useQuery(
+  const [job, setJob] = useState<CompileJob | null>(null);
+  const { error: pingJobError } = useQuery(
     ['job', jobId],
     async () => {
       if (!jobId) {
@@ -94,8 +97,11 @@ export const Compile = ({
         if (res?.state === 'ready') {
           setState((s) => ({ ...s, jobReady: true }));
         }
+        if (res) {
+          setJob(res);
+        }
       },
-      refetchInterval: 5000,
+      refetchInterval: job?.state === 'ready' ? 3000 : false,
       enabled: Boolean(jobId),
     }
   );
@@ -116,6 +122,9 @@ export const Compile = ({
       const res = await fetch(`/api/compile/job/${jobId}/run`, {
         method: 'POST',
       });
+      if (res.status !== 200) {
+        throw new Error(`Status ${res.status}: ${await res.text()}`);
+      }
       return await res.blob();
     },
     {
@@ -142,12 +151,12 @@ export const Compile = ({
   }
 
   return (
-    <div className="mt-8">
+    <div className="expanded-container pt-8 overflow-hidden">
       <div className="text-center">
         Keymap <span className="text-primary">{selectedKeymap.name}</span> (
         <span className="text-sm">{keyboardInfo.qmkpath}</span>)
       </div>
-      <div className="mt-8 mx-[120px]">
+      <div className="pt-8 pb-8 h-full px-[120px] overflow-auto">
         <VerticalSteps current={state.current}>
           <Step name="wait" done={state.jobReady}>
             {() => {
@@ -164,10 +173,21 @@ export const Compile = ({
               return <div>Waiting for runner...</div>;
             }}
           </Step>
-          <Step name="compile" done={state.compileDone}>
+          <Step
+            name="compile"
+            failed={Boolean(runError)}
+            done={state.compileDone}
+          >
             {() => {
               if (runError) {
-                return <span>{(runError as Error).message}</span>;
+                return (
+                  <div>
+                    <span>
+                      Compilation failed: {(runError as Error).message}
+                    </span>
+                    <Logs logs={job?.logs} />
+                  </div>
+                );
               }
 
               if (firmware) {
@@ -175,7 +195,12 @@ export const Compile = ({
               }
 
               if (state.compileStarted) {
-                return <span>Compiling...</span>;
+                return (
+                  <div>
+                    <span>Compiling...</span>
+                    <Logs logs={job?.logs} />
+                  </div>
+                );
               }
 
               return <DisabledStep>Compilation step</DisabledStep>;
