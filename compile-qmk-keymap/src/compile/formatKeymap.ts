@@ -3,8 +3,15 @@ import { formatNode } from './core/formatNode';
 import { StatementsNode, ValueExprNode } from './core/types';
 import { KeymapInput } from '../types';
 
+const formatKeymapName = (name: string) => {
+  return toLower(name)
+    .replace(/\//g, '_')
+    .replace(/ /g, '_')
+    .replace(/[^0-9a-z-_]/gi, '');
+};
+
 const formatLayerName = (layerName: string) => {
-  const normalized = layerName.replace(/ /g, '_');
+  const normalized = layerName.replace(/ |-/g, '_').replace(/[^0-9a-z_]/gi, '');
   return `LAYER_${normalized}`;
 };
 
@@ -30,15 +37,15 @@ export const formatKeymap = ({
       },
       {
         type: 'enum',
-        name: `${toLower(keyboardName).replace(/\//g, '_')}_layers`,
+        name: `${formatKeymapName(keyboardName)}_layers`,
         values: layers.map((l) => ({
-          name: `LAYER_${l.name}`,
+          name: formatLayerName(l.name),
           value: undefined,
         })),
       },
       {
         type: 'var',
-        name: 'keymaps',
+        name: 'keymaps's,
         modifier: 'PROGMEM',
         const: true,
         varType: 'uint16_t',

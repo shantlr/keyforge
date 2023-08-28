@@ -4,7 +4,7 @@ import { sleep } from '@/lib/sleep';
 import getPort from 'get-port';
 import { CompileRunner } from '.';
 import { CompileKeymapInput } from '@/types';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const serverIsReady = async (url: string) => {
   while (true) {
@@ -68,6 +68,11 @@ export class LocalCompileRunner implements CompileRunner {
       });
       console.log(`[runner] {local}: compiled`);
       return res.data;
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        throw new Error(`COMPILED_FAILED: ${err.message}`);
+      }
+      throw err;
     } finally {
       if (!p.pid) {
         return;
