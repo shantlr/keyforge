@@ -10,10 +10,11 @@ export default async function Home() {
       <div className="py-8 flex justify-center">
         <KeyforgeSteps className="mb-4" current="pick" />
       </div>
-      <div className="text-primary flex items-center">
+      <SelectKeyboard className="ml-2" keyboards={res} />
+
+      {/* <div className="text-primary flex items-center">
         <span className="text-primary-lighter">Pick your keyboard</span>
-        <SelectKeyboard className="ml-2" keyboards={res} />
-      </div>
+      </div> */}
     </main>
   );
 }

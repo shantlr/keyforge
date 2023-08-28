@@ -26,6 +26,7 @@
     "dayjs": "^1.11.9",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
+    "fuse.js": "^6.6.2",
     "get-port": "^7.0.0",
     "lodash": "^4.17.21",
     "lru-cache": "^10.0.0",
