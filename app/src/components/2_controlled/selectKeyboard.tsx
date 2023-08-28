@@ -36,7 +36,7 @@ export const SelectKeyboard = ({
     <div className="expanded-container overflow-hidden">
       <div className="flex justify-center items-center">
         <input
-          className="px-6 py-1 w-full rounded max-w-[350px] outline-none"
+          className="px-6 py-1 w-full border-2 bg-mainbg text-primary border-primary rounded max-w-[350px] outline-none"
           placeholder="Search keyboard"
           value={search}
           onChange={(e) => {
