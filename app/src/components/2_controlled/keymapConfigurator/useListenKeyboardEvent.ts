@@ -1,6 +1,6 @@
 import { Keymap } from '@/components/providers/redux';
 import { ReduxDispatch } from '@/components/providers/redux/store';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 // export const useUpdateKeyUsingKeyboard = ({
 //   keymap,
@@ -170,6 +170,9 @@ export const useListenKeyboardEvent = (
   cb: (kc: string) => void,
   enabled = true
 ) => {
+  const ref = useRef<typeof cb>();
+  ref.current = cb;
+
   useEffect(() => {
     if (!enabled) {
       return;
@@ -180,7 +183,7 @@ export const useListenKeyboardEvent = (
       if (kc) {
         e.preventDefault();
         e.stopPropagation();
-        cb(kc);
+        ref.current?.(kc);
       } else {
         console.log(e);
       }
@@ -189,5 +192,5 @@ export const useListenKeyboardEvent = (
     return () => {
       window.removeEventListener('keyup', listener);
     };
-  }, [cb, enabled]);
+  }, [enabled]);
 };

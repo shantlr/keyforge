@@ -9,7 +9,7 @@ export type KeyTheme = {
 export const KEY_THEME: Record<string, KeyTheme> = {
   default: {
     primary: 'bg-slate-400',
-    secondary: 'bg-slate-500',
+    secondary: 'bg-slate-600',
   },
 };
 
@@ -34,7 +34,8 @@ export const Key = ({
   return (
     <div
       className={clsx(
-        'group absolute select-none cursor-pointer rounded bg-slate-600 p-[2px] pb-[8px] transition-all hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]'
+        'group absolute select-none cursor-pointer rounded p-[2px] pb-[8px] transition-all hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]',
+        secondary
       )}
       style={style}
       onClick={onClick}

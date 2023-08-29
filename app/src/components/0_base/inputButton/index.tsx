@@ -37,7 +37,7 @@ export const InputButton = forwardRef<
           {...(props as any)}
           ref={ref as any}
           className={clsx(
-            'h-input-md border border-transparent rounded px-2 button text-sm cursor-pointer truncate w-full',
+            'h-input-md border-2 border-bg-default rounded px-2 button text-sm cursor-pointer truncate w-full',
             {
               [colorScheme || 'default']: !active,
               primary: active,
