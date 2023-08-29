@@ -41,11 +41,6 @@ export const KEYS = [
     group: 'layer',
     params: [{ type: 'layer' }],
   },
-  {
-    key: 'LALT',
-    group: 'layer',
-    params: [{ type: 'layer' }],
-  },
   //#endregions
 
   //#region Alphanum
@@ -550,26 +545,22 @@ export const KEYS = [
     title: 'UP',
     key: 'KC_UP',
     icon: 'up',
-    // icon: faCaretUp,
   },
   {
     title: 'DOWN',
     key: 'KC_DOWN',
     icon: 'down',
-    // icon: faCaretDown,
   },
   {
     title: 'LEFT',
     key: 'KC_LEFT',
     icon: 'left',
-    // icon: faCaretLeft,
   },
   {
     title: 'RIGHT',
     key: 'KC_RGHT',
     aliases: ['KC_RIGHT'],
     icon: 'right',
-    // icon: faCaretRight,
   },
 
   {
@@ -768,6 +759,164 @@ export const KEYS = [
   },
   //#endregion
 
+  //#region Modifier
+  {
+    key: 'LCTL',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    aliases: ['C'],
+    description: 'Hold Left Control and press kc',
+  },
+  {
+    key: 'LSFT',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    aliases: ['S'],
+    description: 'Hold Left Shift and press kc',
+  },
+  {
+    key: 'LALT',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    aliases: ['A', 'LOPT'],
+    description: 'Hold Left Alt and press kc',
+  },
+  {
+    key: 'LGUI',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    aliases: ['G', 'LCMD', 'LWIN'],
+    description: 'Hold Left GUI and press kc',
+  },
+  {
+    key: 'RCTL',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Right Control and press kc',
+  },
+  {
+    key: 'RSFT',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Right Shift and press kc',
+  },
+  {
+    key: 'RALT',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    aliases: ['ROPT', 'ALGR'],
+    description: 'Hold Right Alt and press kc',
+  },
+  {
+    key: 'RGUI',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    aliases: ['RCMD', 'LWIN'],
+    description: 'Hold Right GUI and press kc',
+  },
+  {
+    key: 'LSG',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    aliases: ['SGUI', 'SCMD', 'SWIN'],
+    description: 'Hold Left Shift and GUI and press kc',
+  },
+  {
+    key: 'LAG',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Left Alt and Left GUI and press kc',
+  },
+  {
+    key: 'RSG',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Right Shift and Right GUI and press kc',
+  },
+  {
+    key: 'RAG',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Right Alt and Right GUI and press kc',
+  },
+  {
+    key: 'LCA',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Left Control and Alt and press kc',
+  },
+  {
+    key: 'LSA',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Left Shift and Left Alt and press kc',
+  },
+  {
+    key: 'RSA',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    aliases: ['SAGR'],
+    description: 'Hold Right Shift and Right Alt (AltGr) and press kc',
+  },
+  {
+    key: 'RCS',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Right Control and Right Shift and press kc',
+  },
+  {
+    key: 'LCAG',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Left Control, Alt and GUI and press kc',
+  },
+  {
+    key: 'MEH',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Left Control, Shift and Alt and press kc',
+  },
+  {
+    key: 'HYPR',
+    group: 'modifier',
+    params: [{ type: 'key' }],
+    description: 'Hold Left Control, Shift, Alt and GUI and press kc',
+  },
+  //#endregion
+
+  //#region QMK
+  {
+    key: 'QK_BOOTLOADER',
+    group: 'qmk',
+    aliases: ['QK_BOOT'],
+    description: 'Put the keyboard into bootloader mode for flashing',
+  },
+  {
+    key: 'QK_DEBUG_TOGGLE',
+    group: 'qmk',
+    aliases: ['DB_TOGG'],
+    description: 'Toggle debug mode',
+  },
+  {
+    key: 'QK_CLEAR_EEPROM',
+    group: 'qmk',
+    aliases: ['EE_CLR'],
+    description: 'Reinitializes the keyboard’s EEPROM (persistent memory)',
+  },
+  {
+    key: 'QK_MAKE',
+    group: 'qmk',
+    description:
+      'Sends qmk compile -kb (keyboard) -km (keymap), or qmk flash if shift is held. Puts keyboard into bootloader mode if shift & control are held',
+  },
+  {
+    key: 'QK_REBOOT',
+    group: 'qmk',
+    aliases: ['QK_RBT'],
+    description: 'Resets the keyboard. Does not load the bootloader',
+  },
+  //#endregion
+
   {
     title: 'No op',
     key: 'KC_NO',
@@ -782,6 +931,7 @@ export const KEYS = [
 ] as const satisfies readonly {
   key: string;
   title?: string;
+  description?: string;
   icon?: string;
   group?: string;
   aliases?: readonly string[];

@@ -11,10 +11,6 @@ export default async function Home() {
         <KeyforgeSteps className="mb-4" current="pick" />
       </div>
       <SelectKeyboard className="ml-2" keyboards={res} />
-
-      {/* <div className="text-primary flex items-center">
-        <span className="text-primary-lighter">Pick your keyboard</span>
-      </div> */}
     </main>
   );
 }

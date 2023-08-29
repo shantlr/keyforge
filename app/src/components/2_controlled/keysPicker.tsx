@@ -194,17 +194,37 @@ export const KeysPicker = ({
       <Tab title="Basic">
         <BasicKeys onKeyClick={onKeyClick} />
       </Tab>
+      <Tab title="Options">
+        <LineKeys
+          title="Modifiers"
+          keys={KEYS.filter((k) => 'group' in k && k.group === 'modifier')}
+          onKeyClick={onKeyClick}
+        />
+        <LineKeys
+          title="Mod Tap"
+          keys={[]}
+          // keys={KEYS.filter((k) => 'group' in k && k.group === 'modifier')}
+          onKeyClick={onKeyClick}
+        />
+      </Tab>
       <Tab title="Quantum">
         <QuantumKeys onKeyClick={onKeyClick} />
+        <LineKeys
+          title="QMK"
+          keys={KEYS.filter((k) => 'group' in k && k.group === 'qmk')}
+          onKeyClick={onKeyClick}
+        />
       </Tab>
       <Tab title="Media">
         <LineKeys
           title="System"
           keys={KEYS.filter((k) => 'group' in k && k.group === 'media-system')}
+          onKeyClick={onKeyClick}
         />
         <LineKeys
           title="Audio/Track"
           keys={KEYS.filter((k) => 'group' in k && k.group === 'media-audio')}
+          onKeyClick={onKeyClick}
         />
       </Tab>
     </TabsCard>
