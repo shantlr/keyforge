@@ -47,7 +47,7 @@ export const KeymapWithLayers = ({
 
   return (
     <div className="flex">
-      <div className="mr-8 min-w-[80px] max-w-[200px] overflow-x-hidden space-y-2">
+      <div className="mr-8 min-w-[80px] max-w-[200px] space-y-2">
         <div>Layers</div>
         {Boolean(onAddLayer && showNewLayerInput) && (
           <InputFit

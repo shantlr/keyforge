@@ -31,7 +31,9 @@ export const LayerKey: CustomKeyComponent = ({
           }}
         >
           {layers.map((l) => (
-            <Item key={l.id}>{l.name}</Item>
+            <Item key={l.id} aria-label={l.name}>
+              {l.name}
+            </Item>
           ))}
         </Select>
       )}

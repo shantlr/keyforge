@@ -1,40 +1,11 @@
 'use client';
 
-import { KEYS, KEYS_MAP, KeyConfig, getKeyConfFromDef } from '@/constants';
+import { getKeyConfFromDef } from '@/constants';
 import { KeymapKeyDef } from '@/types';
 import { CSSProperties, useMemo } from 'react';
-import { CustomKeyComponent } from './customKeys/types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCaretDown,
-  faCaretLeft,
-  faCaretRight,
-  faCaretUp,
-} from '@fortawesome/free-solid-svg-icons';
-import { LayerKey } from './customKeys/LayerKey';
-import { KeyModifier } from './customKeys/KeyModifier';
-import { Key, KeyTheme } from '../key';
-
-const CUSTOM_KEYS_COMPONENTS: Record<string, CustomKeyComponent> = {
-  ...KEYS.filter((k) => 'group' in k && k.group === 'layer').reduce(
-    (acc, keyConfig) => {
-      acc[keyConfig.key] = LayerKey;
-      return acc;
-    },
-    {} as Record<string, CustomKeyComponent>
-  ),
-  ...KEYS.filter((k) => 'group' in k && k.group === 'modifier').reduce(
-    (acc, keyConfig) => {
-      acc[keyConfig.key] = KeyModifier;
-      return acc;
-    },
-    {} as Record<string, CustomKeyComponent>
-  ),
-  KC_UP: () => <FontAwesomeIcon icon={faCaretUp} />,
-  KC_DOWN: () => <FontAwesomeIcon icon={faCaretDown} />,
-  KC_LEFT: () => <FontAwesomeIcon icon={faCaretLeft} />,
-  KC_RGHT: () => <FontAwesomeIcon icon={faCaretRight} />,
-};
+import { KeyTheme } from '../key';
+import { Draggable } from '@/components/0_base/draggable';
+import { QMKKey } from '../qmkKey';
 
 export const Keymap = ({
   keyPositions,
@@ -43,11 +14,10 @@ export const Keymap = ({
   keys,
   layers,
 
+  draggableIdPrefix,
   onKeyClick,
   isKeyDown,
   onKeyUpdate,
-
-  paramsEditable,
 
   theme,
 }: {
@@ -64,8 +34,7 @@ export const Keymap = ({
     index: number;
   }) => void;
 
-  paramsEditable?: boolean;
-
+  draggableIdPrefix?: string;
   layers?: { id: string; name: string }[];
 
   theme?: KeyTheme;
@@ -107,41 +76,6 @@ export const Keymap = ({
     return null;
   }
 
-  const renderKey = (kDef: KeymapKeyDef | null | undefined, index: number) => {
-    const params = typeof kDef === 'object' ? kDef?.params : null ?? null;
-    const key = typeof kDef === 'string' ? kDef : kDef?.key ?? null;
-
-    const kConf = key ? KEYS_MAP[key] : null;
-
-    const C = kConf?.key ? CUSTOM_KEYS_COMPONENTS[kConf.key] : null;
-
-    if (kConf && C) {
-      return (
-        <C
-          keyConf={kConf as KeyConfig}
-          params={params}
-          layers={layers}
-          onUpdate={(v) =>
-            onKeyUpdate?.({
-              index,
-              prev: kDef ?? null,
-              value: v,
-            })
-          }
-        />
-      );
-    }
-
-    if (kConf?.title) {
-      return kConf?.title;
-    }
-    if (kConf?.key) {
-      return kConf.key;
-    }
-
-    return 'N/A';
-  };
-
   return (
     <div className="relative w-full" style={{ width, height }}>
       {keyPositions.map((l, idx) => {
@@ -150,10 +84,10 @@ export const Keymap = ({
         const isDown =
           isKeyDown?.({ key: keys?.[idx] ?? null, index: idx }) ?? false;
 
+        const width = (l.w || 1) * baseWidth + ((l.w || 1) - 1) * keySepWidth;
+        const height = baseWidth * (l.h || 1);
+
         const style: CSSProperties = {
-          width: (l.w || 1) * baseWidth + ((l.w || 1) - 1) * keySepWidth,
-          height: baseWidth * (l.h || 1),
-          boxSizing: 'content-box',
           top: l.y * baseWidth + l.y * keySepWidth,
           left: l.x * baseWidth + l.x * keySepWidth,
         };
@@ -166,26 +100,47 @@ export const Keymap = ({
         }
 
         return (
-          <Key
+          <Draggable
             key={idx}
-            style={style}
-            isDown={isDown}
-            textSize={textSize}
-            theme={theme}
-            description={kConf?.description}
-            onClick={
-              onKeyClick
-                ? () => {
-                    onKeyClick({
-                      key: keys?.[idx] ?? null,
-                      index: idx,
-                    });
-                  }
-                : undefined
-            }
+            id={`${draggableIdPrefix || ''}${idx.toString()}`}
+            data={{
+              theme,
+              kDef,
+              width,
+              height,
+              textSize,
+            }}
           >
-            {renderKey(kDef, idx)}
-          </Key>
+            <QMKKey
+              className="absolute"
+              keyDef={kDef}
+              layers={layers}
+              height={height}
+              width={width}
+              onUpdate={(v) => {
+                onKeyUpdate?.({
+                  index: idx,
+                  prev: kDef ?? null,
+                  value: v,
+                });
+              }}
+              style={style}
+              isDown={isDown}
+              textSize={textSize}
+              theme={theme}
+              description={kConf?.description}
+              onClick={
+                onKeyClick
+                  ? () => {
+                      onKeyClick({
+                        key: keys?.[idx] ?? null,
+                        index: idx,
+                      });
+                    }
+                  : undefined
+              }
+            />
+          </Draggable>
         );
       })}
     </div>

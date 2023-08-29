@@ -142,6 +142,7 @@ const BasicKeys = (
 ) => {
   return (
     <Keymap
+      draggableIdPrefix="key-picker:basic:"
       keyPositions={BASIC_KEYS_POSITION}
       baseWidth={40}
       keys={BASIC_KEYS}
@@ -183,7 +184,14 @@ const QuantumKeys = (
     () => KEYS.filter((k) => 'group' in k && k.group === 'layer'),
     []
   );
-  return <LineKeys title="Change layers" keys={keys} {...props} />;
+  return (
+    <LineKeys
+      draggableIdPrefix="key-picker:quantum:"
+      title="Change layers"
+      keys={keys}
+      {...props}
+    />
+  );
 };
 
 export const KeysPicker = ({
@@ -197,11 +205,13 @@ export const KeysPicker = ({
       <Tab title="Options">
         <LineKeys
           title="Modifiers"
+          draggableIdPrefix="key-picker:modifiers:"
           keys={KEYS.filter((k) => 'group' in k && k.group === 'modifier')}
           onKeyClick={onKeyClick}
         />
         <LineKeys
           title="Mod Tap"
+          draggableIdPrefix="key-picker:mod-tap:"
           keys={[]}
           // keys={KEYS.filter((k) => 'group' in k && k.group === 'modifier')}
           onKeyClick={onKeyClick}
@@ -211,6 +221,7 @@ export const KeysPicker = ({
         <QuantumKeys onKeyClick={onKeyClick} />
         <LineKeys
           title="QMK"
+          draggableIdPrefix="key-picker:quantum:qmk:"
           keys={KEYS.filter((k) => 'group' in k && k.group === 'qmk')}
           onKeyClick={onKeyClick}
         />
@@ -218,11 +229,13 @@ export const KeysPicker = ({
       <Tab title="Media">
         <LineKeys
           title="System"
+          draggableIdPrefix="key-picker:media:system:"
           keys={KEYS.filter((k) => 'group' in k && k.group === 'media-system')}
           onKeyClick={onKeyClick}
         />
         <LineKeys
           title="Audio/Track"
+          draggableIdPrefix="key-picker:audio:"
           keys={KEYS.filter((k) => 'group' in k && k.group === 'media-audio')}
           onKeyClick={onKeyClick}
         />
