@@ -3,6 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { useDeferredValue, useMemo, useState } from 'react';
 import Fuse from 'fuse.js';
+import { useSelector } from '../providers/redux';
+import { sortBy } from 'lodash';
+import Link from 'next/link';
 
 export const SelectKeyboard = ({
   value,
@@ -25,6 +28,11 @@ export const SelectKeyboard = ({
       })
   );
 
+  const userKeyboards = useSelector((state) => {
+    const keys = Object.keys(state.keymaps.keyboards);
+    return sortBy(keys);
+  });
+
   const results = useMemo(() => {
     if (!deferredSearch.length) {
       return [];
@@ -45,16 +53,28 @@ export const SelectKeyboard = ({
         />
       </div>
       <div className="mt-2 pt-4 pb-8 flex flex-col items-center overflow-auto">
+        {!results.length && userKeyboards.length > 0 && (
+          <>
+            <div className="mb-2 text-default-darker">Your keyboards:</div>
+            {userKeyboards.map((key) => (
+              <Link
+                className="text-default-darker cursor-pointer hover:bg-primary hover:text-white transition px-8 rounded"
+                href={`/${key}`}
+                key={key}
+              >
+                {key}
+              </Link>
+            ))}
+          </>
+        )}
         {results.map((r) => (
-          <div
+          <Link
             key={r.key}
             className="cursor-pointer hover:bg-primary hover:text-white transition px-8 rounded"
-            onClick={() => {
-              router.push(`/${r.key}`);
-            }}
+            href={`/${r.key}`}
           >
             {r.name} <span>({r.qmkpath})</span>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
