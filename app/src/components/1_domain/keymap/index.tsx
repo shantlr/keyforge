@@ -1,6 +1,6 @@
 'use client';
 
-import { KEYS, KEYS_MAP, KeyConfig } from '@/constants';
+import { KEYS, KEYS_MAP, KeyConfig, getKeyConfFromDef } from '@/constants';
 import { KeymapKeyDef } from '@/types';
 import { CSSProperties, useMemo } from 'react';
 import { CustomKeyComponent } from './customKeys/types';
@@ -158,6 +158,8 @@ export const Keymap = ({
           left: l.x * baseWidth + l.x * keySepWidth,
         };
 
+        const kConf = getKeyConfFromDef(kDef);
+
         if (isDown) {
           style.marginTop = 6;
           style.paddingBottom = 2;
@@ -170,6 +172,7 @@ export const Keymap = ({
             isDown={isDown}
             textSize={textSize}
             theme={theme}
+            description={kConf?.description}
             onClick={
               onKeyClick
                 ? () => {

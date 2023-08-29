@@ -1,3 +1,5 @@
+import { KeymapKeyDef } from './types';
+
 export const MAX_LAYERS = 32;
 
 export const MAX_PARALLEL_JOB = Number(process.env.MAX_PARALLEL_JOB || 3);
@@ -9,6 +11,8 @@ export const KEYS = [
   //#region Layers
   {
     key: 'MO',
+    description:
+      'Momentarily turn on <LAYER> when pressed (requires KC_TRNS at same position on destination layer)',
     title: 'Push to',
     group: 'layer',
     params: [{ type: 'layer' }],
@@ -17,17 +21,22 @@ export const KEYS = [
     key: 'TG',
     title: 'Toggle',
     group: 'layer',
+    description: 'Toggle <LAYER> on or off',
     params: [{ type: 'layer' }],
   },
   {
     key: 'TO',
     title: 'Turn on',
+    description:
+      'Turns on <LAYER> and turns off all other layers, except the default layer',
     group: 'layer',
     params: [{ type: 'layer' }],
   },
   {
     key: 'TT',
     title: 'TT',
+    description:
+      'Momentarily turn on <LAYER> when pressed, if it’s tapped multiple times, toggles <LAYER> on',
     group: 'layer',
     params: [{ type: 'layer' }],
   },
@@ -39,9 +48,11 @@ export const KEYS = [
   {
     key: 'OSL',
     group: 'layer',
+    description:
+      'Momentarily activates <LAYER> until a key is pressed. See One Shot Keys for details.',
     params: [{ type: 'layer' }],
   },
-  //#endregions
+  //#endregion
 
   //#region Alphanum
   {
@@ -544,23 +555,19 @@ export const KEYS = [
   {
     title: 'UP',
     key: 'KC_UP',
-    icon: 'up',
   },
   {
     title: 'DOWN',
     key: 'KC_DOWN',
-    icon: 'down',
   },
   {
     title: 'LEFT',
     key: 'KC_LEFT',
-    icon: 'left',
   },
   {
     title: 'RIGHT',
     key: 'KC_RGHT',
     aliases: ['KC_RIGHT'],
-    icon: 'right',
   },
 
   {
@@ -765,122 +772,122 @@ export const KEYS = [
     group: 'modifier',
     params: [{ type: 'key' }],
     aliases: ['C'],
-    description: 'Hold Left Control and press kc',
+    description: 'Hold Left Control and press <KEY>',
   },
   {
     key: 'LSFT',
     group: 'modifier',
     params: [{ type: 'key' }],
     aliases: ['S'],
-    description: 'Hold Left Shift and press kc',
+    description: 'Hold Left Shift and press <KEY>',
   },
   {
     key: 'LALT',
     group: 'modifier',
     params: [{ type: 'key' }],
     aliases: ['A', 'LOPT'],
-    description: 'Hold Left Alt and press kc',
+    description: 'Hold Left Alt and press <KEY>',
   },
   {
     key: 'LGUI',
     group: 'modifier',
     params: [{ type: 'key' }],
     aliases: ['G', 'LCMD', 'LWIN'],
-    description: 'Hold Left GUI and press kc',
+    description: 'Hold Left GUI and press <KEY>',
   },
   {
     key: 'RCTL',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Right Control and press kc',
+    description: 'Hold Right Control and press <KEY>',
   },
   {
     key: 'RSFT',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Right Shift and press kc',
+    description: 'Hold Right Shift and press <KEY>',
   },
   {
     key: 'RALT',
     group: 'modifier',
     params: [{ type: 'key' }],
     aliases: ['ROPT', 'ALGR'],
-    description: 'Hold Right Alt and press kc',
+    description: 'Hold Right Alt and press <KEY>',
   },
   {
     key: 'RGUI',
     group: 'modifier',
     params: [{ type: 'key' }],
     aliases: ['RCMD', 'LWIN'],
-    description: 'Hold Right GUI and press kc',
+    description: 'Hold Right GUI and press <KEY>',
   },
   {
     key: 'LSG',
     group: 'modifier',
     params: [{ type: 'key' }],
     aliases: ['SGUI', 'SCMD', 'SWIN'],
-    description: 'Hold Left Shift and GUI and press kc',
+    description: 'Hold Left Shift and GUI and press <KEY>',
   },
   {
     key: 'LAG',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Left Alt and Left GUI and press kc',
+    description: 'Hold Left Alt and Left GUI and press <KEY>',
   },
   {
     key: 'RSG',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Right Shift and Right GUI and press kc',
+    description: 'Hold Right Shift and Right GUI and press <KEY>',
   },
   {
     key: 'RAG',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Right Alt and Right GUI and press kc',
+    description: 'Hold Right Alt and Right GUI and press <KEY>',
   },
   {
     key: 'LCA',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Left Control and Alt and press kc',
+    description: 'Hold Left Control and Alt and press <KEY>',
   },
   {
     key: 'LSA',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Left Shift and Left Alt and press kc',
+    description: 'Hold Left Shift and Left Alt and press <KEY>',
   },
   {
     key: 'RSA',
     group: 'modifier',
     params: [{ type: 'key' }],
     aliases: ['SAGR'],
-    description: 'Hold Right Shift and Right Alt (AltGr) and press kc',
+    description: 'Hold Right Shift and Right Alt (AltGr) and press <KEY>',
   },
   {
     key: 'RCS',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Right Control and Right Shift and press kc',
+    description: 'Hold Right Control and Right Shift and press <KEY>',
   },
   {
     key: 'LCAG',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Left Control, Alt and GUI and press kc',
+    description: 'Hold Left Control, Alt and GUI and press <KEY>',
   },
   {
     key: 'MEH',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Left Control, Shift and Alt and press kc',
+    description: 'Hold Left Control, Shift and Alt and press <KEY>',
   },
   {
     key: 'HYPR',
     group: 'modifier',
     params: [{ type: 'key' }],
-    description: 'Hold Left Control, Shift, Alt and GUI and press kc',
+    description: 'Hold Left Control, Shift, Alt and GUI and press <KEY>',
   },
   //#endregion
 
@@ -932,7 +939,6 @@ export const KEYS = [
   key: string;
   title?: string;
   description?: string;
-  icon?: string;
   group?: string;
   aliases?: readonly string[];
   params?: readonly any[];
@@ -942,8 +948,10 @@ export type KeyEnum = (typeof KEYS)[number]['key'];
 
 export type KeyConfig = {
   key: KeyEnum;
+  aliases?: readonly string[];
   title?: string;
-  placeholder?: string;
+  description?: string;
+  group?: ((typeof KEYS)[number] & { group: string & {} })['group'];
 };
 
 export const KEYS_MAP = KEYS.reduce(
@@ -967,3 +975,15 @@ export const KEYS_MAP = KEYS.reduce(
     }
   >
 );
+
+export const getKeyConfFromDef = (
+  key: KeymapKeyDef | null | undefined
+): KeyConfig | null => {
+  if (!key) {
+    return null;
+  }
+  if (typeof key === 'string') {
+    return KEYS_MAP[key] as KeyConfig;
+  }
+  return KEYS_MAP[key.key] as KeyConfig;
+};

@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/0_base/button';
-import { KeyforgeSteps } from '@/components/2_controlled/keyforgeSteps';
+import { KeyforgeSteps } from '@/components/1_domain/keyforgeSteps';
 import { KeymapConfigurator } from '@/components/2_controlled/keymapConfigurator';
 import { ExistingKeymap } from '@/lib/keyboards';
 import { KeyboardInfo } from '@/types';

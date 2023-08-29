@@ -1,3 +1,4 @@
+import { Tooltip } from '@/components/0_base/tooltips';
 import clsx from 'clsx';
 import { CSSProperties, ReactNode } from 'react';
 
@@ -15,7 +16,10 @@ export const KEY_THEME: Record<string, KeyTheme> = {
 
 export const Key = ({
   style,
+
   children,
+  description,
+
   onClick,
   textSize,
   isDown,
@@ -26,12 +30,14 @@ export const Key = ({
 }: {
   style?: CSSProperties;
   children: ReactNode;
+  description?: string | null;
+
   onClick?: () => void;
   textSize?: string;
   isDown?: boolean;
   theme?: KeyTheme;
 }) => {
-  return (
+  const res = (
     <div
       className={clsx(
         'group absolute select-none cursor-pointer rounded p-[2px] pb-[8px] transition-all hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]',
@@ -54,4 +60,20 @@ export const Key = ({
       </div>
     </div>
   );
+
+  if (description) {
+    return (
+      <Tooltip
+        closeDelay={0}
+        tooltip={
+          <div className="max-w-[200px] px-2 text-sm whitespace-pre-wrap rounded bg-slate-300/80 text-secondarybg shadow">
+            {description}
+          </div>
+        }
+      >
+        {res}
+      </Tooltip>
+    );
+  }
+  return res;
 };
