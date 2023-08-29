@@ -2,7 +2,6 @@
 
 import { KEYS, KEYS_MAP, KeyConfig } from '@/constants';
 import { KeymapKeyDef } from '@/types';
-import clsx from 'clsx';
 import { CSSProperties, useMemo } from 'react';
 import { CustomKeyComponent } from './customKeys/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,6 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { LayerKey } from './customKeys/LayerKey';
 import { KeyModifier } from './customKeys/KeyModifier';
+import { Key, KeyTheme } from '../key';
 
 const CUSTOM_KEYS_COMPONENTS: Record<string, CustomKeyComponent> = {
   ...KEYS.filter((k) => 'group' in k && k.group === 'layer').reduce(
@@ -49,7 +49,7 @@ export const Keymap = ({
 
   paramsEditable,
 
-  keyColorScheme: { bg: keyBg = 'bg-slate-400', hoverbg = 'bg-slate-500' } = {},
+  theme,
 }: {
   keyPositions: { x: number; y: number; h?: number; w?: number }[];
   baseWidth?: number;
@@ -68,12 +68,7 @@ export const Keymap = ({
 
   layers?: { id: string; name: string }[];
 
-  keyColorScheme?: {
-    bg?: string;
-    border?: string;
-    color?: string;
-    hoverbg?: string;
-  };
+  theme?: KeyTheme;
 }) => {
   const height = useMemo(() => {
     if (!keyPositions) {
@@ -169,12 +164,12 @@ export const Keymap = ({
         }
 
         return (
-          <div
-            className={clsx(
-              'group absolute select-none cursor-pointer rounded bg-slate-600 p-[2px] pb-[8px] transition-all hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]'
-            )}
+          <Key
+            key={idx}
             style={style}
-            key={`${l.x}-${l.y}`}
+            isDown={isDown}
+            textSize={textSize}
+            theme={theme}
             onClick={
               onKeyClick
                 ? () => {
@@ -186,19 +181,8 @@ export const Keymap = ({
                 : undefined
             }
           >
-            <div
-              className={clsx(
-                `text-mainbg ${keyBg} whitespace-pre group-hover:${hoverbg} text-center rounded-sm w-full h-full flex items-center justify-center transition`,
-                textSize,
-                {
-                  '': isDown,
-                  '': !isDown,
-                }
-              )}
-            >
-              {renderKey(kDef, idx)}
-            </div>
-          </div>
+            {renderKey(kDef, idx)}
+          </Key>
         );
       })}
     </div>
