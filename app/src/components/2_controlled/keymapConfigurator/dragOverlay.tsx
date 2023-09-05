@@ -1,5 +1,4 @@
 import { QMKKey } from '@/components/1_domain/qmkKey';
-import { KeymapKeyDef } from '@/types';
 import { DragOverlay, useDndContext } from '@dnd-kit/core';
 
 export const ConfiguratorDraggableOverlay = () => {

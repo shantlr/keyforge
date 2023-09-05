@@ -58,7 +58,7 @@ export const Key = forwardRef<
         className={clsx(
           'box-content group select-none cursor-pointer rounded transition-all p-[2px] pb-[8px]',
           {
-            'border-dashed pb-[2px] mt-[6px]': isDragging,
+            'border-dashed pb-[0px] mt-[8px]': isDragging,
             'hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]':
               !isDragging,
           },

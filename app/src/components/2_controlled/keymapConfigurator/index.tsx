@@ -250,7 +250,7 @@ export const KeymapConfigurator = ({
             </div>
           </div>
 
-          <div className="h-[330px] shrink-0 grow-0 mt-4 mb-4 expanded-container w-full h-full flex items-center justify-center">
+          <div className="h-[330px] shrink-0 grow-0 mt-4 mb-4 expanded-container w-full flex items-center justify-center">
             <ConfiguratorKeyPicker />
           </div>
         </div>
