@@ -1,4 +1,8 @@
-# Setup local dev env
+# Keyforge
+
+Edit your qmk keymap and download a compiled firmware directly from your browser.
+
+## Setup local dev env
 
 1. Generate keymaps
 
