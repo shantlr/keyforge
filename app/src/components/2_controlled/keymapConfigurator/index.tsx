@@ -1,6 +1,11 @@
 'use client';
 
-import { DndContext } from '@dnd-kit/core';
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 import { KeyboardInfo } from '@/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { isEqual, map } from 'lodash';
@@ -99,8 +104,17 @@ export const KeymapConfigurator = ({
   );
   const [showLayouts, setShowLayouts] = useState(!Boolean(selectedKeymap));
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        // delay: 500,
+        distance: 8,
+      },
+    })
+  );
+
   return (
-    <DndContext>
+    <DndContext sensors={sensors}>
       <KeyContext>
         <div className="expanded-container overflow-hiddden px-4">
           <div className="h-full flex grow-1 shrink-1 overflow-hidden">
