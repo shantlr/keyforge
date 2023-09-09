@@ -13,6 +13,7 @@ export const KeymapWithLayers = ({
   usedLayout,
   layers,
   layerId: controlledLayerId,
+  allowDropKey,
   onChangeLayer,
   onAddLayer,
   onRenameLayer,
@@ -24,6 +25,7 @@ export const KeymapWithLayers = ({
   editable?: boolean;
   keyboard: KeyboardInfo;
   usedLayout: string;
+  allowDropKey?: boolean;
   layers: KM['layers'];
   layerId?: string | null;
   onChangeLayer?: (layerId: string) => void;
@@ -102,7 +104,9 @@ export const KeymapWithLayers = ({
       <Keymap
         keyPositions={keyboard.layouts?.[usedLayout]?.layout}
         keys={layers.find((l) => l.id === currentLayerId)?.keys}
+        currentLayerId={currentLayerId}
         layers={layers}
+        allowDropKey
         {...props}
       />
     </div>

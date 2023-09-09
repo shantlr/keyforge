@@ -6,14 +6,18 @@ import { CSSProperties, useMemo } from 'react';
 import { KeyTheme } from '../key';
 import { Draggable } from '@/components/0_base/draggable';
 import { QMKKey } from '../qmkKey';
+import { Droppable } from '@/components/0_base/droppable';
 
 export const Keymap = ({
   keyPositions,
   baseWidth = 36,
   keySepWidth = 6,
+
   keys,
+  currentLayerId,
   layers,
 
+  allowDropKey,
   draggableIdPrefix,
   onKeyClick,
   isKeyDown,
@@ -26,6 +30,7 @@ export const Keymap = ({
   keySepWidth?: number;
   keys?: KeymapKeyDef[];
 
+  allowDropKey?: boolean;
   onKeyClick?: (arg: { key: KeymapKeyDef | null; index: number }) => void;
   isKeyDown?: (arg: { key: KeymapKeyDef | null; index: number }) => boolean;
   onKeyUpdate?: (arg: {
@@ -35,6 +40,7 @@ export const Keymap = ({
   }) => void;
 
   draggableIdPrefix?: string;
+  currentLayerId?: string;
   layers?: { id: string; name: string }[];
 
   theme?: KeyTheme;
@@ -111,35 +117,84 @@ export const Keymap = ({
               textSize,
             }}
           >
-            <QMKKey
-              className="absolute"
-              keyDef={kDef}
-              layers={layers}
-              height={height}
-              width={width}
-              onUpdate={(v) => {
-                onKeyUpdate?.({
-                  index: idx,
-                  prev: kDef ?? null,
-                  value: v,
-                });
-              }}
-              style={style}
-              isDown={isDown}
-              textSize={textSize}
-              theme={theme}
-              description={kConf?.description}
-              onClick={
-                onKeyClick
-                  ? () => {
-                      onKeyClick({
-                        key: keys?.[idx] ?? null,
-                        index: idx,
-                      });
-                    }
-                  : undefined
+            {({ isDragging }) => {
+              if (allowDropKey) {
+                return (
+                  <Droppable
+                    id={`${draggableIdPrefix || ''}${idx.toString()}`}
+                    data={{
+                      index: idx,
+                      layerId: currentLayerId,
+                    }}
+                  >
+                    {({ isOver }) => (
+                      <QMKKey
+                        className="absolute"
+                        keyDef={kDef}
+                        layers={layers}
+                        height={height}
+                        width={width}
+                        isDragging={isDragging}
+                        onUpdate={(v) => {
+                          onKeyUpdate?.({
+                            index: idx,
+                            prev: kDef ?? null,
+                            value: v,
+                          });
+                        }}
+                        style={style}
+                        isDown={isOver || isDown}
+                        textSize={textSize}
+                        theme={theme}
+                        description={kConf?.description}
+                        onClick={
+                          onKeyClick
+                            ? () => {
+                                onKeyClick({
+                                  key: keys?.[idx] ?? null,
+                                  index: idx,
+                                });
+                              }
+                            : undefined
+                        }
+                      />
+                    )}
+                  </Droppable>
+                );
               }
-            />
+              return (
+                <QMKKey
+                  className="absolute"
+                  keyDef={kDef}
+                  layers={layers}
+                  height={height}
+                  width={width}
+                  isDragging={isDragging}
+                  onUpdate={(v) => {
+                    onKeyUpdate?.({
+                      index: idx,
+                      prev: kDef ?? null,
+                      value: v,
+                    });
+                  }}
+                  style={style}
+                  isDown={isDown}
+                  textSize={textSize}
+                  theme={theme}
+                  description={kConf?.description}
+                  onClick={
+                    onKeyClick
+                      ? () => {
+                          onKeyClick({
+                            key: keys?.[idx] ?? null,
+                            index: idx,
+                          });
+                        }
+                      : undefined
+                  }
+                />
+              );
+            }}
           </Draggable>
         );
       })}

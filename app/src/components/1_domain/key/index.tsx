@@ -61,6 +61,7 @@ export const Key = forwardRef<
             'border-dashed pb-[0px] mt-[8px]': isDragging,
             'hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]':
               !isDragging,
+            'pb-[2px] mt-[2px] mt-[6px]': !isDragging && isDown,
           },
           secondary,
           className

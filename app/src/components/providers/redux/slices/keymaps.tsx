@@ -230,6 +230,9 @@ export const keymapSlice = createSlice({
       {
         payload: { id, layerId, key, keyIdx },
       }: PayloadAction<{
+        /**
+         * keymap ids
+         */
         id: string;
         layerId: string;
         keyIdx: number;

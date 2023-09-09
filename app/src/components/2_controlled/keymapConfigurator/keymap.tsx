@@ -83,6 +83,7 @@ export const ConfiguratorKeymap = ({
           setKeyIdxToEdit(index);
         }
       }}
+      allowDropKey
       onKeyUpdate={({ value, index }) => {
         if (!selectedLayerId) {
           return;
@@ -97,7 +98,6 @@ export const ConfiguratorKeymap = ({
           })
         );
       }}
-      paramsEditable
       layerId={selectedLayerId}
       onRenameLayer={({ layerId, name }) => {
         dispatch(

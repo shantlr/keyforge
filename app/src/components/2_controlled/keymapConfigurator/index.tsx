@@ -114,7 +114,38 @@ export const KeymapConfigurator = ({
   );
 
   return (
-    <DndContext sensors={sensors}>
+    <DndContext
+      sensors={sensors}
+      onDragEnd={(e) => {
+        if (!selectedKeymap) {
+          return;
+        }
+
+        if (
+          typeof e.active.id === 'string' &&
+          e.active.id?.startsWith('key-picker')
+        ) {
+          if (e.collisions?.length) {
+            const c = e.collisions.find(
+              (c) =>
+                typeof c.data?.droppableContainer?.data.current?.index ===
+                'number'
+            );
+            if (!c) {
+              return;
+            }
+            dispatch(
+              keymapSlice.actions.updateKeymapLayerKey({
+                id: selectedKeymap.id,
+                layerId: c?.data?.droppableContainer.data.current.layerId,
+                keyIdx: c?.data?.droppableContainer.data.current.index,
+                key: e.active.data.current?.kDef,
+              })
+            );
+          }
+        }
+      }}
+    >
       <KeyContext>
         <div className="expanded-container overflow-hiddden px-4">
           <div className="h-full flex grow-1 shrink-1 overflow-hidden">

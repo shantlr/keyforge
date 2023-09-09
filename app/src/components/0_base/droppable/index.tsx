@@ -1,33 +1,25 @@
-import { useDraggable } from '@dnd-kit/core';
+import { useDroppable } from '@dnd-kit/core';
 import { ReactElement, cloneElement, forwardRef } from 'react';
-import { mergeProps } from 'react-aria';
 
-export const Draggable = forwardRef<
+export const Droppable = forwardRef<
   {
     id: string;
     data: any;
-    children:
-      | ReactElement
-      | ((props: { isDragging?: boolean }) => ReactElement);
+    children: ReactElement | ((props: { isOver?: boolean }) => ReactElement);
   },
   any
 >(({ id, data, children }, ref) => {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+  const { setNodeRef, isOver } = useDroppable({
     id,
     data,
   });
+  if (isOver) {
+    console.log(isOver);
+  }
 
-  const c =
-    typeof children === 'function'
-      ? children({
-          isDragging,
-        })
-      : children;
+  const c = typeof children === 'function' ? children({ isOver }) : children;
 
   return cloneElement(c, {
-    ...attributes,
-    ...mergeProps(c.props, listeners),
-
     ref: (elem: any) => {
       setNodeRef(elem);
       if (typeof c.props.ref === 'function') {
@@ -35,6 +27,7 @@ export const Draggable = forwardRef<
       } else if (c.props.ref) {
         c.props.ref.current = elem;
       }
+
       if (typeof ref === 'function') {
         ref(elem);
       } else if (ref) {
@@ -43,4 +36,4 @@ export const Draggable = forwardRef<
     },
   });
 });
-Draggable.displayName = 'Draggable';
+Droppable.displayName = 'Droppable';
