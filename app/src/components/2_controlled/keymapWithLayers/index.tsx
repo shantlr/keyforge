@@ -98,7 +98,8 @@ export const KeymapWithLayers = ({
             }
             onChangeLayer?.(layerId);
           }}
-          onLayerDelete={onLayerDelete}
+          // cannot delete layer when only one
+          onLayerDelete={layers.length >= 2 ? onLayerDelete : undefined}
         />
       </div>
       <Keymap

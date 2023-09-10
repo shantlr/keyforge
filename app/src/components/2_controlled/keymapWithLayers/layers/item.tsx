@@ -58,6 +58,7 @@ export const LayerItem = ({
             <FontAwesomeIcon icon={faCopy} />
           </Button>
           <Button
+            isDisabled={!onDelete}
             onPress={() => {
               onDelete?.();
             }}
