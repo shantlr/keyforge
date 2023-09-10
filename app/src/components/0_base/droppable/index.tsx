@@ -2,12 +2,12 @@ import { useDroppable } from '@dnd-kit/core';
 import { ReactElement, cloneElement, forwardRef } from 'react';
 
 export const Droppable = forwardRef<
+  any,
   {
     id: string;
     data: any;
     children: ReactElement | ((props: { isOver?: boolean }) => ReactElement);
-  },
-  any
+  }
 >(({ id, data, children }, ref) => {
   const { setNodeRef, isOver } = useDroppable({
     id,

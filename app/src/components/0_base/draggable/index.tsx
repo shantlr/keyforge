@@ -3,14 +3,14 @@ import { ReactElement, cloneElement, forwardRef } from 'react';
 import { mergeProps } from 'react-aria';
 
 export const Draggable = forwardRef<
+  any,
   {
     id: string;
     data: any;
     children:
       | ReactElement
       | ((props: { isDragging?: boolean }) => ReactElement);
-  },
-  any
+  }
 >(({ id, data, children }, ref) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id,
