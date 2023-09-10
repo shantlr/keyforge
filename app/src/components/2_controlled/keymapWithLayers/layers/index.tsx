@@ -38,9 +38,10 @@ export const Layers = ({
 }) => {
   const items = useMemo(() => [...layers].reverse(), [layers]);
   const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
     })
   );
 

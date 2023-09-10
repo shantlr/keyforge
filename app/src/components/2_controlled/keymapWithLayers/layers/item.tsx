@@ -51,14 +51,6 @@ export const LayerItem = ({
           <Button
             className="px-[6px] text-[10px] bg-mainbg"
             onPress={() => {
-              setEdit(true);
-            }}
-          >
-            <FontAwesomeIcon icon={faEdit} />
-          </Button>
-          <Button
-            className="px-[6px] text-[10px] bg-mainbg"
-            onPress={() => {
               onDuplicateLayer?.();
             }}
           >

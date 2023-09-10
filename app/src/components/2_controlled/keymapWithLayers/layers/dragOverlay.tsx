@@ -10,7 +10,6 @@ export const LayersDragOverlay = ({
 }) => {
   const { active } = useDndContext();
   const dragLayer = active ? layers.find((l) => l.id === active?.id) : null;
-  console.log(dragLayer);
 
   return (
     <DragOverlay>
