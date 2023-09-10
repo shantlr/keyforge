@@ -107,7 +107,6 @@ export const KeymapConfigurator = ({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        // delay: 500,
         distance: 8,
       },
     })

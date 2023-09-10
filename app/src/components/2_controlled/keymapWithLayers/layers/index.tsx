@@ -1,11 +1,9 @@
 'use client';
 
 import { Keymap } from '@/components/providers/redux';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   DndContext,
-  DragOverlay,
-  KeyboardSensor,
   PointerSensor,
   closestCenter,
   useSensor,
@@ -13,7 +11,6 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { LayerItem } from './item';
@@ -44,12 +41,17 @@ export const Layers = ({
       },
     })
   );
+  const [dragged, setDragged] = useState<string | null>(null);
 
   return (
     <DndContext
+      onDragStart={(e) => {
+        setDragged(e.active.id as string);
+      }}
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={(e) => {
+        setDragged(null);
         onLayerMove?.({
           srcIdx: layers.findIndex((l) => l.id === e.active.id) as number,
           dstIdx: layers.findIndex((l) => l.id === e.over?.id) as number,
@@ -63,13 +65,14 @@ export const Layers = ({
               layer={l}
               key={idx}
               active={selectedLayerId === l.id}
+              isDragged={l.id === dragged}
               onNameChange={(e) => {
                 onRenameLayer?.({
                   layerId: l.id,
                   name: e.target.value,
                 });
               }}
-              onPointerDown={() => {
+              onClick={() => {
                 onSelectLayer?.(l.id);
               }}
               onDuplicateLayer={() => {

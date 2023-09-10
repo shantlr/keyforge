@@ -5,7 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Tooltip } from '@/components/0_base/tooltips';
 import { Button } from '@/components/0_base/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { InputButton } from '@/components/0_base/inputButton';
 import { mergeProps } from 'react-aria';
 
@@ -19,6 +19,7 @@ export const LayerItem = ({
 }: {
   layer: Keymap['layers'][number];
   active?: boolean;
+  isDragged?: boolean;
   onNameChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onDelete?: () => void;
   onDuplicateLayer?: () => void;

@@ -55,6 +55,7 @@ export const InputButton = forwardRef<
         </div>
       );
     }
+
     return (
       <InputFit
         className="w-full"
