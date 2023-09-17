@@ -3,15 +3,16 @@ import { Key } from '../key';
 import { KEYS, getKeyConfFromDef } from '@/constants';
 import { KeymapKeyDef } from '@/types';
 import { CustomKeyComponent } from './customKeys/types';
-import { LayerKey } from './customKeys/LayerKey';
-import { KeyModifier } from './customKeys/KeyModifier';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCaretDown,
   faCaretLeft,
   faCaretRight,
   faCaretUp,
 } from '@fortawesome/free-solid-svg-icons';
+import { createIconKey } from './customKeys/iconKey';
+import { LayerKey } from './customKeys/layerKey';
+import { KeyModifier } from './customKeys/keyModifier';
+import { Droppable } from '@/components/0_base/droppable';
 
 const CUSTOM_KEYS_COMPONENTS: Record<string, CustomKeyComponent> = {
   ...KEYS.filter((k) => 'group' in k && k.group === 'layer').reduce(
@@ -28,36 +29,80 @@ const CUSTOM_KEYS_COMPONENTS: Record<string, CustomKeyComponent> = {
     },
     {} as Record<string, CustomKeyComponent>
   ),
-  KC_UP: () => <FontAwesomeIcon icon={faCaretUp} />,
-  KC_DOWN: () => <FontAwesomeIcon icon={faCaretDown} />,
-  KC_LEFT: () => <FontAwesomeIcon icon={faCaretLeft} />,
-  KC_RGHT: () => <FontAwesomeIcon icon={faCaretRight} />,
+  KC_UP: createIconKey(faCaretUp),
+  KC_DOWN: createIconKey(faCaretDown),
+  KC_LEFT: createIconKey(faCaretLeft),
+  KC_RGHT: createIconKey(faCaretRight),
 };
 
 export const QMKKey = forwardRef<
   HTMLDivElement,
   {
     keyDef?: KeymapKeyDef | null;
+    droppableId?: string;
+    droppableData?: any;
   } & Omit<Partial<ComponentProps<CustomKeyComponent>>, 'keyConf'> &
-    Omit<ComponentProps<typeof Key>, 'children'>
->(({ keyDef, layers, onUpdate, ...props }, ref) => {
-  const kConf = getKeyConfFromDef(keyDef);
+    Omit<ComponentProps<typeof Key>, 'children' | 'onDrop'>
+>(
+  (
+    {
+      keyDef,
+      layers,
+      onUpdate,
 
-  const CustomComponent = kConf && CUSTOM_KEYS_COMPONENTS[kConf.key];
+      droppableId,
+      droppableData,
+      droppableDepth,
+      onDrop,
+      ...props
+    },
+    ref
+  ) => {
+    const kConf = getKeyConfFromDef(keyDef);
 
-  return (
-    <Key ref={ref} {...props}>
-      {CustomComponent ? (
+    const CustomComponent = kConf && CUSTOM_KEYS_COMPONENTS[kConf.key];
+
+    if (CustomComponent) {
+      return (
         <CustomComponent
+          ref={ref}
           keyConf={kConf}
-          params={typeof keyDef === 'object' ? keyDef?.params : null}
           layers={layers}
+          params={typeof keyDef === 'object' ? keyDef?.params : null}
           onUpdate={onUpdate}
+          onDrop={onDrop}
+          droppableId={droppableId}
+          droppableDepth={droppableDepth}
+          droppableData={droppableData}
+          {...props}
         />
-      ) : (
-        kConf?.title || kConf?.key || 'N/A'
-      )}
-    </Key>
-  );
-});
+      );
+    }
+
+    if (droppableId) {
+      return (
+        <Droppable
+          id={droppableId}
+          data={{
+            ...droppableData,
+            droppableDepth,
+          }}
+          onDrop={onDrop}
+        >
+          {({ isOver }) => (
+            <Key ref={ref} {...props} isDown={isOver || props.isDown}>
+              {kConf?.title || kConf?.key || 'N/A'}
+            </Key>
+          )}
+        </Droppable>
+      );
+    }
+
+    return (
+      <Key ref={ref} {...props}>
+        {kConf?.title || kConf?.key || 'N/A'}
+      </Key>
+    );
+  }
+);
 QMKKey.displayName = 'QMKKey';

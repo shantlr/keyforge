@@ -1,22 +1,4 @@
-import { Keymap } from '@/components/providers/redux';
-import { ReduxDispatch } from '@/components/providers/redux/store';
 import { useEffect, useRef } from 'react';
-
-// export const useUpdateKeyUsingKeyboard = ({
-//   keymap,
-//   dispatch,
-//   keyIdx,
-//   layerIdx
-// }: {
-//   keymap: Keymap | null;
-//   dispatch: ReduxDispatch;
-//   layerIdx: number | null;
-//   keyIdx: number | null;
-// }) => {
-
-//   useEffect(() => {
-//   }, []);
-// };
 
 const toKeycode = (e: KeyboardEvent) => {
   switch (e.key) {

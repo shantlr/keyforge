@@ -1,14 +1,15 @@
 'use client';
 
 import {
-  DndContext,
   PointerSensor,
+  pointerWithin,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { KeyboardInfo } from '@/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { isEqual, map } from 'lodash';
+import { isEqual, map, sortBy } from 'lodash';
 import { $$getExistingKeymap } from '@/actions/getExisingKeymap';
 import { Button } from '../../0_base/button';
 import { Disclosure } from '@/components/0_base/disclosure';
@@ -28,6 +29,23 @@ import { KeyContext } from './keyContext';
 import { ConfiguratorKeyPicker } from './keyPicker';
 import { ConfiguratorKeymap } from './keymap';
 import { ConfiguratorDraggableOverlay } from './dragOverlay';
+import {
+  DndContext,
+  WrappedCollisionDetection,
+} from '@/components/0_base/dnd/context';
+
+const customCollisions: WrappedCollisionDetection = (e) => {
+  const prevOver = e.prevCollisions?.[0];
+  const res = pointerWithin(e);
+
+  return sortBy(res, (d) => {
+    // ensure that deeper droppable are collided first
+    return -(
+      (d.data?.droppableContainer?.data.current?.droppableDepth ?? 0) +
+      (prevOver?.id === d.id ? 0.5 : 0)
+    );
+  });
+};
 
 export const KeymapConfigurator = ({
   keyboardKey,
@@ -115,35 +133,8 @@ export const KeymapConfigurator = ({
   return (
     <DndContext
       sensors={sensors}
-      onDragEnd={(e) => {
-        if (!selectedKeymap) {
-          return;
-        }
-
-        if (
-          typeof e.active.id === 'string' &&
-          e.active.id?.startsWith('key-picker')
-        ) {
-          if (e.collisions?.length) {
-            const c = e.collisions.find(
-              (c) =>
-                typeof c.data?.droppableContainer?.data.current?.index ===
-                'number'
-            );
-            if (!c) {
-              return;
-            }
-            dispatch(
-              keymapSlice.actions.updateKeymapLayerKey({
-                id: selectedKeymap.id,
-                layerId: c?.data?.droppableContainer.data.current.layerId,
-                keyIdx: c?.data?.droppableContainer.data.current.index,
-                key: e.active.data.current?.kDef,
-              })
-            );
-          }
-        }
-      }}
+      modifiers={[snapCenterToCursor]}
+      collisionDetection={customCollisions}
     >
       <KeyContext>
         <div className="expanded-container overflow-hiddden px-4">

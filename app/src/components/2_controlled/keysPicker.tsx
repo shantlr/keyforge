@@ -167,7 +167,15 @@ const LineKeys = ({
       <div>{title}</div>
       <Keymap
         keyPositions={keys.map((_, idx) => ({ x: idx, y: 0 }))}
-        keys={keys.map((k) => ({ key: k.key, params: [] }))}
+        // @ts-ignore
+        keys={keys.map((k) =>
+          !k.params
+            ? k.key
+            : {
+                key: k.key,
+                params: k.params,
+              }
+        )}
         {...props}
       />
     </div>

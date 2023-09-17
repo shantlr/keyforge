@@ -8,9 +8,13 @@ export const ConfiguratorDraggableOverlay = () => {
     <DragOverlay>
       {active?.data.current ? (
         <QMKKey
+          style={{
+            opacity: 0.6,
+          }}
+          className="shadow-xl"
           width={active.data.current.width}
           height={active.data.current.height}
-          keyDef={active.data.current.kDef}
+          keyDef={active.data.current.keyDef}
           textSize={active.data.current.textSize}
         />
       ) : null}

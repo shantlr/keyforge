@@ -29,7 +29,7 @@ export type KeymapKeyParam =
     }
   | {
       type: 'key';
-      value: string | null;
+      value: KeymapKeyDef | null;
     };
 
 export type KeymapKeyDef =

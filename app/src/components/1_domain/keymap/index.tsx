@@ -2,7 +2,7 @@
 
 import { getKeyConfFromDef } from '@/constants';
 import { KeymapKeyDef } from '@/types';
-import { CSSProperties, useMemo } from 'react';
+import { CSSProperties, useId, useMemo } from 'react';
 import { KeyTheme } from '../key';
 import { Draggable } from '@/components/0_base/draggable';
 import { QMKKey } from '../qmkKey';
@@ -45,6 +45,8 @@ export const Keymap = ({
 
   theme?: KeyTheme;
 }) => {
+  const localId = useId();
+
   const height = useMemo(() => {
     if (!keyPositions) {
       return 0;
@@ -110,66 +112,78 @@ export const Keymap = ({
             key={idx}
             id={`${draggableIdPrefix || ''}${idx.toString()}`}
             data={{
+              type: 'key',
+              keyDef: kDef,
               theme,
-              kDef,
               width,
               height,
               textSize,
+
+              keymapKeyIndex: idx,
+              keymapLocalId: localId,
             }}
           >
             {({ isDragging }) => {
-              if (allowDropKey) {
-                return (
-                  <Droppable
-                    id={`${draggableIdPrefix || ''}${idx.toString()}`}
-                    data={{
-                      index: idx,
-                      layerId: currentLayerId,
-                    }}
-                  >
-                    {({ isOver }) => (
-                      <QMKKey
-                        className="absolute"
-                        keyDef={kDef}
-                        layers={layers}
-                        height={height}
-                        width={width}
-                        isDragging={isDragging}
-                        onUpdate={(v) => {
-                          onKeyUpdate?.({
-                            index: idx,
-                            prev: kDef ?? null,
-                            value: v,
-                          });
-                        }}
-                        style={style}
-                        isDown={isOver || isDown}
-                        textSize={textSize}
-                        theme={theme}
-                        description={kConf?.description}
-                        onClick={
-                          onKeyClick
-                            ? () => {
-                                onKeyClick({
-                                  key: keys?.[idx] ?? null,
-                                  index: idx,
-                                });
-                              }
-                            : undefined
-                        }
-                      />
-                    )}
-                  </Droppable>
-                );
-              }
+              // if (allowDropKey) {
               return (
+                // <Droppable
+                //   id={`${draggableIdPrefix || ''}${idx.toString()}`}
+                //   data={{
+                //     type: 'droppable-key',
+                //     index: idx,
+                //     layerId: currentLayerId,
+                //   }}
+                //   onDrop={(e) => {
+                //     const { active } = e.data;
+                //     e.stopPropagation();
+                //     const dropped = active.data.current as any;
+                //     if (dropped?.type === 'key') {
+                //       onKeyUpdate?.({
+                //         index: idx,
+                //         prev: kDef ?? null,
+                //         value: dropped.keyDef,
+                //       });
+                //     }
+                //   }}
+                // >
+                //   {({ isOver }) => (
                 <QMKKey
                   className="absolute"
                   keyDef={kDef}
                   layers={layers}
                   height={height}
                   width={width}
-                  isDragging={isDragging}
+                  // isDraggingOver={isOver}
+                  droppableId={
+                    allowDropKey
+                      ? `${draggableIdPrefix || ''}${idx}`
+                      : undefined
+                  }
+                  droppableData={
+                    allowDropKey
+                      ? {
+                          type: 'droppable-key',
+                          index: idx,
+                          layerId: currentLayerId,
+                        }
+                      : undefined
+                  }
+                  onDrop={
+                    allowDropKey
+                      ? (e) => {
+                          const { active } = e.data;
+                          e.stopPropagation();
+                          const dropped = active.data.current as any;
+                          if (dropped?.type === 'key') {
+                            onKeyUpdate?.({
+                              index: idx,
+                              prev: kDef ?? null,
+                              value: dropped.keyDef,
+                            });
+                          }
+                        }
+                      : undefined
+                  }
                   onUpdate={(v) => {
                     onKeyUpdate?.({
                       index: idx,
@@ -194,6 +208,43 @@ export const Keymap = ({
                   }
                 />
               );
+              // }
+              //     </Droppable>
+              //   );
+              // }
+
+              // return (
+              //   <QMKKey
+              //     className="absolute"
+              //     keyDef={kDef}
+              //     layers={layers}
+              //     height={height}
+              //     width={width}
+              //     isDragging={isDragging}
+              //     onUpdate={(v) => {
+              //       onKeyUpdate?.({
+              //         index: idx,
+              //         prev: kDef ?? null,
+              //         value: v,
+              //       });
+              //     }}
+              //     style={style}
+              //     isDown={isDown}
+              //     textSize={textSize}
+              //     theme={theme}
+              //     description={kConf?.description}
+              //     onClick={
+              //       onKeyClick
+              //         ? () => {
+              //             onKeyClick({
+              //               key: keys?.[idx] ?? null,
+              //               index: idx,
+              //             });
+              //           }
+              //         : undefined
+              //     }
+              //   />
+              // );
             }}
           </Draggable>
         );

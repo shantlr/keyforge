@@ -1,39 +1,45 @@
 import { useDroppable } from '@dnd-kit/core';
-import { ReactElement, cloneElement, forwardRef } from 'react';
+import { ReactElement, cloneElement, forwardRef, useMemo } from 'react';
+import { useOnDrop } from '../dnd/context';
 
 export const Droppable = forwardRef<
   any,
   {
     id: string;
     data: any;
+    onDrop?: Parameters<typeof useOnDrop>[1];
     children: ReactElement | ((props: { isOver?: boolean }) => ReactElement);
   }
->(({ id, data, children }, ref) => {
+>(({ id, data, onDrop, children }, ref) => {
   const { setNodeRef, isOver } = useDroppable({
     id,
     data,
   });
-  if (isOver) {
-    console.log(isOver);
-  }
 
-  const c = typeof children === 'function' ? children({ isOver }) : children;
+  useOnDrop(id, onDrop);
 
-  return cloneElement(c, {
-    ref: (elem: any) => {
-      setNodeRef(elem);
-      if (typeof c.props.ref === 'function') {
-        c.props.ref(elem);
-      } else if (c.props.ref) {
-        c.props.ref.current = elem;
-      }
+  return useMemo(() => {
+    const c = typeof children === 'function' ? children({ isOver }) : children;
 
-      if (typeof ref === 'function') {
-        ref(elem);
-      } else if (ref) {
-        ref.current = elem;
-      }
-    },
-  });
+    return cloneElement(c, {
+      ...c.props,
+      ref: (elem: any) => {
+        setNodeRef(elem);
+        if ('ref' in c) {
+          if (typeof c.ref === 'function') {
+            c.ref(elem);
+          } else if (typeof c.ref === 'object' && c.ref && 'current' in c.ref) {
+            c.ref.current = elem;
+          }
+        }
+
+        if (typeof ref === 'function') {
+          ref(elem);
+        } else if (ref) {
+          ref.current = elem;
+        }
+      },
+    });
+  }, [children, isOver, ref, setNodeRef]);
 });
 Droppable.displayName = 'Droppable';

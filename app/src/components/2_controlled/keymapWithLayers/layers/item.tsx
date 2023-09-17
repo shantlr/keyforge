@@ -15,6 +15,7 @@ export const LayerItem = ({
   onDelete,
   onDuplicateLayer,
   onNameChange,
+  isDragged,
   ...props
 }: {
   layer: Keymap['layers'][number];

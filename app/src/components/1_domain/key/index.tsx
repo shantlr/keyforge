@@ -15,6 +15,9 @@ export const KEY_THEME: Record<string, KeyTheme> = {
   },
 };
 
+export const KEY_DEFAULT_WIDTH = 36;
+export const KEY_DEFAULT_HEIGHT = 36;
+
 export const Key = forwardRef<
   HTMLDivElement,
   {
@@ -41,8 +44,8 @@ export const Key = forwardRef<
       isDragging,
       style,
 
-      width = 36,
-      height = 36,
+      width = KEY_DEFAULT_WIDTH,
+      height = KEY_DEFAULT_HEIGHT,
 
       theme: {
         primary = KEY_THEME.default.primary,
@@ -106,46 +109,3 @@ export const Key = forwardRef<
   }
 );
 Key.displayName = 'Key';
-
-export const DraggableKey = forwardRef<
-  HTMLDivElement,
-  ComponentProps<typeof Key> & {
-    id: string;
-    dragData?: any;
-  }
->(({ id, style, className, dragData, ...props }, ref) => {
-  const { attributes, listeners, setNodeRef, isDragging, transform } =
-    useDraggable({
-      id,
-      data: dragData,
-    });
-  const dragStyle = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-
-  return (
-    <Key
-      ref={(r) => {
-        setNodeRef(r);
-        if (typeof ref === 'function') {
-          ref(r);
-        } else if (ref) {
-          ref.current = r;
-        }
-      }}
-      className={clsx(className, {
-        'z-10': isDragging,
-      })}
-      {...attributes}
-      {...listeners}
-      {...props}
-      style={{
-        ...(style || null),
-        ...(dragStyle || null),
-      }}
-    />
-  );
-});
-DraggableKey.displayName = 'DraggableKey';
