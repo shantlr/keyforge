@@ -952,7 +952,7 @@ export type KeyConfig = {
   title?: string;
   description?: string;
   group?: ((typeof KEYS)[number] & { group: string & {} })['group'];
-  params?: [{ type: 'layer' | 'key' }];
+  params?: readonly [{ type: 'layer' | 'key' }];
 };
 
 export const KEYS_MAP = KEYS.reduce(

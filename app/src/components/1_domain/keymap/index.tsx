@@ -6,7 +6,6 @@ import { CSSProperties, useId, useMemo } from 'react';
 import { KeyTheme } from '../key';
 import { Draggable } from '@/components/0_base/draggable';
 import { QMKKey } from '../qmkKey';
-import { Droppable } from '@/components/0_base/droppable';
 
 export const Keymap = ({
   keyPositions,
@@ -123,37 +122,14 @@ export const Keymap = ({
               keymapLocalId: localId,
             }}
           >
-            {({ isDragging }) => {
-              // if (allowDropKey) {
+            {() => {
               return (
-                // <Droppable
-                //   id={`${draggableIdPrefix || ''}${idx.toString()}`}
-                //   data={{
-                //     type: 'droppable-key',
-                //     index: idx,
-                //     layerId: currentLayerId,
-                //   }}
-                //   onDrop={(e) => {
-                //     const { active } = e.data;
-                //     e.stopPropagation();
-                //     const dropped = active.data.current as any;
-                //     if (dropped?.type === 'key') {
-                //       onKeyUpdate?.({
-                //         index: idx,
-                //         prev: kDef ?? null,
-                //         value: dropped.keyDef,
-                //       });
-                //     }
-                //   }}
-                // >
-                //   {({ isOver }) => (
                 <QMKKey
                   className="absolute"
                   keyDef={kDef}
                   layers={layers}
                   height={height}
                   width={width}
-                  // isDraggingOver={isOver}
                   droppableId={
                     allowDropKey
                       ? `${draggableIdPrefix || ''}${idx}`
@@ -208,43 +184,6 @@ export const Keymap = ({
                   }
                 />
               );
-              // }
-              //     </Droppable>
-              //   );
-              // }
-
-              // return (
-              //   <QMKKey
-              //     className="absolute"
-              //     keyDef={kDef}
-              //     layers={layers}
-              //     height={height}
-              //     width={width}
-              //     isDragging={isDragging}
-              //     onUpdate={(v) => {
-              //       onKeyUpdate?.({
-              //         index: idx,
-              //         prev: kDef ?? null,
-              //         value: v,
-              //       });
-              //     }}
-              //     style={style}
-              //     isDown={isDown}
-              //     textSize={textSize}
-              //     theme={theme}
-              //     description={kConf?.description}
-              //     onClick={
-              //       onKeyClick
-              //         ? () => {
-              //             onKeyClick({
-              //               key: keys?.[idx] ?? null,
-              //               index: idx,
-              //             });
-              //           }
-              //         : undefined
-              //     }
-              //   />
-              // );
             }}
           </Draggable>
         );
