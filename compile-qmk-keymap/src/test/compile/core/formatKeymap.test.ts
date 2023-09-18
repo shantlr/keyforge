@@ -66,4 +66,40 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [LAYER_2] = layout_test(KC_D, KC_E, KC_F),
 };`);
   });
+
+  it('should format nested modifier key', () => {
+    expect(
+      formatKeymap({
+        keyboardName: 'test',
+        layout: 'layout_test',
+        layers: [
+          {
+            id: 'id1',
+            name: '1',
+            keys: [
+              'KC_A',
+              {
+                key: 'LCTL',
+                params: [
+                  {
+                    type: 'key',
+                    value: {
+                      key: 'LALT',
+                      params: [{ type: 'key', value: 'KC_LEFT' }],
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }),
+    ).toBe(`#include QMK_KEYBOARD_H
+enum test_layers {
+  LAYER_1,
+};
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+  [LAYER_1] = layout_test(KC_A, LCTL(LALT(KC_LEFT))),
+};`);
+  });
 });

@@ -1,7 +1,7 @@
 import { toLower } from 'lodash';
 import { formatNode } from './core/formatNode';
 import { StatementsNode, ValueExprNode } from './core/types';
-import { KeymapInput } from '../types';
+import { KeyInput, KeymapInput } from '../types';
 
 const formatKeymapName = (name: string) => {
   return toLower(name)
@@ -13,6 +13,38 @@ const formatKeymapName = (name: string) => {
 const formatLayerName = (layerName: string) => {
   const normalized = layerName.replace(/ |-/g, '_').replace(/[^0-9a-z_]/gi, '');
   return `LAYER_${normalized}`;
+};
+
+export const formatKey = (
+  key: KeyInput,
+  { layers }: { layers: KeymapInput['layers'] },
+): ValueExprNode => {
+  if (typeof key === 'string') {
+    return key;
+  }
+
+  if (typeof key === 'object') {
+    return {
+      type: 'postCall',
+      fn: key.key,
+      calls: [
+        key.params.map((param) => {
+          if (param.type === 'layer') {
+            const layer = layers.find((l) => l.id === param.value);
+            return formatLayerName(layer.name);
+          }
+
+          if (param.type === 'key') {
+            return formatKey(param.value, { layers });
+          }
+
+          throw new Error(`Unhandled key param: ${JSON.stringify(param)}`);
+        }),
+      ],
+    };
+  }
+
+  throw new Error(`Unhandled key: ${JSON.stringify(key)}`);
 };
 
 export const formatKeymap = ({
@@ -60,35 +92,7 @@ export const formatKeymap = ({
                 fn: layout,
                 calls: [
                   layer.keys.map((k) => {
-                    if (typeof k === 'string') {
-                      return k;
-                    }
-                    if (typeof k === 'object') {
-                      return {
-                        type: 'postCall',
-                        fn: k.key,
-                        calls: [
-                          k.params.map((param) => {
-                            if (param.type === 'layer') {
-                              const layer = layers.find(
-                                (l) => l.id === param.value,
-                              );
-                              return formatLayerName(layer.name);
-                            }
-
-                            if (param.type === 'key') {
-                              return param.value;
-                            }
-
-                            throw new Error(
-                              `Unhandled key param: ${JSON.stringify(param)}`,
-                            );
-                          }),
-                        ],
-                      };
-                    }
-
-                    throw new Error(`Unhandled key: ${JSON.stringify(k)}`);
+                    return formatKey(k, { layers });
                   }),
                 ],
               };

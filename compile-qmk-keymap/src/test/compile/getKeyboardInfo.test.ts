@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { getKeyboardInfo } from '../../compile';
+import { getKeyboardInfo } from '../../compile/getKeyboardInfo';
 
 jest.mock('fs/promises');
 

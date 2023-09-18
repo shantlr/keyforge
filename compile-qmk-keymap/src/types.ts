@@ -1,25 +1,26 @@
+export type KeyInput =
+  | string
+  | {
+      key: string;
+      params: (
+        | {
+            type: 'layer';
+            value: string;
+          }
+        | {
+            type: 'key';
+            value: string | KeyInput;
+          }
+      )[];
+    };
+
 export type KeymapInput = {
   keyboardQmkPath: string;
   layout: string;
   layers: {
     id: string;
     name: string;
-    keys: (
-      | string
-      | {
-          key: string;
-          params: (
-            | {
-                type: 'layer';
-                value: string;
-              }
-            | {
-                type: 'key';
-                value: string;
-              }
-          )[];
-        }
-    )[];
+    keys: KeyInput[];
   }[];
 };
 
