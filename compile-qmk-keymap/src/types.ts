@@ -9,7 +9,7 @@ export type KeyInput =
           }
         | {
             type: 'key';
-            value: string | KeyInput;
+            value: KeyInput;
           }
       )[];
     };

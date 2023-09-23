@@ -64,8 +64,19 @@ export const Compile = ({
           layout: selectedKeymap?.layout,
         }),
       });
-      const job = (await res.json()) as CompileJob;
-      return job.id;
+      if (res.status >= 400) {
+        throw new Error(
+          `${res.status}: ${(await res.text()) || res.statusText}`
+        );
+      }
+      const result = (await res.json()) as
+        | { success: true; job: CompileJob }
+        | { success: false; code?: string };
+      if (!result.success) {
+        throw new Error(`${result.code}`);
+      }
+
+      return result.job.id;
     },
     {
       onSuccess() {
@@ -158,7 +169,11 @@ export const Compile = ({
       </div>
       <div className="pt-8 pb-8 h-full px-[120px] overflow-auto">
         <VerticalSteps current={state.current}>
-          <Step name="wait" done={state.jobReady}>
+          <Step
+            name="wait"
+            failed={Boolean(createJobError)}
+            done={state.jobReady}
+          >
             {() => {
               if (state.jobReady) {
                 return <span>Runner ready</span>;

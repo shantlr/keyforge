@@ -1,7 +1,27 @@
 import { keyboardInfo } from '@/lib/keyboards';
 import { COMPILE } from '@/server/compile';
+import { KeymapKeyDef } from '@/types';
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
+import { ZodError, z } from 'zod';
+
+const validateKey: z.ZodType<KeymapKeyDef> = z.union([
+  z.string(),
+  z.strictObject({
+    key: z.string(),
+    params: z
+      .union([
+        z.strictObject({
+          type: z.enum(['layer']),
+          value: z.string(),
+        }),
+        z.strictObject({
+          type: z.enum(['key']),
+          value: z.lazy(() => validateKey),
+        }),
+      ])
+      .array(),
+  }),
+]);
 
 const validate = z.strictObject({
   keyboardKey: z.string(),
@@ -10,26 +30,7 @@ const validate = z.strictObject({
     .strictObject({
       id: z.string(),
       name: z.string(),
-      keys: z
-        .union([
-          z.string(),
-          z.strictObject({
-            key: z.string(),
-            params: z
-              .union([
-                z.strictObject({
-                  type: z.enum(['layer']),
-                  value: z.string(),
-                }),
-                z.strictObject({
-                  type: z.enum(['key']),
-                  value: z.string(),
-                }),
-              ])
-              .array(),
-          }),
-        ])
-        .array(),
+      keys: validateKey.array(),
     })
     .array(),
 });
@@ -38,9 +39,9 @@ const validate = z.strictObject({
  * Create a compile job
  */
 export async function POST(request: Request) {
-  const parsed = validate.parse(await request.json());
-
   try {
+    const parsed = validate.parse(await request.json());
+
     const kb = await keyboardInfo.get(parsed.keyboardKey);
     const job = COMPILE.createJob({
       keyboardQmkPath: kb.qmkpath,
@@ -48,30 +49,27 @@ export async function POST(request: Request) {
       layout: parsed.layout,
     });
 
-    return NextResponse.json(job);
+    return NextResponse.json({
+      success: true,
+      job,
+    });
     // request.signal.addEventListener('abort', () => {
     //   console.log('[compile] request aborted: cancelling job');
     //   COMPILE.canceJob(job.id);
     // });
-
-    // while (true) {
-    //   if (request.signal.aborted) {
-    //     console.log('[compile] request aborted.');
-    //     return;
-    //   }
-
-    //   const j = COMPILE.getJob(job.id);
-    //   if (j.state === 'done') {
-    //     return new Response(j.result, {
-    //       status: 200,
-    //     });
-    //   }
-    //   await sleep(500);
-    // }
   } catch (err) {
+    if (err instanceof ZodError) {
+      return NextResponse.json({
+        success: false,
+        code: 'INVALID_INPUT',
+        errors: err.errors,
+      });
+    }
+
     console.error(err);
-    return {
+    return NextResponse.json({
       success: false,
-    };
+      code: 'INTERNAL',
+    });
   }
 }
