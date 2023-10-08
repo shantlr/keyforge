@@ -1,4 +1,4 @@
-import { CompileKeymapInput } from '@/types';
+import { CompileKeymapInput } from '../../validate.js';
 
 export interface CompileRunner {
   run(
@@ -6,6 +6,6 @@ export interface CompileRunner {
     opt?: {
       onStdout?: (data: string) => void;
       onStderr?: (data: string) => void;
-    }
+    },
   ): Promise<ArrayBuffer>;
 }

@@ -1,25 +1,26 @@
 'use client';
 
-import { useSelector } from '@/components/providers/redux';
-import { KeyboardInfo } from '@/types';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toLower } from 'lodash';
 import { PropsWithChildren, useState } from 'react';
 import { useQuery } from 'react-query';
+
+import {
+  $$compileCreateJob,
+  $$compilePingJob,
+  CompileJob,
+} from '@/actions/compile';
 import { Button } from '@/components/0_base/button';
 import { Step, VerticalSteps } from '@/components/0_base/verticalSteps';
-import { useDownloadBlob } from './useDownloadBlob';
-import { toLower } from 'lodash';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from '@/components/providers/redux';
+import { KeyboardInfo } from '@/types';
+
 import { Logs } from './logs';
+import { useDownloadBlob } from './useDownloadBlob';
 
 const DisabledStep = ({ children }: PropsWithChildren) => {
   return <span className="text-gray-500">{children}</span>;
-};
-
-type CompileJob = {
-  id: string;
-  state: 'pending' | 'ready' | 'ongoing' | 'done';
-  logs: string[];
 };
 
 export const Compile = ({
@@ -46,39 +47,28 @@ export const Compile = ({
     hasDownloaded: false,
   });
 
+  // init compile job
   const { data: jobId, error: createJobError } = useQuery(
     ['createJob', keyboardKey, selectedKeymap],
     async () => {
-      const res = await fetch('/api/compile', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          keyboardKey,
-          layers: selectedKeymap?.layers.map((l) => ({
-            id: l.id,
-            name: l.name,
-            keys: l.keys,
-          })),
-          layout: selectedKeymap?.layout,
-        }),
-      });
-      if (res.status >= 400) {
-        throw new Error(
-          `${res.status}: ${(await res.text()) || res.statusText}`
-        );
-      }
-      const result = (await res.json()) as
-        | { success: true; job: CompileJob }
-        | { success: false; code?: string };
-      if (!result.success) {
-        throw new Error(`${result.code}`);
+      if (!selectedKeymap) {
+        return null;
       }
 
-      return result.job.id;
+      const res = await $$compileCreateJob({
+        keyboardKey,
+        layout: selectedKeymap?.layout,
+        layers: selectedKeymap?.layers.map((l) => ({
+          id: l.id,
+          name: l.name,
+          keys: l.keys,
+        })),
+      });
+
+      return res;
     },
     {
+      select: (r) => r?.job.id,
       onSuccess() {
         setState((s) => ({ ...s, current: 'wait', jobCreated: true }));
       },
@@ -96,12 +86,9 @@ export const Compile = ({
     ['job', jobId],
     async () => {
       if (!jobId) {
-        return;
+        return null;
       }
-
-      const res = await fetch(`/api/compile/job/${jobId}`);
-      const job = (await res.json()) as CompileJob;
-      return job;
+      return $$compilePingJob(jobId);
     },
     {
       onSuccess(res) {
@@ -130,6 +117,7 @@ export const Compile = ({
         current: 'compile',
       }));
 
+      // NOTE: we are using route instead of action as we cannot send a buffer from action
       const res = await fetch(`/api/compile/job/${jobId}/run`, {
         method: 'POST',
       });
@@ -175,6 +163,12 @@ export const Compile = ({
             done={state.jobReady}
           >
             {() => {
+              if (!state.jobCreated) {
+                return <span>Creating job...</span>;
+              }
+              if (!state.jobReady) {
+                return <span>Job in queue...</span>;
+              }
               if (state.jobReady) {
                 return <span>Runner ready</span>;
               }

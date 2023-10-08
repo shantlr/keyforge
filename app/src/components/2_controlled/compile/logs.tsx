@@ -14,7 +14,7 @@ export const Logs = ({ logs }: { logs?: string[] }) => {
   }
 
   return (
-    <div className="w-full max-h-[500px] overflow-auto text-xs">
+    <div className="w-full max-h-[400px] overflow-auto text-xs">
       <span
         className="cursor-pointer text-default-darker hover:text-primary select-none"
         onClick={() => {

@@ -1,53 +1,93 @@
 'use server';
 
-import { keyboardInfo } from '@/lib/keyboards';
-import { sleep } from '@/lib/sleep';
-import { COMPILE } from '@/server/compile';
+import axios, { AxiosError } from 'axios';
 import { z } from 'zod';
 
-const validate = z.strictObject({
+import { COMPILE_CONTROLLER_API_URL } from '@/config';
+import { keyboardList } from '@/lib/keyboards';
+import { KeymapKeyDef } from '@/types';
+
+const compileController = axios.create({
+  baseURL: COMPILE_CONTROLLER_API_URL,
+});
+
+const validateKey: z.ZodType<KeymapKeyDef> = z.union([
+  z.string(),
+  z.strictObject({
+    key: z.string(),
+    params: z
+      .union([
+        z.strictObject({
+          type: z.enum(['layer']),
+          value: z.string(),
+        }),
+        z.strictObject({
+          type: z.enum(['key']),
+          value: z.lazy(() => validateKey),
+        }),
+      ])
+      .array(),
+  }),
+]);
+
+const validateCompileJobData = z.strictObject({
   keyboardKey: z.string(),
   layout: z.string(),
   layers: z
     .strictObject({
+      id: z.string(),
       name: z.string(),
-      keys: z.string().array(),
+      keys: validateKey.array(),
     })
     .array(),
 });
 
-export const $$compileKeymap = async (input: {
-  keyboardKey: string;
-  layout: string;
-  layers: {
-    name: string;
-    keys: string[];
-  }[];
-}) => {
-  const parsed = validate.parse(input);
+export type CompileJob = {
+  id: string;
+  state: 'pending' | 'ready' | 'ongoing' | 'done';
+  logs: string[];
+};
 
+export const $$compileCreateJob = async (
+  data: z.input<typeof validateCompileJobData>
+) => {
   try {
-    const kb = await keyboardInfo.get(parsed.keyboardKey);
-    const job = COMPILE.createJob({
-      keyboardQmkPath: kb.qmkpath,
-      layers: parsed.layers,
-      layout: parsed.layout,
-    });
-    while (true) {
-      const j = COMPILE.getJob(job.id);
-      if (j.state === 'done') {
-        console.log(typeof j.result);
-        return {
-          success: true,
-          blob: j.result,
-        };
-      }
-      await sleep(500);
+    const parsed = validateCompileJobData.parse(data);
+    const list = await keyboardList.get();
+    const keyboard = list.find((l) => l.key === parsed.keyboardKey);
+    if (!keyboard) {
+      throw new Error(`KEYBOARD_NOT_FOUND`);
     }
+    const res = await compileController.post<{
+      job: CompileJob;
+    }>('/compile/job', {
+      keyboardQmkPath: keyboard.qmkpath,
+      layout: parsed.layout,
+      layers: parsed.layers,
+    });
+    return res.data;
   } catch (err) {
-    console.error(err);
-    return {
-      success: false,
-    };
+    if (err instanceof AxiosError) {
+      if (err.code === 'ECONNREFUSED') {
+        throw new Error(`COMPILE_RUNNER_NOT_READY`);
+      }
+
+      throw new Error(
+        `COMPILE_CREATE_JOB_ERROR: ${err.status} ${err.response?.data}`
+      );
+    }
+
+    console.error(err, `failed to create compile job`);
+    throw new Error(`INTERNAL_SERVER_ERROR`);
   }
+};
+
+export const $$compilePingJob = async (jobId: string) => {
+  const res = await compileController.get<CompileJob>(`/compile/job/${jobId}`);
+  return res.data;
+};
+
+export const $$compileRunJob = async (jobId: string) => {
+  const res = await compileController.post(`/compile/job/${jobId}/run`);
+  return res.data;
 };

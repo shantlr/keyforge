@@ -1,10 +1,10 @@
 import { spawn } from 'child_process';
 import kill from 'tree-kill';
-import { sleep } from '@/lib/sleep';
 import getPort from 'get-port';
-import { CompileRunner } from '.';
-import { CompileKeymapInput } from '@/types';
 import axios, { AxiosError } from 'axios';
+import { sleep } from '../sleep.js';
+import { CompileRunner } from './interface.js';
+import { CompileKeymapInput } from '../../validate.js';
 
 const serverIsReady = async (url: string) => {
   while (true) {
@@ -26,7 +26,7 @@ export class LocalCompileRunner implements CompileRunner {
     opt?: {
       onStdout?: (data: string) => void;
       onStderr?: (data: string) => void;
-    }
+    },
   ) {
     const port = await getPort();
 

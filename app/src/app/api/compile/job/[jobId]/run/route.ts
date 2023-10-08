@@ -1,11 +1,13 @@
-import { COMPILE } from '@/server/compile';
+import { $$compileRunJob } from '@/actions/compile';
 
+// NOTE: We use post instead of server action
+// As server action does not handle buffer yet
 export const POST = async (
   req: Request,
   { params: { jobId } }: { params: { jobId: string } }
 ) => {
   try {
-    const buffer = await COMPILE.runJob(jobId);
+    const buffer = await $$compileRunJob(jobId);
     return new Response(buffer);
   } catch (err) {
     if (err instanceof Error) {

@@ -1,15 +1,18 @@
-FROM node:18-alpine3.18 as base
+FROM alpine/git as clone_qmk
+RUN git clone https://github.com/qmk/qmk_firmware.git /qmk_firmware
+
+FROM ghcr.io/qmk/qmk_cli as base
+RUN apt-get update && apt-get install -y curl
+RUN curl https://get.volta.sh | bash
+ENV VOLTA_HOME "/root/.volta"
+ENV PATH "$VOLTA_HOME/bin:$PATH"
+RUN volta install node@18 yarn@1.22
 
 FROM base as with_qmk
-RUN apk add git py3-pip
-
-RUN python3 -m pip install --user qmk
-ENV PATH="$PATH:/root/.local/bin"
-
 WORKDIR /compile-qmk
-RUN git clone https://github.com/qmk/qmk_firmware.git ./qmk
 
-RUN qmk setup -h ./qmk -y
+COPY --from=clone_qmk /qmk_firmware ./data/qmk_firmware
+RUN qmk setup -H ./data/qmk_firmware -y
 
 FROM with_qmk as compile_keymaps
 
@@ -24,8 +27,3 @@ RUN yarn build
 COPY cli cli
 
 CMD sleep 5000000
-
-# CMD ./cli \
-#   -i ./qmk/quantum/keycodes.h \
-#   ./qmk/keyboards \
-#   ./output/keyboards

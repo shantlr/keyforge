@@ -85,7 +85,7 @@ const compileFirmwareFromKeymapFolder = async ({
   keymapName: string;
   cwd: string;
 }) => {
-  console.log(`[compile-keymap] make ${keyboardQmkPath}:${keymapName}`);
+  console.log(`[compile-qmk] make ${keyboardQmkPath}:${keymapName}`);
   await execa('make', [`${keyboardQmkPath}:${keymapName}`], {
     stdio: 'inherit',
     cwd,
@@ -119,7 +119,7 @@ export const compileKeymap = async ({
     revPath: keymap.keyboardQmkPath,
   });
   assertKeymap({ qmkCwd, keymap, keyboardInfo });
-  console.log(`[compile-qmk] keymap input verified.`);
+  console.log(`[compile-qmk] keymap input validated.`);
 
   const generatedKeymap = await generateKeymap({
     keyboardName: keyboardInfo.keyboard_name,
