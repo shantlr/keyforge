@@ -1,0 +1,7 @@
+{
+  "nodeImage": "node:18-alpine3.17",
+  "run": {
+    "cmd": "node ./build/index.js",
+    "expose": 3022
+  }
+}
