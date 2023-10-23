@@ -7,12 +7,21 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
-import { KeyboardInfo } from '@/types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import clsx from 'clsx';
 import { isEqual, map, sortBy } from 'lodash';
-import { $$getExistingKeymap } from '@/actions/getExisingKeymap';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { Button } from '../../0_base/button';
+import { $$getExistingKeymap } from '@/actions/getExisingKeymap';
 import { Disclosure } from '@/components/0_base/disclosure';
+import {
+  DndContext,
+  WrappedCollisionDetection,
+} from '@/components/0_base/dnd/context';
+import { InputButton } from '@/components/0_base/inputButton';
+import { Tooltip } from '@/components/0_base/tooltips';
 import {
   keymapSlice,
   useDispatch,
@@ -20,19 +29,13 @@ import {
 } from '@/components/providers/redux';
 import { viewSlice } from '@/components/providers/redux/slices/view';
 import { ExistingKeymap } from '@/lib/keyboards';
-import clsx from 'clsx';
-import { Tooltip } from '@/components/0_base/tooltips';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { InputButton } from '@/components/0_base/inputButton';
-import { KeyContext } from './keyContext';
-import { ConfiguratorKeyPicker } from './keyPicker';
-import { ConfiguratorKeymap } from './keymap';
+import { KeyboardInfo } from '@/types';
+
 import { ConfiguratorDraggableOverlay } from './dragOverlay';
-import {
-  DndContext,
-  WrappedCollisionDetection,
-} from '@/components/0_base/dnd/context';
+import { KeyContext } from './keyContext';
+import { ConfiguratorKeymap } from './keymap';
+import { ConfiguratorKeyPicker } from './keyPicker';
+
 
 const customCollisions: WrappedCollisionDetection = (e) => {
   const prevOver = e.prevCollisions?.[0];

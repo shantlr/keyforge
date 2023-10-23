@@ -1,9 +1,13 @@
-import path from 'path';
-import { createCache, createSingleValueCache } from './ttlCache';
 import { readFile } from 'fs/promises';
-import { KeyboardInfo } from '@/types';
+import path from 'path';
+
 import { keyBy } from 'lodash';
+
+import { KeyboardInfo } from '@/types';
+
+
 import { isSubDir } from './isSubDir';
+import { createCache, createSingleValueCache } from './ttlCache';
 
 const baseDir = './keyboards';
 

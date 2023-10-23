@@ -1,13 +1,14 @@
-import { Keymap } from '@/components/providers/redux';
 import { useSortable } from '@dnd-kit/sortable';
-import { ChangeEvent, ComponentProps, useState } from 'react';
 import { CSS } from '@dnd-kit/utilities';
-import { Tooltip } from '@/components/0_base/tooltips';
-import { Button } from '@/components/0_base/button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { InputButton } from '@/components/0_base/inputButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ChangeEvent, ComponentProps, useState } from 'react';
 import { mergeProps } from 'react-aria';
+
+import { Button } from '@/components/0_base/button';
+import { InputButton } from '@/components/0_base/inputButton';
+import { Tooltip } from '@/components/0_base/tooltips';
+import { Keymap } from '@/components/providers/redux';
 
 export const LayerItem = ({
   layer,

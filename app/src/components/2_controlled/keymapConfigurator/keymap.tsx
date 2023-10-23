@@ -1,12 +1,14 @@
-import { KeyboardInfo, KeymapKeyDef } from '@/types';
+import { nanoid } from 'nanoid';
+import { useCallback, useEffect, useState } from 'react';
+
 import { KeymapWithLayers } from '../keymapWithLayers';
 import { Keymap, keymapSlice, useDispatch } from '@/components/providers/redux';
-import { useCallback, useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
 import { MAX_LAYERS } from '@/constants';
-import { useWindowBlur } from './useWindowBlur';
+import { KeyboardInfo, KeymapKeyDef } from '@/types';
+
 import { useListenKey } from './keyContext';
 import { useListenKeyboardEvent } from './useListenKeyboardEvent';
+import { useWindowBlur } from './useWindowBlur';
 
 export const ConfiguratorKeymap = ({
   keyboard,

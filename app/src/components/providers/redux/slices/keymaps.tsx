@@ -1,8 +1,10 @@
 import { PayloadAction, createSlice, original } from '@reduxjs/toolkit';
-import { nanoid } from 'nanoid';
 import type { Draft } from 'immer';
-import { KeymapKeyDef } from '@/types';
 import { toLower } from 'lodash';
+import { nanoid } from 'nanoid';
+
+import { KeymapKeyDef } from '@/types';
+
 
 export type Keymap = {
   id: string;

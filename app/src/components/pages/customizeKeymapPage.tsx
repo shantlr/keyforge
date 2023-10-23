@@ -1,12 +1,13 @@
 'use client';
 
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { Button } from '@/components/0_base/button';
 import { KeyforgeSteps } from '@/components/1_domain/keyforgeSteps';
 import { KeymapConfigurator } from '@/components/2_controlled/keymapConfigurator';
 import { ExistingKeymap } from '@/lib/keyboards';
 import { KeyboardInfo } from '@/types';
-import Link from 'next/link';
-import { useState } from 'react';
 
 export const CustomizeKeymapPage = ({
   keyboardKey,

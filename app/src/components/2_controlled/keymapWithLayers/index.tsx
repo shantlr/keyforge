@@ -1,11 +1,13 @@
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ComponentProps, useState } from 'react';
+
 import { Button } from '@/components/0_base/button';
 import { InputFit } from '@/components/0_base/inputFit';
 import { Keymap } from '@/components/1_domain/keymap';
 import { Keymap as KM } from '@/components/providers/redux';
 import { KeyboardInfo } from '@/types';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ComponentProps, useState } from 'react';
+
 import { Layers } from './layers';
 
 export const KeymapWithLayers = ({

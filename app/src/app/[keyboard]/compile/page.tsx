@@ -1,7 +1,9 @@
-import { Compile } from '@/components/2_controlled/compile';
-import { KeyforgeSteps } from '@/components/1_domain/keyforgeSteps';
-import { keyboardInfo } from '@/lib/keyboards';
 import Link from 'next/link';
+
+import { KeyforgeSteps } from '@/components/1_domain/keyforgeSteps';
+import { Compile } from '@/components/2_controlled/compile';
+import { keyboardInfo } from '@/lib/keyboards';
+
 
 export default async function KeyboardCompile({
   params: { keyboard: kbKey },

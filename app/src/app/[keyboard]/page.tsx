@@ -1,9 +1,10 @@
-import { Button } from '@/components/0_base/button';
-import { existingKeymap, keyboardInfo } from '@/lib/keyboards';
-import { CustomizeKeymapPage } from '@/components/pages/customizeKeymapPage';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
+
+import { Button } from '@/components/0_base/button';
+import { CustomizeKeymapPage } from '@/components/pages/customizeKeymapPage';
+import { existingKeymap, keyboardInfo } from '@/lib/keyboards';
 
 export default async function Keyboard({
   params,

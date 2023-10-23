@@ -1,7 +1,7 @@
-import type { AriaListBoxProps } from 'react-aria';
-import { ListState, Node } from 'react-stately';
-import { mergeProps, useFocusRing, useListBox, useOption } from 'react-aria';
 import { MutableRefObject, useRef } from 'react';
+import type { AriaListBoxProps } from 'react-aria';
+import { mergeProps, useFocusRing, useListBox, useOption } from 'react-aria';
+import { ListState, Node } from 'react-stately';
 
 export function ListBox<T extends object>({
   state,

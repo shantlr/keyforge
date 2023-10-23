@@ -1,7 +1,8 @@
-import { Tooltip } from '@/components/0_base/tooltips';
 import { useDraggable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import { ComponentProps, ReactNode, forwardRef } from 'react';
+
+import { Tooltip } from '@/components/0_base/tooltips';
 
 export type KeyTheme = {
   primary: string;

@@ -1,4 +1,5 @@
 import { KeysPicker } from '../keysPicker';
+
 import { useRegisterKey } from './keyContext';
 
 export const ConfiguratorKeyPicker = () => {

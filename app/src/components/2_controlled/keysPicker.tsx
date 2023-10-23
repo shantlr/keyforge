@@ -1,6 +1,7 @@
 import { ComponentProps, useMemo } from 'react';
-import { Keymap } from '../1_domain/keymap';
+
 import { Tab, TabsCard } from '../0_base/tabsCard';
+import { Keymap } from '../1_domain/keymap';
 import { KEYS, KeyConfig } from '@/constants';
 
 const BASIC_KEYS_POSITION = [

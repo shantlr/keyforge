@@ -1,5 +1,7 @@
 'use client';
 
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRef } from 'react';
 import {
   AriaSelectProps,
@@ -10,11 +12,10 @@ import {
   useSelect,
 } from 'react-aria';
 import { ListState, Node, useSelectState } from 'react-stately';
+
 import { Button } from '../button';
-import { Popover } from '../popover';
 import { ListBox } from '../listBox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { Popover } from '../popover';
 
 export function Select<T extends object>({
   className,

@@ -1,6 +1,7 @@
-import { ComponentProps, forwardRef, useRef, useState } from 'react';
-import { Input } from '../input';
 import clsx from 'clsx';
+import { ComponentProps, forwardRef, useRef, useState } from 'react';
+
+import { Input } from '../input';
 import { InputFit } from '../inputFit';
 
 export const InputButton = forwardRef<

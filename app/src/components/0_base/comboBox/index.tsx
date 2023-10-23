@@ -1,12 +1,14 @@
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRef } from 'react';
 import { AriaComboBoxProps, useComboBox, useFilter } from 'react-aria';
 import { useComboBoxState } from 'react-stately';
+
 import { Button } from '../button';
-import { Popover } from '../popover';
-import { ListBox } from '../listBox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { Input } from '../input';
+import { ListBox } from '../listBox';
+import { Popover } from '../popover';
+
 
 export function ComboBox<Option extends object>({
   className,

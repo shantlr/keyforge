@@ -1,7 +1,5 @@
 'use client';
 
-import { Keymap } from '@/components/providers/redux';
-import { useMemo, useState } from 'react';
 import {
   DndContext,
   PointerSensor,
@@ -13,8 +11,12 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { LayerItem } from './item';
+import { useMemo, useState } from 'react';
+
+import { Keymap } from '@/components/providers/redux';
+
 import { LayersDragOverlay } from './dragOverlay';
+import { LayerItem } from './item';
 
 export const Layers = ({
   selectedLayerId,

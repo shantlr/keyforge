@@ -1,9 +1,10 @@
 'use client';
 
-import { Provider } from 'react-redux';
-import { persistor, store } from './store';
 import { PropsWithChildren } from 'react';
+import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+
+import { persistor, store } from './store';
 
 export * from './slices/keymaps';
 

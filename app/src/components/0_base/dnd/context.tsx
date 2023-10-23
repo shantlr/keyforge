@@ -1,16 +1,11 @@
-import {
+import type {
   Collision,
   CollisionDetection,
   DndContext as DndContextBase,
   DragEndEvent,
 } from '@dnd-kit/core';
-import {
-  ComponentProps,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { ComponentProps, createContext, useContext, useState } from 'react';
+
 import { createListenerMapContext } from '../context/listenerMap';
 
 const {

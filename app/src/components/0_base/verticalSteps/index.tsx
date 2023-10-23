@@ -1,13 +1,14 @@
-import { isArray } from 'lodash';
-import { Fragment, ReactElement, ReactNode, isValidElement } from 'react';
-import { Spinner } from '../spinner';
-import clsx from 'clsx';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck,
   faHourglass,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import clsx from 'clsx';
+import { isArray } from 'lodash';
+import { Fragment, ReactElement, ReactNode, isValidElement } from 'react';
+
+import { Spinner } from '../spinner';
 
 export const Step = ({}: {
   name: string;

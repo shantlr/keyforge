@@ -1,6 +1,6 @@
+import { useSpring, animated } from '@react-spring/web';
 import clsx from 'clsx';
 import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
-import { useSpring, animated } from '@react-spring/web';
 
 export const Disclosure = ({
   defaultOpen = false,

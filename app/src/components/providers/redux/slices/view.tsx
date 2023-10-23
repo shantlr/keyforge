@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+
 import { keymapSlice } from './keymaps';
 
 export const viewSlice = createSlice({

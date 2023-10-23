@@ -1,14 +1,18 @@
-import { Button } from '@/components/0_base/button';
-import { CustomKeyProps } from './types';
-import { forwardRef, useId, useMemo } from 'react';
-import { KEY_DEFAULT_HEIGHT, KEY_DEFAULT_WIDTH, Key } from '../../key';
-import clsx from 'clsx';
-import { useDroppableContainer } from '@/components/0_base/droppableGroup';
-import { QMKKey } from '..';
-import { formatKeyDef } from '../formatKeyDef';
-import { KeymapKeyParam } from '@/types';
 import { useDroppable } from '@dnd-kit/core';
+import clsx from 'clsx';
+import { forwardRef, useId, useMemo } from 'react';
+
+
+
+import { QMKKey } from '..';
+import { KEY_DEFAULT_HEIGHT, KEY_DEFAULT_WIDTH, Key } from '../../key';
+import { formatKeyDef } from '../formatKeyDef';
+import { Button } from '@/components/0_base/button';
 import { useOnDrop } from '@/components/0_base/dnd/context';
+import { useDroppableContainer } from '@/components/0_base/droppableGroup';
+import { KeymapKeyParam } from '@/types';
+
+import { CustomKeyProps } from './types';
 
 const computeWidth = ({
   width,

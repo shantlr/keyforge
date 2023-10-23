@@ -1,11 +1,12 @@
 'use client';
 
+import { CSSProperties, useId, useMemo } from 'react';
+
+import { KeyTheme } from '../key';
+import { QMKKey } from '../qmkKey';
+import { Draggable } from '@/components/0_base/draggable';
 import { getKeyConfFromDef } from '@/constants';
 import { KeymapKeyDef } from '@/types';
-import { CSSProperties, useId, useMemo } from 'react';
-import { KeyTheme } from '../key';
-import { Draggable } from '@/components/0_base/draggable';
-import { QMKKey } from '../qmkKey';
 
 export const Keymap = ({
   keyPositions,

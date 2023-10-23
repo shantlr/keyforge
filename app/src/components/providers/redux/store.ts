@@ -6,14 +6,11 @@ import {
   type Action,
   combineReducers,
 } from '@reduxjs/toolkit';
-import storage from 'redux-persist/lib/storage';
 import {
   useSelector as useReduxSelector,
   useDispatch as useReduxDispatch,
   type TypedUseSelectorHook,
 } from 'react-redux';
-import { keymapSlice } from './slices/keymaps';
-import { viewSlice } from './slices/view';
 import {
   persistReducer,
   persistStore,
@@ -24,6 +21,11 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
+import { keymapSlice } from './slices/keymaps';
+import { viewSlice } from './slices/view';
+
 
 const persistConfig = {
   key: 'keyforge',

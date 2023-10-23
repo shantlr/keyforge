@@ -1,5 +1,6 @@
-import { QMKKey } from '@/components/1_domain/qmkKey';
 import { DragOverlay, useDndContext } from '@dnd-kit/core';
+
+import { QMKKey } from '@/components/1_domain/qmkKey';
 
 export const ConfiguratorDraggableOverlay = () => {
   const { active } = useDndContext();

@@ -1,4 +1,3 @@
-import { KeymapKeyDef } from '@/types';
 import {
   ReactNode,
   createContext,
@@ -8,6 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
+
+import { KeymapKeyDef } from '@/types';
 
 type KeyContext = {
   keyDown: string | null;

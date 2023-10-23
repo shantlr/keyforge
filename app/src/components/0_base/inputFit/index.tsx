@@ -1,6 +1,7 @@
-import { ComponentProps, forwardRef, useLayoutEffect, useRef } from 'react';
-import { Input } from '../input';
 import clsx from 'clsx';
+import { ComponentProps, forwardRef, useLayoutEffect, useRef } from 'react';
+
+import { Input } from '../input';
 
 export const InputFit = forwardRef<
   HTMLInputElement,

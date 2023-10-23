@@ -1,9 +1,11 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { ComponentProps, forwardRef } from 'react';
-import { CustomKeyComponent } from './types';
-import { Key } from '../../key';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ComponentProps, forwardRef } from 'react';
+
+import { Key } from '../../key';
 import { Droppable } from '@/components/0_base/droppable';
+
+import { CustomKeyComponent } from './types';
 
 export const createIconKey = (icon: IconDefinition) => {
   const C = forwardRef<any, ComponentProps<CustomKeyComponent>>(

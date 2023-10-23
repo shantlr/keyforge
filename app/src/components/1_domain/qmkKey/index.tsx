@@ -1,18 +1,21 @@
-import { ComponentProps, forwardRef } from 'react';
-import { Key } from '../key';
-import { KEYS, getKeyConfFromDef } from '@/constants';
-import { KeymapKeyDef } from '@/types';
-import { CustomKeyComponent } from './customKeys/types';
 import {
   faCaretDown,
   faCaretLeft,
   faCaretRight,
   faCaretUp,
 } from '@fortawesome/free-solid-svg-icons';
-import { createIconKey } from './customKeys/iconKey';
-import { LayerKey } from './customKeys/layerKey';
-import { KeyModifier } from './customKeys/keyModifier';
+import { ComponentProps, forwardRef } from 'react';
+
+import { Key } from '../key';
 import { Droppable } from '@/components/0_base/droppable';
+import { KEYS, getKeyConfFromDef } from '@/constants';
+import { KeymapKeyDef } from '@/types';
+
+import { createIconKey } from './customKeys/iconKey';
+import { KeyModifier } from './customKeys/keyModifier';
+import { LayerKey } from './customKeys/layerKey';
+import { CustomKeyComponent } from './customKeys/types';
+
 
 const CUSTOM_KEYS_COMPONENTS: Record<string, CustomKeyComponent> = {
   ...KEYS.filter((k) => 'group' in k && k.group === 'layer').reduce(
