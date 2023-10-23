@@ -1,15 +1,14 @@
+import { config } from '@fortawesome/fontawesome-svg-core';
 import clsx from 'clsx';
-import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
 
-import { ReduxProvider } from '@/components/providers/redux';
-
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { config } from '@fortawesome/fontawesome-svg-core';
+import './globals.css';
 
 import { QueryProvider } from '@/components/providers/queryClient';
+import { ReduxProvider } from '@/components/providers/redux';
 
 config.autoAddCss = false;
 

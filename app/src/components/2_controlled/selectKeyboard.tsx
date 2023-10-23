@@ -8,7 +8,6 @@ import { useDeferredValue, useMemo, useState } from 'react';
 
 import { useSelector } from '../providers/redux';
 
-
 export const SelectKeyboard = ({
   value,
   className,
