@@ -1,4 +1,4 @@
-import type {
+import {
   Collision,
   CollisionDetection,
   DndContext as DndContextBase,
