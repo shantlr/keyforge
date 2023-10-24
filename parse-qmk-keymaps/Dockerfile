@@ -1,6 +1,5 @@
 FROM node:18-alpine3.18 as base
 
-
 FROM base as with_qmk
 RUN apk add git
 
