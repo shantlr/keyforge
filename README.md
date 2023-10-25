@@ -2,6 +2,8 @@
 
 Edit your qmk keymap and download a compiled firmware directly from your browser.
 
+Available at http://keyforge.shantr.dev
+
 ## Setup local dev env
 
 1. Generate keymaps
