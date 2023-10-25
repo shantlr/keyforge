@@ -48,7 +48,7 @@ export const Compile = ({
   });
 
   // init compile job
-  const { data: jobId, error: createJobError } = useQuery(
+  const { data: initJob, error: createJobError } = useQuery(
     ['createJob', keyboardKey, selectedKeymap],
     async () => {
       if (!selectedKeymap) {
@@ -68,7 +68,6 @@ export const Compile = ({
       return res;
     },
     {
-      select: (r) => r?.job.id,
       onSuccess() {
         setState((s) => ({ ...s, current: 'wait', jobCreated: true }));
       },
@@ -80,6 +79,8 @@ export const Compile = ({
       refetchIntervalInBackground: false,
     }
   );
+
+  const jobId = initJob?.job?.id;
 
   const [job, setJob] = useState<CompileJob | null>(null);
   const { error: pingJobError } = useQuery(
@@ -159,10 +160,25 @@ export const Compile = ({
         <VerticalSteps current={state.current}>
           <Step
             name="wait"
-            failed={Boolean(createJobError)}
+            failed={Boolean(createJobError) || initJob?.success === false}
             done={state.jobReady}
           >
             {() => {
+              if (initJob?.error_code === 'COMPILE_OPERATOR_NOT_READY') {
+                return <span>Compile runner is not ready</span>;
+              }
+              if (initJob?.error_code === 'COMPILE_OPERATOR_NOT_SETUP') {
+                return <span>Compile runner is not setup</span>;
+              }
+
+              if (createJobError) {
+                return (
+                  <span>
+                    Failed to create job: {(createJobError as Error).message}
+                  </span>
+                );
+              }
+
               if (!state.jobCreated) {
                 return <span>Creating job...</span>;
               }
@@ -172,13 +188,7 @@ export const Compile = ({
               if (state.jobReady) {
                 return <span>Runner ready</span>;
               }
-              if (createJobError) {
-                return (
-                  <span>
-                    Failed to create job: {(createJobError as Error).message}
-                  </span>
-                );
-              }
+
               return <div>Waiting for runner...</div>;
             }}
           </Step>

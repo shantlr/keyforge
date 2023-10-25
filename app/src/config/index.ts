@@ -1,2 +1,3 @@
-export const COMPILE_CONTROLLER_API_URL =
-  process.env.COMPILE_CONTROLLER_API_URL;
+const env = process.env;
+
+export const COMPILE_OPERATOR_API_URL = env.COMPILE_OPERATOR_API_URL;

@@ -3,12 +3,12 @@
 import axios, { AxiosError } from 'axios';
 import { z } from 'zod';
 
-import { COMPILE_CONTROLLER_API_URL } from '@/config';
+import { COMPILE_OPERATOR_API_URL } from '@/config';
 import { keyboardList } from '@/lib/keyboards';
 import { KeymapKeyDef } from '@/types';
 
 const compileController = axios.create({
-  baseURL: COMPILE_CONTROLLER_API_URL,
+  baseURL: COMPILE_OPERATOR_API_URL,
 });
 
 const validateKey: z.ZodType<KeymapKeyDef> = z.union([
@@ -50,7 +50,17 @@ export type CompileJob = {
 
 export const $$compileCreateJob = async (
   data: z.input<typeof validateCompileJobData>
-) => {
+): Promise<{
+  success: boolean;
+  job?: CompileJob;
+  error_code?: 'COMPILE_OPERATOR_NOT_READY' | 'COMPILE_OPERATOR_NOT_SETUP';
+}> => {
+  if (!COMPILE_OPERATOR_API_URL) {
+    return {
+      success: false,
+      error_code: 'COMPILE_OPERATOR_NOT_SETUP',
+    };
+  }
   try {
     const parsed = validateCompileJobData.parse(data);
     const list = await keyboardList.get();
@@ -65,11 +75,19 @@ export const $$compileCreateJob = async (
       layout: parsed.layout,
       layers: parsed.layers,
     });
-    return res.data;
+    return {
+      success: true,
+      job: res.data.job,
+    };
   } catch (err) {
     if (err instanceof AxiosError) {
       if (err.code === 'ECONNREFUSED') {
-        throw new Error(`COMPILE_RUNNER_NOT_READY`);
+        console.log('Failed to connect to ', COMPILE_OPERATOR_API_URL);
+
+        return {
+          success: false,
+          error_code: 'COMPILE_OPERATOR_NOT_READY',
+        };
       }
 
       throw new Error(

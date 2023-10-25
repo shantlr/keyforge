@@ -2,8 +2,6 @@ import { useDroppable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import { forwardRef, useId, useMemo } from 'react';
 
-
-
 import { QMKKey } from '..';
 import { KEY_DEFAULT_HEIGHT, KEY_DEFAULT_WIDTH, Key } from '../../key';
 import { formatKeyDef } from '../formatKeyDef';

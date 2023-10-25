@@ -6,8 +6,6 @@ import { Select } from '@/components/0_base/select';
 
 import { CustomKeyProps } from './types';
 
-
-
 export const LayerKey = forwardRef<any, CustomKeyProps>(
   (
     {

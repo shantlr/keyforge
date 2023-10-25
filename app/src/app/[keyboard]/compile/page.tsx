@@ -4,7 +4,6 @@ import { KeyforgeSteps } from '@/components/1_domain/keyforgeSteps';
 import { Compile } from '@/components/2_controlled/compile';
 import { keyboardInfo } from '@/lib/keyboards';
 
-
 export default async function KeyboardCompile({
   params: { keyboard: kbKey },
 }: {
