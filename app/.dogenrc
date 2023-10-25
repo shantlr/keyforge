@@ -1,0 +1,12 @@
+{
+  "nodeImage": "node:18-alpine3.18",
+  "build": {
+    "copy": [
+      {
+        "from": "keyforge-parse-qmk-keymaps",
+        "src": "/output/keyboards",
+        "dst": "./keyboards"
+      }
+    ]
+  }
+}

@@ -1,10 +1,3 @@
-FROM node:18-alpine3.18 as qmk_repo
-RUN apk add git
-
-WORKDIR /service
-RUN git clone https://github.com/qmk/qmk_firmware.git ./qmk
-
-
 #>>dogen
 FROM alpine:3.12 AS jq
 RUN apk add --update --no-cache jq
@@ -27,16 +20,17 @@ RUN yarn install --pure-lockfile --non-interactive --cache-folder ./.ycache && r
 # Build
 FROM node-base AS build
 WORKDIR /service
+COPY --from=keyforge-parse-qmk-keymaps /output/keyboards ./keyboards
 COPY --from=install-modules /service/node_modules node_modules
 COPY package.json package.json
-COPY tsconfig.build.json tsconfig.build.json
-COPY tsconfig.json tsconfig.json
 COPY src src
+COPY tsconfig.json tsconfig.json
+COPY next.config.js next.config.js
+COPY postcss.config.js postcss.config.js
+COPY tailwind.config.js tailwind.config.js
+COPY jest.config.js jest.config.js
 RUN yarn build
-COPY cli cli
-COPY --from=qmk_repo /service/qmk ./qmk
-RUN ./cli -i ./qmk/quantum/keycodes.h ./qmk/keyboards /output/keyboards
 
 FROM build AS service
-CMD ./cli
+CMD yarn start
 #<<dogen

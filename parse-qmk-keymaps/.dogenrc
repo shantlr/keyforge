@@ -1,0 +1,24 @@
+{
+  "nodeImage": "node:18-alpine3.18",
+  "postBuild": {
+    "include": [
+      "cli"
+    ],
+    "copy": [
+      {
+        "from": "qmk_repo",
+        "src": "/service/qmk",
+        "dst": "./qmk"
+      }
+    ],
+    "ops": [
+      {
+        "type": "RUN",
+        "cmd": "./cli -i ./qmk/quantum/keycodes.h ./qmk/keyboards /output/keyboards"
+      }
+    ]
+  },
+  "run": {
+    "cmd": "./cli"
+  }
+}
