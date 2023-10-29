@@ -135,7 +135,7 @@ export const compileKeymap = async ({
       keyboardQmkPath: keymap.keyboardQmkPath,
       keymapName: generatedKeymap.keymapName,
     });
-    console.log(`[compile-qmk]`);
+    console.log(`[compile-qmk] done`);
     binPath = path.resolve(qmkCwd, binName);
     if (onBin) {
       onBin({ binPath });

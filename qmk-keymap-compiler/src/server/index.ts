@@ -40,8 +40,8 @@ const validateKeymap = z.strictObject({
     .array(),
 });
 
-export const main = async () => {
-  console.log('qmk folder:', QMK_FOLDER);
+export const server = async () => {
+  console.log('[config] qmk folder:', QMK_FOLDER);
   if (!(await isDir(QMK_FOLDER))) {
     console.warn(`qmk folder does not exists`);
   }
@@ -69,6 +69,7 @@ export const main = async () => {
       });
     } catch (err) {
       if (err instanceof z.ZodError) {
+        console.error(`invalid body`, err);
         return res.status(400).send({
           success: false,
           code: 'INVALID_BODY',
@@ -85,8 +86,3 @@ export const main = async () => {
     console.log(`Listnening to http://localhost:${SERVER_PORT}`);
   });
 };
-
-main().catch((err) => {
-  console.error(err, `main failed (exiting...)`);
-  process.exit(1);
-});

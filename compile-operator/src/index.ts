@@ -6,9 +6,11 @@ import {
   MAX_PARALLEL_JOB,
   RUNNER_DOCKER_IMAGE,
   RUNNER_DOCKER_SOCKET,
+  RUNNER_DOCKER_NETWORK_ID,
   RUNNER_LOCAL_PATH,
   RUNNER_MODE,
   SERVICE_PORT,
+  RUNNER_DOCKER_NETWORK_MODE_HOST,
 } from './config/index.js';
 import { CompileRunner } from './lib/compileRunner/interface.js';
 import { CompileKeymapInput, validateCompileData } from './validate.js';
@@ -38,11 +40,13 @@ const main = async () => {
       connection: {
         socketPath: RUNNER_DOCKER_SOCKET,
       },
+      networkModeHost: RUNNER_DOCKER_NETWORK_MODE_HOST,
+      usedNetworkId: RUNNER_DOCKER_NETWORK_ID,
       compileImage: RUNNER_DOCKER_IMAGE,
       tmpDir: './tmp',
     });
     console.log(
-      `[runner] docker runner inited (socket=${RUNNER_DOCKER_SOCKET} image=${RUNNER_DOCKER_IMAGE} dir=./tmp)`,
+      `[runner] docker runner inited (socket=${RUNNER_DOCKER_SOCKET}, network_host=${RUNNER_DOCKER_NETWORK_MODE_HOST}, network=${RUNNER_DOCKER_NETWORK_ID}, image=${RUNNER_DOCKER_IMAGE} dir=./tmp)`,
     );
   } else if (RUNNER_MODE) {
     console.error(`Unrecognized runner mode: ${RUNNER_MODE}`);

@@ -3,6 +3,7 @@ import { readFile } from 'fs/promises';
 import { compileKeymap } from '../../compile';
 import { pipeline } from 'stream/promises';
 import { createReadStream, createWriteStream } from 'fs';
+import { server } from '../../server';
 
 const QMK_FOLDER = process.env.QMK_FOLDER || './data/qmk_firmware';
 
@@ -44,3 +45,7 @@ prog
       throw err;
     }
   });
+
+prog.command('server').action(async () => {
+  server();
+});
