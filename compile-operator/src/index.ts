@@ -73,6 +73,16 @@ const main = async () => {
     jobTimeoutMs: COMPILE_JOB_ALIVE_TIMEOUT_MS,
   });
 
+  app.use((req, res, next) => {
+    console.log(`[IN] [${req.method}] ${req.path}`);
+    const onRes = () => {
+      console.log(`[OUT] [${req.method}] ${req.path} {${res.statusCode}}`);
+      res.off('close', onRes);
+    };
+    res.on('close', onRes);
+    next?.();
+  });
+
   app.post('/compile/job', async (req, res) => {
     try {
       const data = validateCompileData.parse(req.body);
@@ -83,24 +93,36 @@ const main = async () => {
       });
     } catch (err) {
       if (err instanceof ZodError) {
+        console.error('validation error', err);
         return res.send({
           success: false,
           code: 'VALIDATE_INPUT_ERRORS',
           errors: err.errors,
         });
       }
+      console.error(err);
       return res.status(500).send();
     }
   });
   app.get('/compile/job/:id', async (req, res) => {
-    const { id } = req.params;
-    const job = compileQueue.getJob(id);
-    return res.send(job);
+    try {
+      const { id } = req.params;
+      const job = compileQueue.getJob(id);
+      return res.send(job);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send();
+    }
   });
   app.post('/compile/job/:id/run', async (req, res) => {
-    const { id } = req.params;
-    const buffer = await compileQueue.runJob(id);
-    return res.send(buffer);
+    try {
+      const { id } = req.params;
+      const buffer = await compileQueue.runJob(id);
+      return res.send(buffer);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send();
+    }
   });
 
   app.listen(SERVICE_PORT, () => {

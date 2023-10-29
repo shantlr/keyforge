@@ -24,9 +24,9 @@ COPY --from=install-modules /service/node_modules node_modules
 COPY package.json package.json
 COPY src src
 COPY tsconfig.json tsconfig.json
-CMD yarn build
+RUN yarn build
 
 FROM build AS service
-CMD node ./build/index.js
+CMD yarn start
 EXPOSE 3022
 #<<dogen

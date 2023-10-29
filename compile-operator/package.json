@@ -5,7 +5,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "ts-node --esm -r dotenv/config ./src/index.ts"
+    "dev": "ts-node --esm -r dotenv/config ./src/index.ts",
+    "build": "tsc",
+    "start": "node ./build/index.js"
   },
   "dogen": {
     "nodeImage": "node:18-alpine3.17"
