@@ -89,9 +89,12 @@ export const $$compileCreateJob = async (
           error_code: 'COMPILE_OPERATOR_NOT_READY',
         };
       }
+      if (err.code === 'EAI_AGAIN') {
+        console.log(`failed to resolved dns`, COMPILE_OPERATOR_API_URL);
+      }
 
       throw new Error(
-        `COMPILE_CREATE_JOB_ERROR: ${err.status} ${err.response?.data}`
+        `COMPILE_CREATE_JOB_ERROR: [${err.code}] {${err.status}} s`
       );
     }
 

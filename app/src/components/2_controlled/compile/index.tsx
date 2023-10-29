@@ -23,6 +23,15 @@ const DisabledStep = ({ children }: PropsWithChildren) => {
   return <span className="text-gray-500">{children}</span>;
 };
 
+const INITIAL_STATE = {
+  current: 'wait',
+  jobCreated: false,
+  jobReady: false,
+  compileStarted: false,
+  compileDone: false,
+  hasDownloaded: false,
+};
+
 export const Compile = ({
   keyboardKey,
   keyboardInfo,
@@ -30,6 +39,8 @@ export const Compile = ({
   keyboardKey: string;
   keyboardInfo: KeyboardInfo & { qmkpath: string };
 }) => {
+  const [stop, setStop] = useState(false);
+
   const selectedKeymap = useSelector((state) => {
     const id = state.view.selectedKeymap?.[keyboardKey]?.lastSelectedKeymap;
     if (!id) {
@@ -38,17 +49,14 @@ export const Compile = ({
     return state.keymaps.keymaps[id];
   });
 
-  const [state, setState] = useState({
-    current: 'wait',
-    jobCreated: false,
-    jobReady: false,
-    compileStarted: false,
-    compileDone: false,
-    hasDownloaded: false,
-  });
+  const [state, setState] = useState(INITIAL_STATE);
 
   // init compile job
-  const { data: initJob, error: createJobError } = useQuery(
+  const {
+    data: initJob,
+    error: createJobError,
+    refetch: recreateJob,
+  } = useQuery(
     ['createJob', keyboardKey, selectedKeymap],
     async () => {
       if (!selectedKeymap) {
@@ -70,6 +78,9 @@ export const Compile = ({
     {
       onSuccess() {
         setState((s) => ({ ...s, current: 'wait', jobCreated: true }));
+      },
+      onError() {
+        setStop(true);
       },
       enabled: Boolean(keyboardKey && selectedKeymap),
       refetchOnMount: false,
@@ -100,7 +111,10 @@ export const Compile = ({
           setJob(res);
         }
       },
-      refetchInterval: job?.state === 'ready' ? 3000 : false,
+      onError() {
+        setStop(true);
+      },
+      refetchInterval: !stop && job?.state === 'ready' ? 3000 : false,
       enabled: Boolean(jobId),
     }
   );
@@ -134,6 +148,10 @@ export const Compile = ({
           compileDone: true,
           current: 'download',
         }));
+        setStop(true);
+      },
+      onError() {
+        setStop(true);
       },
       enabled: Boolean(job && job.state === 'ready'),
       refetchOnMount: false,
@@ -145,6 +163,13 @@ export const Compile = ({
   );
 
   const [downloadBlob] = useDownloadBlob();
+
+  const retry = () => {
+    setStop(false);
+    setState(INITIAL_STATE);
+    setJob(null);
+    recreateJob();
+  };
 
   if (!selectedKeymap) {
     return <div>No keymap selected</div>;
@@ -165,17 +190,34 @@ export const Compile = ({
           >
             {() => {
               if (initJob?.error_code === 'COMPILE_OPERATOR_NOT_READY') {
-                return <span>Compile runner is not ready</span>;
+                return (
+                  <div className="flex">
+                    Compile runner is not ready, retry later{' '}
+                    <Button className="ml-4" onPress={retry}>
+                      Retry
+                    </Button>
+                  </div>
+                );
               }
               if (initJob?.error_code === 'COMPILE_OPERATOR_NOT_SETUP') {
-                return <span>Compile runner is not setup</span>;
+                return (
+                  <div className="flex">
+                    Compile runner is not setup, retry later{' '}
+                    <Button className="ml-4" onPress={retry}>
+                      Retry
+                    </Button>
+                  </div>
+                );
               }
 
               if (createJobError) {
                 return (
-                  <span>
+                  <div>
                     Failed to create job: {(createJobError as Error).message}
-                  </span>
+                    <Button className="ml-4" onPress={retry}>
+                      Retry
+                    </Button>
+                  </div>
                 );
               }
 
@@ -186,7 +228,16 @@ export const Compile = ({
                 return <span>Job in queue...</span>;
               }
               if (state.jobReady) {
-                return <span>Runner ready</span>;
+                return (
+                  <div className="flex">
+                    Runner ready
+                    {Boolean(runError) && (
+                      <Button className="ml-4" onPress={retry}>
+                        Retry
+                      </Button>
+                    )}
+                  </div>
+                );
               }
 
               return <div>Waiting for runner...</div>;
