@@ -30,3 +30,11 @@ FROM build AS service
 CMD yarn start
 EXPOSE 3022
 #<<dogen
+
+# Dev
+FROM node-base AS dev
+WORKDIR /service
+
+VOLUME [ "/service/node_modules", "/service/src" ]
+
+CMD yarn install && yarn dev:container

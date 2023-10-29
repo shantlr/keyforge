@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  compile-operator:
+    build:
+      context: ./
+      target: dev
+    networks:
+      - keyforge-compile-operator
+    ports:
+      - 3022:3022
+    volumes:
+      - ./src:/service/src
+      - ./package.json:/service/package.json
+      - ./tsconfig.json:/service/tsconfig.json
+      - ./yarn.lock:/service/yarn.lock
+      - ./node_modules:/service/node_modules
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - ./env/env.dev-docker
+
+networks:
+  keyforge-compile-operator:
+    external: true

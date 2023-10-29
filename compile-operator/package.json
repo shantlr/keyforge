@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "ts-node --esm -r dotenv/config ./src/index.ts",
+    "dev": "DOTENV_CONFIG_PATH=./env/env.dev nodemon --exec ts-node --esm -r dotenv/config ./src/index.ts",
+    "dev:container": "nodemon --exec ts-node ./src/index.ts",
     "build": "tsc",
     "start": "node ./build/index.js"
   },
@@ -25,8 +26,8 @@
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.3",
-    "@types/express": "^4.17.17",
     "@types/dockerode": "^3.3.20",
+    "@types/express": "^4.17.17",
     "@types/jest": "^29.5.5",
     "@types/node": "^20.6.4",
     "dotenv": "^16.3.1",

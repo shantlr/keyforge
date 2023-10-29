@@ -1,12 +1,11 @@
 import Docker, { DockerOptions } from 'dockerode';
-import path from 'node:path';
 
 import { CompileKeymapInput } from '../../validate.js';
 import { CompileRunner } from './interface.js';
-import { readFile, rm } from 'node:fs/promises';
 import { sleep } from '../sleep.js';
 import { randomInt } from 'node:crypto';
 import axios from 'axios';
+import { customAlphabet } from 'nanoid';
 
 export class DockerCompileRunner implements CompileRunner {
   docker: Docker;
@@ -34,7 +33,7 @@ export class DockerCompileRunner implements CompileRunner {
       connection: DockerOptions;
       compileImage: string;
       networkModeHost?: boolean;
-      usedNetworkId?: string;
+      usedNetwork?: string;
       tmpDir: string;
     },
   ) {
@@ -53,6 +52,9 @@ export class DockerCompileRunner implements CompileRunner {
       console.log(
         `[runner] starting qmk-keymap-compiler in server mode (port: ${port})...`,
       );
+      const networkAlias = customAlphabet(
+        '0123456789abcdefghijklmnopqrstuvwxxyz',
+      )();
       const container = await this.docker.createContainer({
         // name: `qmk_compile_job_$`,
         Image: this.config.compileImage,
@@ -70,15 +72,23 @@ export class DockerCompileRunner implements CompileRunner {
               }
             : undefined,
         },
+        NetworkingConfig: {
+          EndpointsConfig: this.config.usedNetwork
+            ? {
+                [this.config.usedNetwork]: {
+                  Aliases: [networkAlias],
+                },
+              }
+            : undefined,
+        },
         Cmd: ['./cli', 'server'],
       });
       console.log(`[runner] container '${container.id}' created`);
       console.log(`[runner] waiting 'qmk-keymap-compiler' to be ready...`);
 
-      const containerName = (await container.inspect()).Name;
       const containerUrl = this.config.networkModeHost
         ? `http://localhost:${port}`
-        : `http://${containerName}:${port}`;
+        : `http://${networkAlias}:${port}`;
 
       let stream: NodeJS.ReadWriteStream;
       try {

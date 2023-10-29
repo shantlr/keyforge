@@ -9,7 +9,6 @@ export const RUNNER_LOCAL_PATH = process.env.RUNNER_LOCAL_PATH;
 
 export const RUNNER_DOCKER_SOCKET = process.env.RUNNER_DOCKER_SOCKET || '';
 export const RUNNER_DOCKER_IMAGE = process.env.RUNNER_DOCKER_IMAGE || '';
-export const RUNNER_DOCKER_NETWORK_ID =
-  process.env.RUNNER_DOCKER_NETWORK_ID || '';
+export const RUNNER_DOCKER_NETWORK = process.env.RUNNER_DOCKER_NETWORK || '';
 export const RUNNER_DOCKER_NETWORK_MODE_HOST =
   process.env.RUNNER_DOCKER_NETWORK_MODE_HOST === 'true';

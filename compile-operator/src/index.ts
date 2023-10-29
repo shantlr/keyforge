@@ -6,7 +6,7 @@ import {
   MAX_PARALLEL_JOB,
   RUNNER_DOCKER_IMAGE,
   RUNNER_DOCKER_SOCKET,
-  RUNNER_DOCKER_NETWORK_ID,
+  RUNNER_DOCKER_NETWORK,
   RUNNER_LOCAL_PATH,
   RUNNER_MODE,
   SERVICE_PORT,
@@ -29,7 +29,7 @@ const main = async () => {
     const localPath = RUNNER_LOCAL_PATH;
     const cmd = ['yarn', 'start'];
     runner = new LocalCompileRunner({
-      path: localPath,
+      path: localPath as string,
       command: cmd,
     });
     console.log(
@@ -41,18 +41,19 @@ const main = async () => {
         socketPath: RUNNER_DOCKER_SOCKET,
       },
       networkModeHost: RUNNER_DOCKER_NETWORK_MODE_HOST,
-      usedNetworkId: RUNNER_DOCKER_NETWORK_ID,
+      usedNetwork: RUNNER_DOCKER_NETWORK,
       compileImage: RUNNER_DOCKER_IMAGE,
       tmpDir: './tmp',
     });
     console.log(
-      `[runner] docker runner inited (socket=${RUNNER_DOCKER_SOCKET}, network_host=${RUNNER_DOCKER_NETWORK_MODE_HOST}, network=${RUNNER_DOCKER_NETWORK_ID}, image=${RUNNER_DOCKER_IMAGE} dir=./tmp)`,
+      `[runner] docker runner inited (socket=${RUNNER_DOCKER_SOCKET}, network_host=${RUNNER_DOCKER_NETWORK_MODE_HOST}, network=${RUNNER_DOCKER_NETWORK}, image=${RUNNER_DOCKER_IMAGE} dir=./tmp)`,
     );
   } else if (RUNNER_MODE) {
     console.error(`Unrecognized runner mode: ${RUNNER_MODE}`);
   } else {
     console.error('Runner mode not provided, please set `RUNNER_MODE` env var');
   }
+
   if (!runner) {
     throw new Error('Could not initialize runner');
   }
