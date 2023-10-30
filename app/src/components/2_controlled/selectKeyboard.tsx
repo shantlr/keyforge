@@ -53,13 +53,13 @@ export const SelectKeyboard = ({
           }}
         />
       </div>
-      <div className="mt-2 pt-4 pb-8 flex flex-col items-center overflow-auto">
+      <div className="mt-2 pt-4 pb-8 flex flex-col items-center overflow-auto snap-y">
         {!results.length && userKeyboards.length > 0 && (
           <>
             <div className="mb-2 text-default-darker">Your keyboards:</div>
             {userKeyboards.map((key) => (
               <Link
-                className="text-default-darker cursor-pointer hover:bg-primary hover:text-white transition px-8 rounded"
+                className="snap-start text-default-darker cursor-pointer hover:bg-primary hover:text-white transition px-8 rounded"
                 href={`/${key}`}
                 key={key}
               >
@@ -71,7 +71,7 @@ export const SelectKeyboard = ({
         {results.map((r) => (
           <Link
             key={r.key}
-            className="cursor-pointer hover:bg-primary hover:text-white transition px-8 rounded"
+            className="snap-start cursor-pointer hover:bg-primary hover:text-white transition px-8 rounded"
             href={`/${r.key}`}
           >
             {r.name} <span>({r.qmkpath})</span>

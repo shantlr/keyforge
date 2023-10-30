@@ -176,7 +176,7 @@ export const Compile = ({
   }
 
   return (
-    <div className="expanded-container pt-8 overflow-hidden">
+    <div className="expanded-container overflow-hidden">
       <div className="text-center">
         Keymap <span className="text-primary">{selectedKeymap.name}</span> (
         <span className="text-sm">{keyboardInfo.qmkpath}</span>)

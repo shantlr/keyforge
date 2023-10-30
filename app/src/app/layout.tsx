@@ -7,6 +7,7 @@ import { Suspense } from 'react';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import './globals.css';
 
+import { HeaderSteps } from '@/components/2_controlled/headerSteps';
 import { QueryProvider } from '@/components/providers/queryClient';
 import { ReduxProvider } from '@/components/providers/redux';
 
@@ -34,7 +35,10 @@ export default function RootLayout({
       >
         <QueryProvider>
           <ReduxProvider>
-            <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+            <Suspense>
+              <HeaderSteps />
+              {children}
+            </Suspense>
           </ReduxProvider>
         </QueryProvider>
       </body>
