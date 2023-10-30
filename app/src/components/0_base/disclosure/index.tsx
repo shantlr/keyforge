@@ -58,10 +58,10 @@ export const Disclosure = ({
 
   return (
     <>
-      <div className="border border-default rounded overflow-hidden">
+      <div className="border border-gray-700 rounded overflow-hidden">
         <button
           className={clsx(
-            'w-full px-2 shrink-0 rounded-none text-mainbg truncate text-start bg-default hover:bg-default-lighter transition',
+            'w-full px-2 shrink-0 rounded-none border-b border-gray-800 truncate text-start hover:bg-secondarybg-lighter transition',
             titleClassName
           )}
           onClick={() => {

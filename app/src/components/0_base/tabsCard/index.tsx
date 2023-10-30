@@ -83,16 +83,20 @@ export const TabsCard = ({
   }, [currenTabKey, tabs]);
 
   return (
-    <div className={clsx('w-full h-full rounded overflow-hidden', className)}>
+    <div
+      className={clsx(
+        'w-full h-full rounded overflow-hidden border border-gray-700',
+        className
+      )}
+    >
       {/* header */}
-      <div className="bg-mainbg flex">
+      <div className="bg-mainbg flex p-1 border-b border-gray-800 space-x-2">
         {tabs.map((t) => (
           <div
             className={clsx(
-              'px-4 rounded-t hover:bg-secondarybg-lighter cursor-pointer transition',
+              'rounded-xl px-4 transition cursor-pointer hover:bg-secondarybg-lighter',
               {
-                'bg-secondarybg text-primary': currenTabKey === t.key,
-                'bg-mainbg': currenTabKey !== t.key,
+                'bg-secondarybg': currenTabKey === t.key,
               }
             )}
             key={t.key}
@@ -107,7 +111,7 @@ export const TabsCard = ({
       {/* content */}
       <div
         className={clsx(
-          'rounded-t overflow-hidden text-default bg-secondarybg h-full w-full',
+          'rounded-t overflow-hidden text-default h-full w-full p-2',
           {
             'rounded-tl-none': currentTabIdx === 0,
           },
