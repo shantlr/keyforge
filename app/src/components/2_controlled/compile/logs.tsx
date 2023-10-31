@@ -1,5 +1,5 @@
 import { parse } from 'ansicolor';
-import { useMemo, useState } from 'react';
+import { UIEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 const Line = ({ text }: { text: string }) => {
   const parsed = useMemo(() => parse(text), [text]);
@@ -30,12 +30,54 @@ export const Logs = ({ logs }: { logs?: string[] }) => {
     return logs.join('').split('\n');
   }, [logs]);
 
+  const ref = useRef<HTMLDivElement>(null);
+  const prevScrollRef = useRef<number | undefined>(undefined);
+  const [shouldAutoscroll, setShouldAutoscroll] = useState(true);
+
+  // init prev scroll
+  useEffect(() => {
+    if (prevScrollRef.current === undefined) {
+      prevScrollRef.current = ref.current?.scrollTop;
+    }
+  }, []);
+
+  const onScroll = (e: UIEvent<HTMLDivElement>) => {
+    const container = e.target as HTMLDivElement;
+    const isAtBottom =
+      container.scrollHeight - container.scrollTop === container.clientHeight;
+    if (isAtBottom) {
+      // allow autoscroll when bottom
+      setShouldAutoscroll(true);
+    } else if (
+      typeof prevScrollRef.current === 'number' &&
+      container.scrollTop < prevScrollRef.current
+    ) {
+      // deactivate auto scroll on scroll up
+      setShouldAutoscroll(false);
+    }
+    prevScrollRef.current = container.scrollTop;
+  };
+
+  // autoscroll down on new logs
+  useEffect(() => {
+    if (shouldAutoscroll) {
+      ref.current?.scroll({
+        top: ref.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [logs, shouldAutoscroll]);
+
   if (!l) {
     return null;
   }
 
   return (
-    <div className="w-full max-h-[400px] overflow-auto text-xs">
+    <div
+      ref={ref}
+      className="w-full max-h-[400px] overflow-auto text-xs"
+      onScroll={onScroll}
+    >
       <span
         className="cursor-pointer text-default-darker hover:text-primary select-none"
         onClick={() => {

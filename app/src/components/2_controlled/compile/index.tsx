@@ -150,6 +150,7 @@ export const Compile = ({
     }
     return false;
   }, [job?.state, jobId, stop]);
+
   const { error: pingJobError } = useQuery(
     ['job', jobId],
     async () => {
