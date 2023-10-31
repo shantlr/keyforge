@@ -36,7 +36,6 @@ import { KeyContext } from './keyContext';
 import { ConfiguratorKeymap } from './keymap';
 import { ConfiguratorKeyPicker } from './keyPicker';
 
-
 const customCollisions: WrappedCollisionDetection = (e) => {
   const prevOver = e.prevCollisions?.[0];
   const res = pointerWithin(e);
@@ -219,7 +218,7 @@ export const KeymapConfigurator = ({
               <Disclosure
                 titleClassName="sticky top-[0px]"
                 title="From scratch - Layouts"
-                contentClassName="py-2 pl-2 space-y-1"
+                contentClassName="p-2 space-y-1"
                 show={showLayouts}
                 onVisibilityChange={setShowLayouts}
               >
@@ -227,7 +226,8 @@ export const KeymapConfigurator = ({
                   <Button
                     key={l.name}
                     colorScheme="text"
-                    className={clsx('items-start text-sm', {
+                    justify="start"
+                    className={clsx('text-sm w-full', {
                       'border-dashed border-default':
                         l.name === selectedKeymap?.layout,
                     })}
@@ -254,12 +254,13 @@ export const KeymapConfigurator = ({
               <Disclosure
                 title="From existing keymap"
                 titleClassName="sticky top-[0px]"
-                contentClassName="py-2 pl-2"
+                contentClassName="p-2 space-y-1"
               >
                 {keymaps.map((k, idx) => (
                   <Button
                     key={idx}
-                    className="text-sm"
+                    justify="start"
+                    className="text-sm w-full"
                     colorScheme="text"
                     onPress={() => {
                       dispatch(

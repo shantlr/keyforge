@@ -14,6 +14,7 @@ export const Button = forwardRef(
       className,
       colorScheme,
       size,
+      justify = 'center',
       ...props
     }: AriaButtonProps & {
       colorScheme?:
@@ -27,6 +28,7 @@ export const Button = forwardRef(
       size?: keyof typeof SIZE;
       className?: string;
       style?: CSSProperties;
+      justify?: 'center' | 'start';
     },
     ref: ForwardedRef<HTMLButtonElement | null>
   ) => {
@@ -38,7 +40,11 @@ export const Button = forwardRef(
       <button
         {...buttonProps}
         className={clsx(
-          'button rounded-sm outline-none flex items-center justify-center',
+          'button rounded-sm outline-none flex items-center',
+          {
+            'justify-center': justify === 'center',
+            'justify-start': justify === 'start',
+          },
           SIZE[size || 'md'],
           colorScheme || 'default',
           className
