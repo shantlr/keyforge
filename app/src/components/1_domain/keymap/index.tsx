@@ -74,6 +74,9 @@ export const Keymap = ({
   }, [baseWidth, keyPositions, keySepWidth]);
 
   const textSize = useMemo(() => {
+    if (baseWidth <= 18) {
+      return 'text-[5px]';
+    }
     if (baseWidth < 26) {
       return 'text-[8px]';
     }
