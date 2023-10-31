@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "DOTENV_CONFIG_PATH=./env/env.dev nodemon --exec ts-node --esm -r dotenv/config ./src/index.ts",
-    "dev:container": "nodemon --exec ts-node ./src/index.ts",
+    "dev:container": "nodemon --exec ts-node --esm ./src/index.ts",
     "build": "tsc",
     "start": "node ./build/index.js"
   },

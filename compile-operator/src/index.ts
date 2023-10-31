@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser';
 import express from 'express';
+import { ZodError } from 'zod';
 import { createJobQueue } from './lib/jobQueue.js';
 import {
   COMPILE_JOB_ALIVE_TIMEOUT_MS,
@@ -14,7 +15,6 @@ import {
 } from './config/index.js';
 import { CompileRunner } from './lib/compileRunner/interface.js';
 import { CompileKeymapInput, validateCompileData } from './validate.js';
-import { ZodError } from 'zod';
 import { LocalCompileRunner } from './lib/compileRunner/local.js';
 import { DockerCompileRunner } from './lib/compileRunner/docker.js';
 
