@@ -3,7 +3,7 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toLower } from 'lodash';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 
 import {
@@ -50,6 +50,7 @@ export const Compile = ({
   });
 
   const [state, setState] = useState(INITIAL_STATE);
+  const [job, setJob] = useState<CompileJob | null>(null);
 
   // init compile job
   const {
@@ -76,8 +77,9 @@ export const Compile = ({
       return res;
     },
     {
-      onSuccess() {
+      onSuccess(res) {
         setState((s) => ({ ...s, current: 'wait', jobCreated: true }));
+        setJob(res?.job ?? null);
       },
       onError() {
         setStop(true);
@@ -92,32 +94,6 @@ export const Compile = ({
   );
 
   const jobId = initJob?.job?.id;
-
-  const [job, setJob] = useState<CompileJob | null>(null);
-  const { error: pingJobError } = useQuery(
-    ['job', jobId],
-    async () => {
-      if (!jobId) {
-        return null;
-      }
-      return $$compilePingJob(jobId);
-    },
-    {
-      onSuccess(res) {
-        if (res?.state === 'ready') {
-          setState((s) => ({ ...s, jobReady: true }));
-        }
-        if (res) {
-          setJob(res);
-        }
-      },
-      onError() {
-        setStop(true);
-      },
-      refetchInterval: !stop && job?.state === 'ready' ? 3000 : false,
-      enabled: Boolean(jobId),
-    }
-  );
 
   const { data: firmware, error: runError } = useQuery(
     ['job', jobId, 'run'],
@@ -159,6 +135,43 @@ export const Compile = ({
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
       refetchIntervalInBackground: false,
+    }
+  );
+
+  const getJobInterval = useMemo((): number | false => {
+    if (stop || !jobId) {
+      return false;
+    }
+    if (job?.state === 'ongoing') {
+      return 300;
+    }
+    if (job?.state === 'ready' || job?.state === 'pending') {
+      return 3000;
+    }
+    return false;
+  }, [job?.state, jobId, stop]);
+  const { error: pingJobError } = useQuery(
+    ['job', jobId],
+    async () => {
+      if (!jobId) {
+        return null;
+      }
+      return $$compilePingJob(jobId);
+    },
+    {
+      onSuccess(res) {
+        if (res?.state === 'ready') {
+          setState((s) => ({ ...s, jobReady: true }));
+        }
+        if (res) {
+          setJob(res);
+        }
+      },
+      onError() {
+        setStop(true);
+      },
+      refetchInterval: getJobInterval,
+      enabled: typeof getJobInterval === 'number',
     }
   );
 
