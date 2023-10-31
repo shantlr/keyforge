@@ -1,4 +1,4 @@
-import { SelectKeyboard } from '@/components/2_controlled/selectKeyboard';
+import { SelectKeyboardPage } from '@/components/pages/selectKeyboardPage';
 import { keyboardOptions } from '@/lib/keyboards';
 
 export default async function Home() {
@@ -6,7 +6,7 @@ export default async function Home() {
 
   return (
     <main className="expanded-container overflow-hidden">
-      <SelectKeyboard className="ml-2" keyboards={res} />
+      <SelectKeyboardPage keyboards={res} />
     </main>
   );
 }
