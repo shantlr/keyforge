@@ -31,9 +31,9 @@ import { ExistingKeymap } from '@/lib/keyboards';
 import { KeyboardInfo } from '@/types';
 
 import { Button } from '../../0_base/button';
+import { useRegisterKeyDown } from '../../providers/keymap';
 
 import { ConfiguratorDraggableOverlay } from './dragOverlay';
-import { KeyContext, useRegisterKeyDown } from './keyContext';
 import { ConfiguratorKeymap } from './keymap';
 import { ConfiguratorKeyPicker } from './keyPicker';
 
@@ -138,7 +138,7 @@ export const KeymapConfigurator = ({
     const click = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.hasAttribute('data-blur-key-down')) {
-        setKeyDown();
+        setKeyDown(undefined);
       }
     };
     window.addEventListener('click', click);

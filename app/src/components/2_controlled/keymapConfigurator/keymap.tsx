@@ -5,9 +5,13 @@ import { Keymap, keymapSlice, useDispatch } from '@/components/providers/redux';
 import { MAX_LAYERS } from '@/constants';
 import { KeyboardInfo, KeymapKeyDef } from '@/types';
 
+import {
+  useKeyDown,
+  useListenKey,
+  useRegisterKeyDown,
+} from '../../providers/keymap';
 import { KeymapWithLayers } from '../keymapWithLayers';
 
-import { useKeyDown, useListenKey, useRegisterKeyDown } from './keyContext';
 import { useListenKeyboardEvent } from './useListenKeyboardEvent';
 import { useWindowBlur } from './useWindowBlur';
 
@@ -26,7 +30,7 @@ export const ConfiguratorKeymap = ({
 
   useWindowBlur(
     useCallback(() => {
-      setKeyIdxToEdit?.();
+      setKeyIdxToEdit?.(undefined);
     }, [setKeyIdxToEdit])
   );
 
@@ -58,7 +62,7 @@ export const ConfiguratorKeymap = ({
     if (keyIdxToEdit < keymap.layers[0].keys.length - 1) {
       setKeyIdxToEdit(keyIdxToEdit + 1);
     } else {
-      setKeyIdxToEdit();
+      setKeyIdxToEdit(undefined);
     }
   };
 
@@ -82,7 +86,7 @@ export const ConfiguratorKeymap = ({
       }
       onKeyClick={({ index }) => {
         if (index === keyIdxToEdit) {
-          setKeyIdxToEdit();
+          setKeyIdxToEdit(undefined);
         } else {
           setKeyIdxToEdit(index);
         }

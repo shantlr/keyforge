@@ -6,7 +6,7 @@ import { KeymapConfigurator } from '@/components/2_controlled/keymapConfigurator
 import { ExistingKeymap } from '@/lib/keyboards';
 import { KeyboardInfo } from '@/types';
 
-import { KeyContext } from '../2_controlled/keymapConfigurator/keyContext';
+import { KeyContext } from '../providers/keymap';
 
 export const CustomizeKeymapPage = ({
   keyboardKey,

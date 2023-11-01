@@ -25,6 +25,7 @@ export const InputButton = forwardRef<
       onClick,
       colorScheme,
       onVisibilityChange,
+      className,
       ...props
     },
     ref
@@ -37,12 +38,14 @@ export const InputButton = forwardRef<
         <div
           {...(props as any)}
           ref={ref as any}
+          role="button"
           className={clsx(
             'h-input-md border-2 border-bg-default rounded px-2 button text-sm cursor-pointer truncate w-full',
             {
               [colorScheme || 'default']: !active,
               primary: active,
-            }
+            },
+            className
           )}
           onClick={(e) => {
             onClick?.(e);
@@ -59,7 +62,7 @@ export const InputButton = forwardRef<
 
     return (
       <InputFit
-        className="w-full"
+        className={clsx('w-full', className)}
         // @ts-ignore
         ref={(r) => {
           if (typeof ref === 'function') {

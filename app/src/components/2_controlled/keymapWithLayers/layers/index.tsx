@@ -13,6 +13,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useMemo, useState } from 'react';
 
+import { useHighlightedLayer } from '@/components/providers/keymap';
 import { Keymap } from '@/components/providers/redux';
 
 import { LayersDragOverlay } from './dragOverlay';
@@ -45,6 +46,8 @@ export const Layers = ({
   );
   const [dragged, setDragged] = useState<string | null>(null);
 
+  const highlightedLayer = useHighlightedLayer();
+
   return (
     <DndContext
       onDragStart={(e) => {
@@ -68,6 +71,7 @@ export const Layers = ({
               key={idx}
               active={selectedLayerId === l.id}
               isDragged={l.id === dragged}
+              outline={highlightedLayer === l.id}
               onNameChange={(e) => {
                 onRenameLayer?.({
                   layerId: l.id,

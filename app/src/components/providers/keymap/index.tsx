@@ -10,14 +10,16 @@ import {
 
 import { KeymapKeyDef } from '@/types';
 
+import { createStateContext } from './base';
+
 type KeyContext = {
   keyDown: string | null;
 };
 
 type ListenKeyFn = (arg: { key: KeymapKeyDef }) => void;
 
-const KeyDownContext = createContext<number | undefined>(undefined);
-const SetKeyDownContext = createContext<(keyIndex?: number) => void>(() => {});
+// const KeyDownContext = createContext<number | undefined>(undefined);
+// const SetKeyDownContext = createContext<(keyIndex?: number) => void>(() => {});
 const RegisterListenContext = createContext<
   ((cb: ListenKeyFn) => () => void) | null
 >(null);
@@ -25,8 +27,16 @@ const RegisterKeyContext = createContext<((key: KeymapKeyDef) => void) | null>(
   null
 );
 
+const KeyDownIndex = createStateContext<number | undefined>({
+  default: undefined,
+});
+const HighlightedLayer = createStateContext<string | undefined>({
+  default: undefined,
+});
+
 export const KeyContext = ({ children }: { children: ReactNode }) => {
-  const [keyDown, setKeyDown] = useState<number | undefined>();
+  const keyDown = KeyDownIndex.useState();
+  const higlightedLayer = HighlightedLayer.useState();
 
   const listeners = useRef<ListenKeyFn[]>([]);
 
@@ -49,21 +59,27 @@ export const KeyContext = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <SetKeyDownContext.Provider value={setKeyDown}>
-      <KeyDownContext.Provider value={keyDown}>
+    <HighlightedLayer.Provider value={higlightedLayer}>
+      <KeyDownIndex.Provider value={keyDown}>
         <RegisterListenContext.Provider value={registerListen}>
           <RegisterKeyContext.Provider value={registerKey}>
             {children}
           </RegisterKeyContext.Provider>
         </RegisterListenContext.Provider>
-      </KeyDownContext.Provider>
-    </SetKeyDownContext.Provider>
+      </KeyDownIndex.Provider>
+    </HighlightedLayer.Provider>
   );
 };
 
 export const useRegisterKeyDown = () => {
-  return useContext(SetKeyDownContext);
+  return KeyDownIndex.useSetValue();
 };
+export const useKeyDown = () => {
+  return KeyDownIndex.useValue();
+};
+
+export const useRegisterHighlightedLayer = HighlightedLayer.useSetValue;
+export const useHighlightedLayer = HighlightedLayer.useValue;
 
 export const useRegisterKey = () => {
   return useContext(RegisterKeyContext);
@@ -79,7 +95,4 @@ export const useListenKey = (cb: ListenKeyFn) => {
       ref.current?.(e);
     });
   }, [register]);
-};
-export const useKeyDown = () => {
-  return useContext(KeyDownContext);
 };

@@ -2,6 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import clsx from 'clsx';
 import { ChangeEvent, ComponentProps, useState } from 'react';
 import { mergeProps } from 'react-aria';
 
@@ -17,11 +18,13 @@ export const LayerItem = ({
   onDuplicateLayer,
   onNameChange,
   isDragged,
+  outline,
   ...props
 }: {
   layer: Keymap['layers'][number];
   active?: boolean;
   isDragged?: boolean;
+  outline?: boolean;
   onNameChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onDelete?: () => void;
   onDuplicateLayer?: () => void;
@@ -74,6 +77,9 @@ export const LayerItem = ({
       <InputButton
         value={layer.name}
         style={style}
+        className={clsx({
+          'outline-offset-1 outline-dashed outline-primary-darker': outline,
+        })}
         colorScheme="default-filled"
         edit={edit}
         placeholder="<unamed-layer>"

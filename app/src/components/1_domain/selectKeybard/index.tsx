@@ -46,7 +46,6 @@ export const SelectKeyboard = ({
         <Input
           dim="lg"
           className="w-full"
-          // className="px-6 py-1 w-full border-2 bg-mainbg text-primary border-default hover:border-primary focus:border-primary transition rounded outline-none"
           placeholder="Search keyboard"
           value={search}
           allowClear

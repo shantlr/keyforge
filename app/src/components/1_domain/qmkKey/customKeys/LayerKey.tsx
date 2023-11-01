@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import { Item } from 'react-stately';
 
 import { Select } from '@/components/0_base/select';
+import { useRegisterHighlightedLayer } from '@/components/providers/keymap';
 
 import { Key } from '../../key';
 
@@ -23,8 +24,20 @@ export const LayerKey = forwardRef<any, CustomKeyProps>(
     },
     ref
   ) => {
+    const layerId = params?.[0]?.value as string | undefined;
+    const registerHighlightedLayer = useRegisterHighlightedLayer();
+
     return (
-      <Key {...props} ref={ref}>
+      <Key
+        {...props}
+        ref={ref}
+        onMouseEnter={() => {
+          registerHighlightedLayer(layerId);
+        }}
+        onMouseLeave={() => {
+          registerHighlightedLayer(undefined);
+        }}
+      >
         <div className="overflow-hidden flex flex-col items-center">
           <div className="text-[9px]">{keyConf.title || keyConf.key}</div>
           {!layers?.length && (
