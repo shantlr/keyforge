@@ -6,6 +6,7 @@ import { customAlphabet } from 'nanoid';
 import { getKeyboardInfo } from './getKeyboardInfo';
 import execa from 'execa';
 import { deleteDir } from '../lib/deleteDir';
+import { isFileExists } from '../lib/isFileExists';
 
 const randomKemapId = customAlphabet(
   '0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSUVWXYZ',
@@ -90,8 +91,18 @@ const compileFirmwareFromKeymapFolder = async ({
     stdio: 'inherit',
     cwd,
   });
-  const binName = `${keyboardQmkPath.replace(/\//g, '_')}_${keymapName}.bin`;
-  return { binName };
+  const baseName = `${keyboardQmkPath.replace(/\//g, '_')}_${keymapName}`;
+
+  const binName = `${baseName}.bin`;
+  if (await isFileExists(path.resolve(cwd, binName))) {
+    return { binName };
+  }
+  const hexName = `${baseName}.hex`;
+  if (await isFileExists(path.resolve(cwd, hexName))) {
+    return { binName: hexName };
+  }
+
+  throw new Error(`BIN_NOT_FOUND`);
 };
 
 export const compileKeymap = async ({
