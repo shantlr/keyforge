@@ -33,7 +33,7 @@ import { KeyboardInfo } from '@/types';
 import { Button } from '../../0_base/button';
 
 import { ConfiguratorDraggableOverlay } from './dragOverlay';
-import { KeyContext } from './keyContext';
+import { KeyContext, useRegisterKeyDown } from './keyContext';
 import { ConfiguratorKeymap } from './keymap';
 import { ConfiguratorKeyPicker } from './keyPicker';
 
@@ -61,6 +61,7 @@ export const KeymapConfigurator = ({
   keymaps: ExistingKeymap[];
   onSelectKeymap?: (keymapId: string | null) => void;
 }) => {
+  const setKeyDown = useRegisterKeyDown();
   const layouts = useMemo(
     () =>
       map(keyboard?.layouts, (l, name) => ({
@@ -133,15 +134,37 @@ export const KeymapConfigurator = ({
     })
   );
 
+  useEffect(() => {
+    const click = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.hasAttribute('data-blur-key-down')) {
+        setKeyDown();
+      }
+    };
+    window.addEventListener('click', click);
+    return () => {
+      window.removeEventListener('click', click);
+    };
+  });
+
   return (
     <DndContext
       sensors={sensors}
       modifiers={[snapCenterToCursor]}
       collisionDetection={customCollisions}
     >
-      <div className="expanded-container overflow-hiddden px-4">
-        <div className="h-full flex grow-1 shrink-1 overflow-hidden">
-          <div className="h-full mr-8 space-y-1 overflow-y-auto relative w-[220px] shrink-0">
+      <div
+        className="expanded-container overflow-hiddden px-4"
+        data-blur-key-down
+      >
+        <div
+          className="h-full flex grow-1 shrink-1 overflow-hidden"
+          data-blur-key-down
+        >
+          <div
+            className="h-full mr-8 space-y-1 overflow-y-auto relative w-[220px] shrink-0"
+            data-blur-key-down
+          >
             <Disclosure
               title="Your keymaps"
               titleClassName="sticky top-[0px]"
@@ -286,7 +309,7 @@ export const KeymapConfigurator = ({
           </div>
 
           {/* Keymap */}
-          <div className="w-full flex">
+          <div className="w-full flex" data-blur-key-down>
             <ConfiguratorKeymap keyboard={keyboard} keymap={selectedKeymap} />
           </div>
         </div>

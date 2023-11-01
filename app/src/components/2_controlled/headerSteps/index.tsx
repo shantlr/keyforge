@@ -49,7 +49,10 @@ export const HeaderSteps = () => {
   }, [seg.length]);
 
   return (
-    <div className="flex items-center justify-center py-8 space-x-2 mb-4">
+    <div
+      className="flex items-center justify-center py-8 space-x-2 mb-4"
+      data-blur-key-down
+    >
       <Item href="/" active={active === 'pick'}>
         Pick a keyboard
       </Item>

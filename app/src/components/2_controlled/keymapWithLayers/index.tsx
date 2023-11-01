@@ -50,8 +50,11 @@ export const KeymapWithLayers = ({
       : localSelectedLayerId;
 
   return (
-    <div className="flex">
-      <div className="mr-8 min-w-[80px] max-w-[200px] space-y-2">
+    <div className="flex" data-blur-key-down>
+      <div
+        className="mr-8 min-w-[80px] max-w-[200px] space-y-2"
+        data-blur-key-down
+      >
         <div>Layers</div>
         {Boolean(onAddLayer && showNewLayerInput) && (
           <InputFit
