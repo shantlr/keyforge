@@ -6,6 +6,8 @@ import { KeymapConfigurator } from '@/components/2_controlled/keymapConfigurator
 import { ExistingKeymap } from '@/lib/keyboards';
 import { KeyboardInfo } from '@/types';
 
+import { KeyContext } from '../2_controlled/keymapConfigurator/keyContext';
+
 export const CustomizeKeymapPage = ({
   keyboardKey,
   keyboard,
@@ -19,12 +21,14 @@ export const CustomizeKeymapPage = ({
 
   return (
     <div className="expanded-container">
-      <KeymapConfigurator
-        keyboardKey={keyboardKey}
-        keyboard={keyboard}
-        keymaps={keymaps}
-        onSelectKeymap={setSelectedKeymapId}
-      />
+      <KeyContext>
+        <KeymapConfigurator
+          keyboardKey={keyboardKey}
+          keyboard={keyboard}
+          keymaps={keymaps}
+          onSelectKeymap={setSelectedKeymapId}
+        />
+      </KeyContext>
     </div>
   );
 };

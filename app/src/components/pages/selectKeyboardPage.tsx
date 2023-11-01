@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
 
-import { KeyboardPreview } from '../1_domain/keyboardPreview';
 import { SelectKeyboard } from '@/components/1_domain/selectKeybard';
 import { UserKeyboards } from '@/components/1_domain/userKeyboards';
+
+import { KeyboardPreview } from '../1_domain/keyboardPreview';
 
 export const SelectKeyboardPage = ({
   keyboards,

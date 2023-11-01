@@ -1,8 +1,9 @@
 import { forwardRef } from 'react';
 import { Item } from 'react-stately';
 
-import { Key } from '../../key';
 import { Select } from '@/components/0_base/select';
+
+import { Key } from '../../key';
 
 import { CustomKeyProps } from './types';
 

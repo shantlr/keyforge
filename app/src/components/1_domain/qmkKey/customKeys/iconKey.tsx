@@ -2,8 +2,9 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ComponentProps, forwardRef } from 'react';
 
-import { Key } from '../../key';
 import { Droppable } from '@/components/0_base/droppable';
+
+import { Key } from '../../key';
 
 import { CustomKeyComponent } from './types';
 

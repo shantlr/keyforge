@@ -2,8 +2,9 @@ import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useQuery } from 'react-query';
 
-import { Keymap } from '../keymap';
 import { $$getKeyboard } from '@/actions/getExisingKeymap';
+
+import { Keymap } from '../keymap';
 
 export const KeyboardPreview = ({
   keyboardKey,

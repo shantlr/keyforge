@@ -1,8 +1,8 @@
 {
   "eslint.workingDirectories": [
     "./app",
-    "./compile-keymap",
-    "./parse",
+    "./qmk-keymap-compiler",
+    "./parse-qmk-keymaps",
   ],
   "git.autoRepositoryDetection": "openEditors"
 }

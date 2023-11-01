@@ -6,10 +6,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ComponentProps, forwardRef } from 'react';
 
-import { Key } from '../key';
 import { Droppable } from '@/components/0_base/droppable';
 import { KEYS, getKeyConfFromDef } from '@/constants';
 import { KeymapKeyDef } from '@/types';
+
+import { Key } from '../key';
 
 import { createIconKey } from './customKeys/iconKey';
 import { KeyModifier } from './customKeys/keyModifier';

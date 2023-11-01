@@ -1,12 +1,13 @@
 import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useState } from 'react';
 
-import { KeymapWithLayers } from '../keymapWithLayers';
 import { Keymap, keymapSlice, useDispatch } from '@/components/providers/redux';
 import { MAX_LAYERS } from '@/constants';
 import { KeyboardInfo, KeymapKeyDef } from '@/types';
 
-import { useListenKey } from './keyContext';
+import { KeymapWithLayers } from '../keymapWithLayers';
+
+import { useKeyDown, useListenKey, useRegisterKeyDown } from './keyContext';
 import { useListenKeyboardEvent } from './useListenKeyboardEvent';
 import { useWindowBlur } from './useWindowBlur';
 
@@ -19,13 +20,14 @@ export const ConfiguratorKeymap = ({
 }) => {
   const dispatch = useDispatch();
 
-  const [keyIdxToEdit, setKeyIdxToEdit] = useState<number | null>(null);
+  const keyIdxToEdit = useKeyDown();
+  const setKeyIdxToEdit = useRegisterKeyDown();
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
 
   useWindowBlur(
     useCallback(() => {
-      setKeyIdxToEdit(null);
-    }, [])
+      setKeyIdxToEdit?.();
+    }, [setKeyIdxToEdit])
   );
 
   // Auto select layer
@@ -56,7 +58,7 @@ export const ConfiguratorKeymap = ({
     if (keyIdxToEdit < keymap.layers[0].keys.length - 1) {
       setKeyIdxToEdit(keyIdxToEdit + 1);
     } else {
-      setKeyIdxToEdit(null);
+      setKeyIdxToEdit();
     }
   };
 
@@ -80,7 +82,7 @@ export const ConfiguratorKeymap = ({
       }
       onKeyClick={({ index }) => {
         if (index === keyIdxToEdit) {
-          setKeyIdxToEdit(null);
+          setKeyIdxToEdit();
         } else {
           setKeyIdxToEdit(index);
         }

@@ -16,7 +16,8 @@ type KeyContext = {
 
 type ListenKeyFn = (arg: { key: KeymapKeyDef }) => void;
 
-const KeyDownContext = createContext<string | null>(null);
+const KeyDownContext = createContext<number | undefined>(undefined);
+const SetKeyDownContext = createContext<(keyIndex?: number) => void>(() => {});
 const RegisterListenContext = createContext<
   ((cb: ListenKeyFn) => () => void) | null
 >(null);
@@ -25,7 +26,7 @@ const RegisterKeyContext = createContext<((key: KeymapKeyDef) => void) | null>(
 );
 
 export const KeyContext = ({ children }: { children: ReactNode }) => {
-  const [keyDown, setKeyDown] = useState(null);
+  const [keyDown, setKeyDown] = useState<number | undefined>();
 
   const listeners = useRef<ListenKeyFn[]>([]);
 
@@ -48,14 +49,20 @@ export const KeyContext = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <KeyDownContext.Provider value={keyDown}>
-      <RegisterListenContext.Provider value={registerListen}>
-        <RegisterKeyContext.Provider value={registerKey}>
-          {children}
-        </RegisterKeyContext.Provider>
-      </RegisterListenContext.Provider>
-    </KeyDownContext.Provider>
+    <SetKeyDownContext.Provider value={setKeyDown}>
+      <KeyDownContext.Provider value={keyDown}>
+        <RegisterListenContext.Provider value={registerListen}>
+          <RegisterKeyContext.Provider value={registerKey}>
+            {children}
+          </RegisterKeyContext.Provider>
+        </RegisterListenContext.Provider>
+      </KeyDownContext.Provider>
+    </SetKeyDownContext.Provider>
   );
+};
+
+export const useRegisterKeyDown = () => {
+  return useContext(SetKeyDownContext);
 };
 
 export const useRegisterKey = () => {

@@ -1,8 +1,9 @@
 import { ComponentProps, useMemo } from 'react';
 
+import { KEYS, KeyConfig } from '@/constants';
+
 import { Tab, TabsCard } from '../0_base/tabsCard';
 import { Keymap } from '../1_domain/keymap';
-import { KEYS, KeyConfig } from '@/constants';
 
 const BASIC_KEYS_POSITION = [
   { x: 0, y: 0, key: 'KC_ESC' },
