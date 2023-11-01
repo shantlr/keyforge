@@ -11,6 +11,7 @@ module.exports = {
     extend: {
       height: {
         'input-md': 24,
+        'input-lg': 32,
       },
       colors: {
         danger: colors.red[500],

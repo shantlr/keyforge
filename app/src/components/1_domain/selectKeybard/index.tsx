@@ -5,6 +5,8 @@ import Fuse from 'fuse.js';
 import Link from 'next/link';
 import { useDeferredValue, useMemo, useState } from 'react';
 
+import { Input } from '@/components/0_base/input';
+
 export const SelectKeyboard = ({
   value,
   className,
@@ -41,10 +43,13 @@ export const SelectKeyboard = ({
   return (
     <div className={clsx('expanded-container overflow-hidden', className)}>
       <div className="flex">
-        <input
-          className="px-6 py-1 w-full border-2 bg-mainbg text-primary border-default hover:border-primary focus:border-primary transition rounded outline-none"
+        <Input
+          dim="lg"
+          className="w-full"
+          // className="px-6 py-1 w-full border-2 bg-mainbg text-primary border-default hover:border-primary focus:border-primary transition rounded outline-none"
           placeholder="Search keyboard"
           value={search}
+          allowClear
           onChange={(e) => {
             setSearch(e.target.value);
           }}
