@@ -25,3 +25,15 @@ MAX_PARALLEL_JOB=1
 ```bash
 cd ./app && yarn dev
 ```
+
+## Host it yourself
+
+[docker-compose.yml](./docker-compose.yml)
+
+## Keymaps json
+
+You can get the keymaps json parsed from qmk repo using this image
+
+```bash
+docker run --rm --mount src=./keymaps,target=/output,type=bind shantr/keyforge-qmk-keymaps
+```

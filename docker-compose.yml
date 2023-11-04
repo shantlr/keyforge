@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: keyforge-app
+    restart: unless-stopped
+    image: shantry/keyforge-app
+    networks:
+      - compile-operator
+    environment:
+      COMPILE_OPERATOR_API_URL: http://keyforge-compile-operator:3000
+  compile-operator:
+    container_name: keyforge-compile-operator
+    restart: unless-stopped
+    image: shantry/keyforge-compile-operator:0.0.3
+    networks:
+      - compile-operator
+      - keyforge-compile-operator
+    environment:
+      SERVICE_PORT: 3000
+      RUNNER_MODE: docker
+      RUNNER_DOCKER_IMAGE: shantry/keyforge-qmk-keymap-compiler
+      RUNNER_DOCKER_NETWORK: keyforge-compile-operator
+      RUNNER_DOCKER_SOCKET: /var/run/docker.sock
+      MAX_PARALLEL_JOB: 1
+    volumes:
+      # compile-operator require docker socket to create container for running compilation jobs
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  compile-operator:
+  # network used for compile-operator to communicate with created compilation container
+  keyforge-compile-operator:
+    external: true
