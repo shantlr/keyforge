@@ -1,4 +1,3 @@
-import { useDraggable } from '@dnd-kit/core';
 import clsx from 'clsx';
 import { ComponentProps, ReactNode, forwardRef } from 'react';
 
@@ -33,6 +32,7 @@ export const Key = forwardRef<
     textSize?: string;
     isDown?: boolean;
     theme?: KeyTheme;
+    zIndex?: number;
   } & ComponentProps<'div'>
 >(
   (
@@ -52,6 +52,7 @@ export const Key = forwardRef<
         primary = KEY_THEME.default.primary,
         secondary = KEY_THEME.default.secondary,
       } = KEY_THEME.default,
+      zIndex,
       ...props
     },
     ref
@@ -73,6 +74,7 @@ export const Key = forwardRef<
         style={{
           width,
           height,
+          zIndex,
           ...(style || null),
         }}
         {...props}

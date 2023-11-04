@@ -17,7 +17,6 @@ import { KeyModifier } from './customKeys/keyModifier';
 import { LayerKey } from './customKeys/layerKey';
 import { CustomKeyComponent } from './customKeys/types';
 
-
 const CUSTOM_KEYS_COMPONENTS: Record<string, CustomKeyComponent> = {
   ...KEYS.filter((k) => 'group' in k && k.group === 'layer').reduce(
     (acc, keyConfig) => {

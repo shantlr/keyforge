@@ -2,39 +2,38 @@
 
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useRef } from 'react';
-import {
-  AriaSelectProps,
-  HiddenSelect,
-  mergeProps,
-  useFocusRing,
-  useOption,
-  useSelect,
-} from 'react-aria';
-import { ListState, Node, useSelectState } from 'react-stately';
+import { MutableRefObject, useRef } from 'react';
+import { AriaSelectProps, HiddenSelect, useSelect } from 'react-aria';
+import { useSelectState } from 'react-stately';
 
 import { Button } from '../button';
 import { ListBox } from '../listBox';
 import { Popover } from '../popover';
+
+type Props<T> = AriaSelectProps<T> & {
+  className?: string;
+  inputClassName?: string;
+  colorScheme: any;
+  size?: any;
+  buttonRef?:
+    | MutableRefObject<HTMLButtonElement | null>
+    | ((elem: HTMLButtonElement | null) => void);
+};
 
 export function Select<T extends object>({
   className,
   colorScheme,
   inputClassName,
   size,
+  buttonRef: propsButtonRef,
   ...props
-}: AriaSelectProps<T> & {
-  className?: string;
-  inputClassName?: string;
-  colorScheme: any;
-  size?: any;
-}) {
+}: Props<T>) {
   const state = useSelectState(props);
-  const ref = useRef(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const { labelProps, triggerProps, valueProps, menuProps } = useSelect(
     props,
     state,
-    ref
+    buttonRef
   );
 
   return (
@@ -43,7 +42,7 @@ export function Select<T extends object>({
       <HiddenSelect
         isDisabled={props.isDisabled}
         state={state}
-        triggerRef={ref}
+        triggerRef={buttonRef}
         label={props.label}
         name={props.name}
       />
@@ -52,7 +51,14 @@ export function Select<T extends object>({
         className={inputClassName}
         size={size}
         {...triggerProps}
-        ref={ref}
+        ref={(elem) => {
+          buttonRef.current = elem;
+          if (typeof propsButtonRef === 'function') {
+            propsButtonRef(elem);
+          } else if (propsButtonRef) {
+            propsButtonRef.current = elem;
+          }
+        }}
         style={{ height: 30, fontSize: 14 }}
       >
         <span {...valueProps}>
@@ -65,45 +71,10 @@ export function Select<T extends object>({
         </span>
       </Button>
       {state.isOpen && (
-        <Popover state={state} triggerRef={ref} placement="bottom start">
+        <Popover state={state} triggerRef={buttonRef} placement="bottom start">
           <ListBox {...menuProps} state={state}></ListBox>
         </Popover>
       )}
     </div>
-  );
-}
-
-function Option<T extends object>({
-  item,
-  state,
-}: {
-  item: Node<T>;
-  state: ListState<T>;
-}) {
-  // Get props for the option element
-  let ref = useRef(null);
-  let { optionProps, isSelected, isDisabled } = useOption(
-    { key: item.key },
-    state,
-    ref
-  );
-
-  // Determine whether we should show a keyboard
-  // focus ring for accessibility
-  let { isFocusVisible, focusProps } = useFocusRing();
-
-  return (
-    <li
-      {...mergeProps(optionProps, focusProps)}
-      ref={ref}
-      style={{
-        background: isSelected ? 'blueviolet' : 'transparent',
-        color: isDisabled ? '#aaa' : isSelected ? 'white' : undefined,
-        padding: '2px 5px',
-        outline: isFocusVisible ? '2px solid orange' : 'none',
-      }}
-    >
-      {item.rendered}
-    </li>
   );
 }

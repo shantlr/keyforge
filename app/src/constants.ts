@@ -783,11 +783,11 @@ export const KEYS = [
     key: 'KC_LGUI',
   },
   {
-    title: 'Left Shift',
+    title: 'Left\nShift',
     key: 'KC_LSFT',
   },
   {
-    title: 'Right Shift',
+    title: 'Right\nShift',
     key: 'KC_RSFT',
   },
   {
