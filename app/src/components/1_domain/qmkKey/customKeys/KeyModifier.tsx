@@ -53,7 +53,6 @@ export const KeyModifier = forwardRef<any, CustomKeyProps>(
       onUpdate,
       width = KEY_DEFAULT_WIDTH,
       height = KEY_DEFAULT_HEIGHT,
-      className,
 
       droppableId,
       droppableData,
@@ -82,7 +81,7 @@ export const KeyModifier = forwardRef<any, CustomKeyProps>(
       useDroppableContainer();
 
     const shouldExpand = Boolean(
-      params && droppableId && (isOver || isOverGroup)
+      isDown || (params && droppableId && (isOver || isOverGroup))
     );
 
     const paramKey = params?.[0]?.value;
@@ -105,10 +104,7 @@ export const KeyModifier = forwardRef<any, CustomKeyProps>(
         }}
         width={w}
         height={!shouldExpand ? height : height + 16}
-        className={clsx(className, {
-          'z-[50]': shouldExpand,
-          'z-0': !shouldExpand,
-        })}
+        zIndex={shouldExpand ? 50 : undefined}
         isDown={isDown || shouldExpand}
         {...props}
       >

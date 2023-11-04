@@ -74,7 +74,7 @@ export const LayerKey = forwardRef<any, CustomKeyProps>(
       <Key
         {...props}
         width={computedWidth}
-        zIndex={isDown ? 10 : undefined}
+        zIndex={isDown ? 50 : undefined}
         isDown={isDown}
         ref={ref}
         onMouseEnter={() => {
