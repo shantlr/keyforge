@@ -235,12 +235,24 @@ export const KeysPicker = ({
           keys={KEYS.filter((k) => 'group' in k && k.group === 'qmk')}
           onKeyClick={onKeyClick}
         />
+        <LineKeys
+          title="Repeat"
+          draggableIdPrefix="key-picker:quantum:qmk:repeat"
+          keys={KEYS.filter((k) => 'group' in k && k.group === 'qmk-repeat')}
+          onKeyClick={onKeyClick}
+        />
       </Tab>
       <Tab title="Media">
         <LineKeys
           title="System"
           draggableIdPrefix="key-picker:media:system:"
           keys={KEYS.filter((k) => 'group' in k && k.group === 'media-system')}
+          onKeyClick={onKeyClick}
+        />
+        <LineKeys
+          title="Mouse"
+          draggableIdPrefix="key-picker:media:mouse:"
+          keys={KEYS.filter((k) => 'group' in k && k.group === 'mouse')}
           onKeyClick={onKeyClick}
         />
         <LineKeys

@@ -949,6 +949,103 @@ export const KEYS = [
       'Decrease effect speed (does not support eeprom yet), increase speed when Shift is held',
   },
 
+  {
+    aliases: ['KC_MS_UP'],
+    key: 'KC_MS_U',
+    group: 'mouse',
+    title: 'Mouse\nCursor\nUp',
+  },
+  {
+    aliases: ['KC_MS_DOWN'],
+    key: 'KC_MS_D',
+    group: 'mouse',
+    title: 'Mouse\nCursor\nDown',
+  },
+  {
+    aliases: ['KC_MS_LEFT'],
+    key: 'KC_MS_L',
+    group: 'mouse',
+    title: 'Mouse\nCursor\nLeft',
+  },
+  {
+    aliases: ['KC_MS_RIGHT'],
+    key: 'KC_MS_R',
+    group: 'mouse',
+    title: 'Mouse\nCursor\nRight',
+  },
+  {
+    aliases: ['KC_MS_BTN1'],
+    key: 'KC_BTN1',
+    group: 'mouse',
+    title: 'Mouse\nButton\n1',
+  },
+  {
+    aliases: ['KC_MS_BTN2'],
+    key: 'KC_BTN2',
+    group: 'mouse',
+    title: 'Mouse\nButton\n2',
+  },
+  {
+    aliases: ['KC_MS_BTN3'],
+    key: 'KC_BTN3',
+    group: 'mouse',
+    title: 'Mouse\nButton\n3',
+  },
+  {
+    aliases: ['KC_MS_BTN4'],
+    key: 'KC_BTN4',
+    group: 'mouse',
+    title: 'Mouse\nButton\n4',
+  },
+  {
+    aliases: ['KC_MS_BTN5'],
+    key: 'KC_BTN5',
+    group: 'mouse',
+    title: 'Mouse\nButton\n5',
+  },
+  {
+    aliases: ['KC_MS_WH_UP'],
+    key: 'KC_WH_U',
+    group: 'mouse',
+    title: 'Mouse\nWheel\nUp',
+  },
+  {
+    aliases: ['KC_MS_WH_DOWN'],
+    key: 'KC_WH_D',
+    group: 'mouse',
+    title: 'Mouse\nWheel\nDown',
+  },
+  {
+    aliases: ['KC_MS_WH_LEFT'],
+    key: 'KC_WH_L',
+    group: 'mouse',
+    title: 'Mouse\nWheel\nLeft',
+  },
+  {
+    aliases: ['KC_MS_WH_RIGHT'],
+    key: 'KC_WH_R',
+    group: 'mouse',
+    title: 'Mouse\nWheel\nRight',
+  },
+  {
+    aliases: ['KC_MS_ACCEL0'],
+    key: 'KC_ACL0',
+    group: 'mouse',
+    description: 'Set mouse acceleration to 0',
+  },
+  {
+    aliases: ['KC_MS_ACCEL1'],
+    key: 'KC_ACL1',
+    group: 'mouse',
+    description: 'Set mouse acceleration to 1',
+  },
+  {
+    aliases: ['KC_MS_ACCEL2'],
+    key: 'KC_ACL2',
+    group: 'mouse',
+    description: 'Set mouse acceleration to 2',
+  },
+
   //#region Modifier
   {
     key: 'LCTL',
@@ -1079,23 +1176,27 @@ export const KEYS = [
     key: 'QK_BOOTLOADER',
     group: 'qmk',
     aliases: ['QK_BOOT'],
+    title: 'QMK\nBootloader',
     description: 'Put the keyboard into bootloader mode for flashing',
   },
   {
     key: 'QK_DEBUG_TOGGLE',
     group: 'qmk',
     aliases: ['DB_TOGG'],
+    title: 'QMK\nToggle\nDebug',
     description: 'Toggle debug mode',
   },
   {
     key: 'QK_CLEAR_EEPROM',
     group: 'qmk',
     aliases: ['EE_CLR'],
+    title: 'QMK\nClear\nEEPROM',
     description: 'Reinitializes the keyboard’s EEPROM (persistent memory)',
   },
   {
     key: 'QK_MAKE',
     group: 'qmk',
+    title: 'QMK\nMake',
     description:
       'Sends qmk compile -kb (keyboard) -km (keymap), or qmk flash if shift is held. Puts keyboard into bootloader mode if shift & control are held',
   },
@@ -1103,8 +1204,25 @@ export const KEYS = [
     key: 'QK_REBOOT',
     group: 'qmk',
     aliases: ['QK_RBT'],
+    title: 'Reset\nKeyboard',
     description: 'Resets the keyboard. Does not load the bootloader',
   },
+
+  {
+    aliases: ['QK_REPEAT_KEY'],
+    key: 'QK_REP',
+    title: 'Repeat',
+    group: 'qmk-repeat',
+    description: 'Repeat the last pressed key',
+  },
+  {
+    aliases: ['QK_ALT_REPEAT_KEY'],
+    key: 'QK_AREP',
+    title: 'Repeat\nAlt',
+    group: 'qmk-repeat',
+    description: 'Perform alternate of the last key',
+  },
+
   //#endregion
 
   {
