@@ -85,7 +85,7 @@ export const TabsCard = ({
   return (
     <div
       className={clsx(
-        'w-full h-full rounded overflow-hidden border border-gray-700',
+        'w-full h-full flex flex-col rounded overflow-hidden border border-gray-700',
         className
       )}
     >

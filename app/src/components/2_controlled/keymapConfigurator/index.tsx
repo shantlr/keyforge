@@ -158,7 +158,7 @@ export const KeymapConfigurator = ({
         data-blur-key-down
       >
         <div
-          className="h-full flex grow-1 shrink-1 overflow-hidden"
+          className="w-full h-full flex grow-1 shrink-1 overflow-hidden"
           data-blur-key-down
         >
           <div
@@ -309,7 +309,7 @@ export const KeymapConfigurator = ({
           </div>
 
           {/* Keymap */}
-          <div className="w-full flex" data-blur-key-down>
+          <div className="w-full grow flex" data-blur-key-down>
             <ConfiguratorKeymap keyboard={keyboard} keymap={selectedKeymap} />
           </div>
         </div>

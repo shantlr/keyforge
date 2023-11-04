@@ -1,9 +1,10 @@
 'use client';
 
-import { CSSProperties, useId, useMemo } from 'react';
+import { CSSProperties, useId, useMemo, useState } from 'react';
 
 import { Draggable } from '@/components/0_base/draggable';
 import { getKeyConfFromDef } from '@/constants';
+import { useElemSize } from '@/hooks/useElemSize';
 import { KeymapKeyDef } from '@/types';
 
 import { KeyTheme } from '../key';
@@ -11,7 +12,6 @@ import { QMKKey } from '../qmkKey';
 
 export const Keymap = ({
   keyPositions,
-  baseWidth = 36,
   keySepWidth = 6,
 
   keys,
@@ -47,32 +47,30 @@ export const Keymap = ({
   theme?: KeyTheme;
 }) => {
   const localId = useId();
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
-  const height = useMemo(() => {
-    if (!keyPositions) {
+  const containerSize = useElemSize(container);
+
+  const xUnit = useMemo(() => {
+    return Math.max(...keyPositions.map((k) => k.x + (k.w || 1)));
+  }, [keyPositions]);
+  const yUnit = useMemo(() => {
+    return Math.max(...keyPositions.map((k) => k.y + (k.h || 1)));
+  }, [keyPositions]);
+
+  // Auto detech key width based on available space
+  const baseWidth = useMemo(() => {
+    if (!containerSize.width || !containerSize.height) {
       return 0;
     }
-    const height = Math.max(
-      0,
-      ...keyPositions.map(
-        (k) => k.y * baseWidth + k.y * keySepWidth + (k.h || 1) * baseWidth + 10 // padding + border-b
-      )
-    );
-    return height;
-  }, [baseWidth, keyPositions, keySepWidth]);
 
-  const width = useMemo(() => {
-    if (!keyPositions) {
-      return 0;
-    }
-    const w = Math.max(
-      0,
-      ...keyPositions.map(
-        (k) => k.x * baseWidth + k.x * keySepWidth + (k.w || 1) * baseWidth + 10 // padding + border-b
-      )
+    const w = Math.min(
+      containerSize.width / xUnit - keySepWidth,
+      containerSize.height / yUnit - keySepWidth,
+      40
     );
     return w;
-  }, [baseWidth, keyPositions, keySepWidth]);
+  }, [containerSize, keySepWidth, xUnit, yUnit]);
 
   const textSize = useMemo(() => {
     if (baseWidth <= 18) {
@@ -89,7 +87,7 @@ export const Keymap = ({
   }
 
   return (
-    <div className="relative w-full" style={{ width, height }}>
+    <div ref={setContainer} className="relative w-full h-full grow">
       {keyPositions.map((l, idx) => {
         const kDef = keys?.[idx];
 

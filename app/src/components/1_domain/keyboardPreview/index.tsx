@@ -55,16 +55,18 @@ export const KeyboardPreview = ({
         <span className="text-sm text-default-darker">{keyboardKey}</span>
         {keyboard?.keyboard_name ? ` - ${keyboard.keyboard_name}` : ''}
       </div>
-      <div className="p-2">
+      <div className="p-2" style={{ width: 450, height: 200 }}>
         {isLoading && <span>Loading...</span>}
         {data === null && <span>Keyboard not found</span>}
         {preview && (
-          <Keymap
-            keyPositions={preview.keyPositions}
-            keys={preview.keys}
-            baseWidth={18}
-            keySepWidth={5}
-          />
+          <div className="w-full h-full">
+            <Keymap
+              keyPositions={preview.keyPositions}
+              keys={preview.keys}
+              baseWidth={18}
+              keySepWidth={5}
+            />
+          </div>
         )}
         {!preview && keyboard && (
           <span>Keyboard seems to have an invalid info.json</span>

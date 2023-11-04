@@ -136,8 +136,6 @@ const BASIC_KEYS_POSITION = [
 
 const BASIC_KEYS = BASIC_KEYS_POSITION.map((k) => k.key || 'KC_NOOP');
 
-const MEDIA_KEYS = [{ x: 0, y: 0, key: 'KC_' }];
-
 const BasicKeys = (
   props: Omit<
     ComponentProps<typeof Keymap>,
@@ -148,7 +146,6 @@ const BasicKeys = (
     <Keymap
       draggableIdPrefix="key-picker:basic:"
       keyPositions={BASIC_KEYS_POSITION}
-      baseWidth={40}
       keys={BASIC_KEYS}
       {...props}
     />
