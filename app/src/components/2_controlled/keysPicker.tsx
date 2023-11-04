@@ -1,9 +1,11 @@
-import { ComponentProps, useMemo } from 'react';
+import { ComponentProps, useId, useMemo } from 'react';
 
 import { KEYS, KeyConfig } from '@/constants';
 
+import { Draggable } from '../0_base/draggable';
 import { Tab, TabsCard } from '../0_base/tabsCard';
 import { Keymap } from '../1_domain/keymap';
+import { QMKKey } from '../1_domain/qmkKey';
 
 const BASIC_KEYS_POSITION = [
   { x: 0, y: 0, key: 'KC_ESC' },
@@ -156,7 +158,7 @@ const BasicKeys = (
 const LineKeys = ({
   title,
   keys,
-  ...props
+  draggableIdPrefix,
 }: Omit<
   ComponentProps<typeof Keymap>,
   'keyPositions' | 'baseWidth' | 'keys'
@@ -164,22 +166,37 @@ const LineKeys = ({
   title: string;
   keys: KeyConfig[];
 }) => {
+  const localId = useId();
+
   return (
     <div>
       <div>{title}</div>
-      <Keymap
-        keyPositions={keys.map((_, idx) => ({ x: idx, y: 0 }))}
-        // @ts-ignore
-        keys={keys.map((k) =>
-          !k.params
-            ? k.key
-            : {
-                key: k.key,
-                params: k.params,
-              }
-        )}
-        {...props}
-      />
+      <div className="flex flex-wrap gap-px">
+        {keys.map((key, index) => {
+          const kDef = {
+            key: key.key,
+            params: key.params as any,
+          };
+          return (
+            <Draggable
+              key={index}
+              id={`${draggableIdPrefix || ''}${index.toString()}`}
+              data={{
+                type: 'key',
+                keyDef: kDef,
+                width: 36,
+                height: 36,
+                textSize: 'text-[10px]',
+
+                keymapKeyIndex: index,
+                keymapLocalId: localId,
+              }}
+            >
+              <QMKKey key={index} keyDef={kDef} textSize="text-[10px]" />
+            </Draggable>
+          );
+        })}
+      </div>
     </div>
   );
 };
