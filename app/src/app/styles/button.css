@@ -44,6 +44,6 @@
 
   .button:disabled {
     cursor: not-allowed;
-    @apply bg-gray-400 hover:bg-gray-400 border-gray-400 text-gray-500 hover:border-gray-400 hover:text-gray-500;
+    @apply bg-default-darker hover:bg-default-darker border-default-darker text-default hover:border-default-darker hover:text-default;
   }
 }

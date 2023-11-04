@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from 'clsx';
 import { isArray } from 'lodash';
-import { Fragment, ReactElement, ReactNode, isValidElement } from 'react';
+import { ReactNode, isValidElement } from 'react';
 
 import { Spinner } from '../spinner';
 
@@ -17,7 +17,7 @@ export const Step = ({}: {
   doneIcon?: ReactNode;
   pendingIcon?: ReactNode;
   loadingIcon?: ReactNode;
-  children: (arg: { active?: boolean }) => ReactNode;
+  children: ReactNode | ((arg: { active?: boolean }) => ReactNode);
 }) => {
   return null;
 };
@@ -79,14 +79,13 @@ export const VerticalSteps = ({
       return;
     }
     const props = c.props as any;
-    if (
-      typeof props.name === 'string' &&
+
+    const elem =
       typeof props.children === 'function'
-    ) {
-    }
-    const elem = props.children({
-      active: props.name === current,
-    });
+        ? props.children({
+            active: props.name === current,
+          })
+        : props.children;
     if (typeof elem === 'string' || isValidElement(elem)) {
       const done = Boolean(props.done);
       const failed = Boolean(props.failed);

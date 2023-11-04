@@ -2,6 +2,7 @@
 
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import clsx from 'clsx';
 import { toLower } from 'lodash';
 import { PropsWithChildren, useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
@@ -20,7 +21,7 @@ import { Logs } from './logs';
 import { useDownloadBlob } from './useDownloadBlob';
 
 const DisabledStep = ({ children }: PropsWithChildren) => {
-  return <span className="text-gray-500">{children}</span>;
+  return <span className="text-default-darker">{children}</span>;
 };
 
 const INITIAL_STATE = {
@@ -317,6 +318,7 @@ export const Compile = ({
                     }
                     setState((s) => ({
                       ...s,
+                      current: 'flash',
                       hasDownloaded: true,
                     }));
 
@@ -331,6 +333,28 @@ export const Compile = ({
                 </Button>
               );
             }}
+          </Step>
+          <Step name="flash">
+            {({ active }) => (
+              <div
+                className={clsx({
+                  'text-default-darker': !active,
+                })}
+              >
+                <div>Flash firmware to keyboard</div>
+                <div className="text-sm">
+                  Once you have downloaded the firmware, follow this{' '}
+                  <a
+                    className="text-primary-darker hover:text-primary transition underline"
+                    href="https://docs.qmk.fm/#/newbs_flashing?id=flashing-your-keyboard-with-qmk-toolbox"
+                    target="_blank"
+                  >
+                    guide
+                  </a>{' '}
+                  to flash your firmware
+                </div>
+              </div>
+            )}
           </Step>
         </VerticalSteps>
       </div>
