@@ -35,5 +35,5 @@ cd ./app && yarn dev
 You can get the keymaps json parsed from qmk repo using this image
 
 ```bash
-docker run --rm --mount src=./keymaps,target=/output,type=bind shantr/keyforge-qmk-keymaps
+CONTAINER_ID=$(docker create shantry/keyforge-qmk-keymaps) && docker cp $CONTAINER_ID:/output/keyboards ./keyboards && docker rm $CONTAINER_ID
 ```
