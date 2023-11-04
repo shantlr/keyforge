@@ -244,6 +244,12 @@ export const KeysPicker = ({
           onKeyClick={onKeyClick}
         />
         <LineKeys
+          title="RGB"
+          draggableIdPrefix="key-picker:media:rgb:"
+          keys={KEYS.filter((k) => 'group' in k && k.group === 'rgb')}
+          onKeyClick={onKeyClick}
+        />
+        <LineKeys
           title="Audio/Track"
           draggableIdPrefix="key-picker:audio:"
           keys={KEYS.filter((k) => 'group' in k && k.group === 'media-audio')}

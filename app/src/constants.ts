@@ -316,6 +316,112 @@ export const KEYS = [
   },
   //#endregion
 
+  // #region Symbols
+  {
+    key: 'KC_EXLM',
+    aliases: ['KC_EXCLAIM'],
+    title: '!',
+  },
+  {
+    key: 'KC_TILD',
+    aliases: ['KC_TILDE'],
+    title: '~',
+  },
+  {
+    key: 'KC_AT',
+    title: '@',
+  },
+  {
+    key: 'KC_HASH',
+    title: '#',
+  },
+  {
+    key: 'KC_DLR',
+    aliases: ['KC_DOLLAR'],
+    title: '$',
+  },
+  {
+    aliases: ['KC_PERCENT'],
+    key: 'KC_PERC',
+    title: '%',
+  },
+  {
+    aliases: ['KC_CIRCUMFLEX'],
+    key: 'KC_CIRC',
+    title: '^',
+  },
+  {
+    aliases: ['KC_AMPERSAND'],
+    key: 'KC_AMPR',
+    title: '&',
+  },
+  {
+    aliases: ['KC_ASTERISK'],
+    key: 'KC_ASTR',
+    title: '*',
+  },
+  {
+    aliases: ['KC_LEFT_PAREN'],
+    key: 'KC_LPRN',
+    title: '(',
+  },
+  {
+    aliases: ['KC_RIGHT_PAREN'],
+    key: 'KC_RPRN',
+    title: ')',
+  },
+  {
+    aliases: ['KC_UNDERSCORE'],
+    key: 'KC_UNDS',
+    title: '_',
+  },
+  {
+    aliases: ['KC_PLUS'],
+    key: '+',
+    title: '{',
+  },
+  {
+    aliases: ['KC_LEFT_CURLY_BRACE'],
+    key: 'KC_LCBR',
+    title: '{',
+  },
+  {
+    aliases: ['KC_RIGHT_CURLY_BRACE'],
+    key: 'KC_RCBR',
+    title: '}',
+  },
+  {
+    aliases: ['KC_PIPE'],
+    key: '|',
+    title: '{',
+  },
+  {
+    aliases: ['KC_COLON'],
+    key: 'KC_COLN',
+    title: ':',
+  },
+  {
+    aliases: ['KC_DQUO', 'KC_DOUBLE_QUOTE'],
+    key: 'KC_DQT',
+    title: `"`,
+  },
+  {
+    aliases: ['KC_LABK', 'KC_LEFT_ANGLE_BRACKET'],
+    key: 'KC_LT',
+    title: '<',
+  },
+  {
+    aliases: ['KC_RABK', 'KC_RIGHT_ANGLE_BRACKET'],
+    key: 'KC_GT',
+    title: '>',
+  },
+  {
+    aliases: ['KC_QUESTION'],
+    key: 'KC_QUES',
+    title: '?',
+  },
+  // #endregion
+
   //#region Function key
   {
     title: 'F0',
@@ -552,6 +658,7 @@ export const KEYS = [
     key: 'KC_BRIGHTNESS_DOWN',
   },
 
+  //#region Arrows
   {
     title: 'UP',
     key: 'KC_UP',
@@ -569,6 +676,7 @@ export const KEYS = [
     key: 'KC_RGHT',
     aliases: ['KC_RIGHT'],
   },
+  //#endregion
 
   {
     title: '~\n`',
@@ -704,6 +812,7 @@ export const KEYS = [
     key: 'KC_PWR',
     aliases: ['KC_SYSTEM_POWER'],
   },
+
   {
     title: 'System\nsleep',
     group: 'media-system',
@@ -765,6 +874,80 @@ export const KEYS = [
     key: 'KC_MSEL',
   },
   //#endregion
+
+  {
+    key: 'RGB_TOG',
+    group: 'rgb',
+    title: 'RGB\nToggle',
+    description: 'Toggle RGB lighting on or off',
+  },
+  {
+    key: 'RGB_MOD',
+    group: 'rgb',
+    aliases: ['RGB_MODE_FORWARD'],
+    title: 'RGB\nCycle',
+    description: 'Cycle through modes, reverse direction when Shift is held',
+  },
+  {
+    key: 'RGB_RMOD',
+    group: 'rgb',
+    aliases: ['RGB_MODE_REVERSE'],
+    title: 'RGB\nRev Cycle',
+    description:
+      'Cycle through modes in reverse, forward direction when Shift is held',
+  },
+  {
+    key: 'RGB_HUI',
+    group: 'rgb',
+    title: 'RGB\nInc Hue',
+    description: 'Increase hue, decrease hue when Shift is held',
+  },
+  {
+    key: 'RGB_HUD',
+    group: 'rgb',
+    title: 'RGB\nDec Hue',
+    description: 'Decrease hue, increase hue when Shift is held',
+  },
+  {
+    key: 'RGB_SAI',
+    group: 'rgb',
+    title: 'RGB\nInc Sat',
+    description: 'Increase saturation, decrease saturation when Shift is held',
+  },
+  {
+    key: 'RGB_SAD',
+    group: 'rgb',
+    title: 'RGB\nDec Sat',
+    description: 'Decrease saturation, increase saturation when Shift is held',
+  },
+  {
+    key: 'RGB_VAI',
+    group: 'rgb',
+    title: 'RGB\nInc Bri',
+    description:
+      'Increase value (brightness), decrease value when Shift is held',
+  },
+  {
+    key: 'RGB_VAD',
+    group: 'rgb',
+    title: 'RGB\nDec Bri',
+    description:
+      'Decrease value (brightness), increase value when Shift is held',
+  },
+  {
+    key: 'RGB_SPI',
+    group: 'rgb',
+    title: 'RGB\nInc Speed',
+    description:
+      'Increase effect speed (does not support eeprom yet), decrease speed when Shift is held',
+  },
+  {
+    key: 'RGB_SPD',
+    group: 'rgb',
+    title: 'RGB\nDec Speed',
+    description:
+      'Decrease effect speed (does not support eeprom yet), increase speed when Shift is held',
+  },
 
   //#region Modifier
   {
