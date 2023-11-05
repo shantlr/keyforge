@@ -123,7 +123,7 @@ const BASIC_KEYS_POSITION = [
   { x: 10, y: 5, w: 1.25, key: 'KC_RALT' },
   { x: 11.25, y: 5, w: 1.25, key: 'KC_RGUI' },
   { x: 12.5, y: 5, key: 'KC_APP' },
-  { x: 13.5, y: 5, key: 'KC_RCTL' },
+  { x: 13.5, y: 5, w: 1.5, key: 'KC_RCTL' },
 
   { x: 15.25, y: 5, key: 'KC_LEFT' },
   { x: 16.25, y: 5, key: 'KC_DOWN' },
