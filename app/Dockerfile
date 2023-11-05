@@ -20,7 +20,7 @@ RUN yarn install --pure-lockfile --non-interactive --cache-folder ./.ycache && r
 # Build
 FROM node-base AS build
 WORKDIR /service
-COPY --from=keyforge-qmk-keymaps /output/keyboards ./keyboards
+COPY --from=shantry/keyforge-qmk-keymaps /output/keyboards ./keyboards
 COPY --from=install-modules /service/node_modules node_modules
 COPY package.json package.json
 COPY src src
