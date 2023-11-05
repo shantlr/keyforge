@@ -64,7 +64,7 @@ export function Select<T extends object>({
         <span {...valueProps}>
           {state.selectedItem
             ? state.selectedItem.rendered
-            : 'Select an option'}
+            : props.placeholder || 'Select an option'}
         </span>
         <span aria-hidden="true" style={{ paddingLeft: 5 }}>
           <FontAwesomeIcon icon={faCaretDown} />
