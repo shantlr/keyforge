@@ -76,6 +76,9 @@ export const Keymap = ({
     if (baseWidth <= 18) {
       return 'text-[5px]';
     }
+    if (baseWidth <= 22) {
+      return 'text-[6px]';
+    }
     if (baseWidth < 26) {
       return 'text-[8px]';
     }
