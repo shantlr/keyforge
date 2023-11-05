@@ -37,6 +37,9 @@ const toKeycode = (
   state: { shift?: boolean }
 ): KeyEnum | null => {
   switch (e.key) {
+    case ' ': {
+      return 'KC_SPC';
+    }
     case 'a':
     case 'A':
       return 'KC_A';
