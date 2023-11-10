@@ -23,6 +23,7 @@ export const Keymap = ({
   onKeyClick,
   isKeyDown,
   onKeyUpdate,
+  onSwapKey,
 
   theme,
 }: {
@@ -38,6 +39,16 @@ export const Keymap = ({
     prev: KeymapKeyDef | null;
     value: KeymapKeyDef | null;
     index: number;
+  }) => void;
+  onSwapKey?: (arg: {
+    key1: {
+      layerId: string;
+      keyIndex: number;
+    };
+    key2: {
+      layerId: string;
+      keyIndex: number;
+    };
   }) => void;
 
   draggableIdPrefix?: string;
@@ -135,6 +146,7 @@ export const Keymap = ({
               textSize,
 
               keymapKeyIndex: idx,
+              keymapKeyLayerId: currentLayerId,
               keymapLocalId: localId,
             }}
           >
@@ -164,14 +176,31 @@ export const Keymap = ({
                     allowDropKey
                       ? (e) => {
                           const { active } = e.data;
+                          console.log(e.data);
                           e.stopPropagation();
                           const dropped = active.data.current as any;
                           if (dropped?.type === 'key') {
-                            onKeyUpdate?.({
-                              index: idx,
-                              prev: kDef ?? null,
-                              value: dropped.keyDef,
-                            });
+                            if (
+                              typeof dropped.keymapKeyLayerId === 'string' &&
+                              typeof dropped.keymapKeyIndex === 'number'
+                            ) {
+                              onSwapKey?.({
+                                key1: {
+                                  layerId: dropped.keymapKeyLayerId,
+                                  keyIndex: dropped.keymapKeyIndex,
+                                },
+                                key2: {
+                                  layerId: currentLayerId as string,
+                                  keyIndex: idx,
+                                },
+                              });
+                            } else {
+                              onKeyUpdate?.({
+                                index: idx,
+                                prev: kDef ?? null,
+                                value: dropped.keyDef,
+                              });
+                            }
                           }
                         }
                       : undefined

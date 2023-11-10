@@ -106,6 +106,15 @@ export const ConfiguratorKeymap = ({
           })
         );
       }}
+      onSwapKey={({ key1, key2 }) => {
+        dispatch(
+          keymapSlice.actions.swapKeys({
+            keymapId: keymap.id,
+            key1,
+            key2,
+          })
+        );
+      }}
       layerId={selectedLayerId}
       onRenameLayer={({ layerId, name }) => {
         dispatch(

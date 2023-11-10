@@ -5,7 +5,6 @@ import { nanoid } from 'nanoid';
 
 import { KeymapKeyDef } from '@/types';
 
-
 export type Keymap = {
   id: string;
   name: string;
@@ -251,6 +250,31 @@ export const keymapSlice = createSlice({
           }
         }
       }
+    },
+    swapKeys: (
+      state,
+      {
+        payload: { keymapId, key1, key2 },
+      }: PayloadAction<{
+        keymapId: string;
+        key1: { layerId: string; keyIndex: number };
+        key2: { layerId: string; keyIndex: number };
+      }>
+    ) => {
+      const keymap = state.keymaps[keymapId];
+      if (!keymap) {
+        return;
+      }
+      const layer1 = keymap.layers.find((l) => l.id === key1.layerId);
+      const layer2 = keymap.layers.find((l) => l.id === key2.layerId);
+      if (!layer1 || !layer2) {
+        return;
+      }
+
+      const k1 = layer1.keys[key1.keyIndex];
+      const k2 = layer2.keys[key2.keyIndex];
+      layer1.keys[key1.keyIndex] = k2;
+      layer2.keys[key2.keyIndex] = k1;
     },
   },
 });
