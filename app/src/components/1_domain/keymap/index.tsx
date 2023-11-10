@@ -52,9 +52,15 @@ export const Keymap = ({
   const containerSize = useElemSize(container);
 
   const xUnit = useMemo(() => {
+    if (!keyPositions) {
+      return 0;
+    }
     return Math.max(...keyPositions.map((k) => k.x + (k.w || 1)));
   }, [keyPositions]);
   const yUnit = useMemo(() => {
+    if (!keyPositions) {
+      return 0;
+    }
     return Math.max(...keyPositions.map((k) => k.y + (k.h || 1)));
   }, [keyPositions]);
 
