@@ -21,6 +21,7 @@ import {
 } from '@/components/0_base/dnd/context';
 import { InputButton } from '@/components/0_base/inputButton';
 import { Tooltip } from '@/components/0_base/tooltips';
+import { SelectKey } from '@/components/1_domain/selectKey';
 import {
   keymapSlice,
   useDispatch,
@@ -28,10 +29,14 @@ import {
 } from '@/components/providers/redux';
 import { viewSlice } from '@/components/providers/redux/slices/view';
 import { ExistingKeymap } from '@/lib/keyboards';
-import { KeyboardInfo } from '@/types';
+import { KeyboardInfo, KeymapKeyParam } from '@/types';
 
 import { Button } from '../../0_base/button';
-import { useRegisterKeyDown } from '../../providers/keymap';
+import {
+  useKeyDown,
+  useRegisterKey,
+  useRegisterKeyDown,
+} from '../../providers/keymap';
 
 import { ConfiguratorDraggableOverlay } from './dragOverlay';
 import { ConfiguratorKeymap } from './keymap';
@@ -61,6 +66,7 @@ export const KeymapConfigurator = ({
   keymaps: ExistingKeymap[];
   onSelectKeymap?: (keymapId: string | null) => void;
 }) => {
+  const keyDown = useKeyDown();
   const setKeyDown = useRegisterKeyDown();
   const layouts = useMemo(
     () =>
@@ -78,6 +84,7 @@ export const KeymapConfigurator = ({
       keys: string[];
     }[];
   } | null>(null);
+  const registerKey = useRegisterKey();
 
   const handleSelectKeymap = useCallback(
     async (key: string) => {
@@ -313,6 +320,31 @@ export const KeymapConfigurator = ({
             <ConfiguratorKeymap keyboard={keyboard} keymap={selectedKeymap} />
           </div>
         </div>
+
+        {/*  */}
+        {typeof keyDown === 'number' && (
+          <div className="flex justify-center" data-blur-key-down>
+            <SelectKey
+              className="my-2 w-full max-w-[350px]"
+              colorScheme="default-darker"
+              placeholder="Press any key or search for keys"
+              inputClassName="placeholder:text-center"
+              onInputKeyUp={(e) => {
+                e.stopPropagation();
+              }}
+              value={null}
+              shape="pill"
+              onSelect={(opt) => {
+                if (opt) {
+                  registerKey?.({
+                    key: opt.key,
+                    params: opt.params as KeymapKeyParam[],
+                  });
+                }
+              }}
+            />
+          </div>
+        )}
 
         {/* Picker */}
         <div className="h-[330px] shrink-0 grow-0 mt-4 mb-4 expanded-container w-full flex items-center justify-center">

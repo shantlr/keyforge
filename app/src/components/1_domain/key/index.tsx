@@ -28,7 +28,7 @@ export const Key = forwardRef<
     height?: number;
 
     isDragging?: boolean;
-    onClick?: () => void;
+    onClick?: (e: MouseEvent) => void;
     textSize?: string;
     isDown?: boolean;
     theme?: KeyTheme;

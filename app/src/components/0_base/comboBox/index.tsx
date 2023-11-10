@@ -1,68 +1,121 @@
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useRef } from 'react';
-import { AriaComboBoxProps, useComboBox, useFilter } from 'react-aria';
-import { useComboBoxState } from 'react-stately';
+import { Popper } from '@mui/base';
+import { useAutocomplete } from '@mui/base/useAutocomplete';
+import clsx from 'clsx';
+import { KeyboardEventHandler, ReactNode, SyntheticEvent } from 'react';
 
-import { Button } from '../button';
-import { Input } from '../input';
-import { ListBox } from '../listBox';
-import { Popover } from '../popover';
+import { Input, InputColorScheme, InputShape, InputSize } from '../input';
 
-
-export function ComboBox<Option extends object>({
+export function Combobox<T>({
   className,
-  ...props
-}: AriaComboBoxProps<Option> & {
+
+  colorScheme,
+  shape,
+  dim,
+
+  input,
+  inputClassName,
+  placeholder,
+  onInputChange,
+  onInputChangeEvent,
+  onInputKeyUp,
+
+  options,
+  value,
+  onSelect,
+
+  getOptionKey,
+  renderOption,
+}: {
+  input?: string;
+  placeholder?: string;
   className?: string;
+  dim?: InputSize;
+  inputClassName?: string;
+  colorScheme?: InputColorScheme;
+  shape?: InputShape;
+  onInputChange?: (value: string) => void;
+  onInputChangeEvent?: (e: SyntheticEvent) => void;
+  onInputKeyUp?: KeyboardEventHandler<HTMLInputElement>;
+
+  options: T[];
+  value?: T | null;
+  onSelect?: (v: T | null) => void;
+
+  getOptionKey?: (option: T) => string;
+  renderOption?: (option: T) => ReactNode;
 }) {
-  // Setup filter function and state.
-  let { contains } = useFilter({ sensitivity: 'base' });
-  let state = useComboBoxState<Option>({ ...props, defaultFilter: contains });
+  const {
+    getRootProps,
+    getInputProps,
+    getOptionProps,
+    groupedOptions,
+    getListboxProps,
+    anchorEl,
+    setAnchorEl,
+    popupOpen,
+  } = useAutocomplete({
+    value,
+    includeInputInList: true,
 
-  // Setup refs and get props for child elements.
-  let buttonRef = useRef(null);
-  let inputRef = useRef(null);
-  let listBoxRef = useRef(null);
-  let popoverRef = useRef(null);
-
-  let { buttonProps, inputProps, listBoxProps, labelProps } = useComboBox(
-    {
-      ...props,
-      inputRef,
-      buttonRef,
-      listBoxRef,
-      popoverRef,
+    inputValue: input,
+    onInputChange: (e, v) => {
+      onInputChangeEvent?.(e);
+      onInputChange?.(v);
     },
-    state
-  );
+    onChange: (e, v) => {
+      onSelect?.(v);
+    },
+    filterOptions: (opts) => opts,
+    options,
+    getOptionLabel: getOptionKey,
+  });
 
   return (
-    <div
-      style={{ display: 'inline-flex', flexDirection: 'column' }}
-      className={className}
-    >
-      <label {...labelProps}>{props.label}</label>
-      <div>
-        <div className="group h-input-md overflow-hidden flex">
-          <Input {...inputProps} ref={inputRef} className="rounded-r-none" />
-          <Button className="rounded-l-none" {...buttonProps} ref={buttonRef}>
-            <FontAwesomeIcon icon={faCaretDown} />
-          </Button>
-        </div>
-
-        {state.isOpen && (
-          <Popover
-            state={state}
-            triggerRef={inputRef}
-            popoverRef={popoverRef}
-            isNonModal
-            placement="bottom start"
-          >
-            <ListBox {...listBoxProps} listBoxRef={listBoxRef} state={state} />
-          </Popover>
-        )}
+    <>
+      <div className={className} {...getRootProps()} ref={setAnchorEl}>
+        <Input
+          className={clsx('w-full', inputClassName)}
+          colorScheme={colorScheme}
+          shape={shape}
+          dim={dim}
+          placeholder={placeholder}
+          {...getInputProps()}
+          onKeyUp={onInputKeyUp}
+        />
       </div>
-    </div>
+      {anchorEl && (
+        <Popper
+          modifiers={[
+            {
+              name: 'offset',
+              options: {
+                offset: [0, 10],
+              },
+            },
+          ]}
+          open={popupOpen}
+          placement="auto"
+          anchorEl={anchorEl}
+        >
+          <ul
+            {...getListboxProps()}
+            className="max-w-[300px] bg-slate-300 py-2 rounded max-h-[500px] overflow-auto"
+          >
+            {(groupedOptions as T[]).map((opt, index) => (
+              <li
+                {...getOptionProps({ option: opt, index })}
+                key={getOptionKey?.(opt) ?? index}
+                className="mx-2 hover:bg-primary hover:text-white cursor-pointer px-2 rounded transition-all"
+              >
+                {renderOption?.(opt) ??
+                  (typeof opt === 'string' || typeof opt === 'number'
+                    ? opt
+                    : null)}
+              </li>
+            ))}
+          </ul>
+        </Popper>
+      )}
+    </>
   );
 }

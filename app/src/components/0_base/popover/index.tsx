@@ -37,7 +37,7 @@ export function Popover({
       <div
         {...popoverProps}
         ref={popoverRef}
-        className="popover bg-white px-1 py-2 text-slate-900 rounded-sm overflow-hidden"
+        className="shadow-md shadow-default-darker popover bg-slate-300 px-1 py-2 text-slate-900 rounded-sm flex flex-col overflow-hidden"
       >
         <DismissButton onDismiss={state.close} />
         {children}

@@ -1,4 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
+import clsx from 'clsx';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { Item } from 'react-stately';
 
@@ -21,6 +22,7 @@ export const LayerKey = forwardRef<any, CustomKeyProps>(
       droppableData,
       onDrop,
       droppableDepth,
+      textSize,
 
       width: propsWidth,
       isDown: propsIsDown,
@@ -73,6 +75,7 @@ export const LayerKey = forwardRef<any, CustomKeyProps>(
     return (
       <Key
         {...props}
+        textSize={textSize}
         width={computedWidth}
         zIndex={isDown ? 50 : undefined}
         isDown={isDown}
@@ -86,11 +89,18 @@ export const LayerKey = forwardRef<any, CustomKeyProps>(
       >
         <div
           ref={setNodeRef}
-          className="overflow-hidden flex flex-col items-center w-full"
+          className={clsx(
+            'overflow-hidden flex flex-col items-center w-full',
+            textSize
+          )}
         >
-          <div className="text-[9px]">{keyConf.title || keyConf.key}</div>
+          <div>{keyConf.title || keyConf.key}</div>
           {!layers?.length && (
-            <div className="text-[9px] border border-dashed px-1 mx-[1px] rounded-sm border-secondary text-secondary">
+            <div
+              className={clsx(
+                'border border-dashed px-1 mx-[1px] rounded-sm border-secondary text-secondary'
+              )}
+            >
               Layer
             </div>
           )}

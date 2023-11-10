@@ -11,9 +11,6 @@ export function ListBox<T extends object>({
   state: ListState<T>;
   listBoxRef?: MutableRefObject<HTMLUListElement | null>;
 }) {
-  // // Create state based on the incoming props
-  // let state = useListState(props);
-
   // Get props for the listbox element
   let ref = useRef<HTMLUListElement | null>(null);
   let { listBoxProps, labelProps } = useListBox(props, state, ref);
@@ -25,7 +22,11 @@ export function ListBox<T extends object>({
   return (
     <>
       <div {...labelProps}>{props.label}</div>
-      <ul {...listBoxProps} ref={ref} className="overflow-auto max-h-[600px]">
+      <ul
+        {...listBoxProps}
+        ref={ref}
+        className="overflow-auto max-h-[600px] z-[100]"
+      >
         {[...state.collection].map((item) =>
           item.type === 'section' ? null : (
             // <ListBoxSection key={item.key} section={item} state={state} />
@@ -51,6 +52,8 @@ function Option<T extends object>({
     state,
     ref
   );
+
+  console.log('OPT', item);
 
   // Determine whether we should show a keyboard
   // focus ring for accessibility

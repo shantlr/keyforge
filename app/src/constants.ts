@@ -7,6 +7,15 @@ export const MAX_PARALLEL_JOB = Number(process.env.MAX_PARALLEL_JOB || 3);
 export const COMPILE_JOB_ALIVE_TIMEOUT_MS =
   Number(process.env.COMPILE_JOB_ALIVE_TIMEOUT_MS) || 30 * 1000;
 
+export type GenericKey = {
+  key: string;
+  title?: string;
+  description?: string;
+  group?: string;
+  aliases?: readonly string[];
+  params?: readonly any[];
+};
+
 export const KEYS = [
   //#region Layers
   {
@@ -638,10 +647,6 @@ export const KEYS = [
     key: 'KC_FIND',
   },
   {
-    title: 'Mute',
-    key: 'KC_MUTE',
-  },
-  {
     title: 'Volume\nUp',
     key: 'KC_KB_VOLUME_UP',
   },
@@ -862,7 +867,7 @@ export const KEYS = [
     key: 'KC_MSTP',
   },
   {
-    title: 'Play/Pause\nTrack',
+    title: 'Play\nPause\nTrack',
     group: 'media-audio',
     aliases: ['KC_MEDIA_PLAY_PAUSE'],
     key: 'KC_MPLY',
@@ -1236,14 +1241,7 @@ export const KEYS = [
     key: '_______',
     aliases: ['KC_TRNS', 'KC_TRANSPARENT'],
   },
-] as const satisfies readonly {
-  key: string;
-  title?: string;
-  description?: string;
-  group?: string;
-  aliases?: readonly string[];
-  params?: readonly any[];
-}[];
+] as const satisfies readonly GenericKey[];
 
 export type KeyEnum = (typeof KEYS)[number]['key'];
 

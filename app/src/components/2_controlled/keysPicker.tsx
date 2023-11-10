@@ -168,7 +168,7 @@ const LineKeys = ({
   return (
     <div>
       <div>{title}</div>
-      <div className="flex flex-wrap gap-px">
+      <div className="flex flex-wrap gap-[2px]">
         {keys.map((key, index) => {
           const kDef = {
             key: key.key,

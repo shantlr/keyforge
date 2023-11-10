@@ -90,7 +90,11 @@ export const Keymap = ({
   }
 
   return (
-    <div ref={setContainer} className="relative w-full h-full grow">
+    <div
+      ref={setContainer}
+      className="relative w-full h-full grow"
+      data-blur-key-down
+    >
       {keyPositions.map((l, idx) => {
         const kDef = keys?.[idx];
 
