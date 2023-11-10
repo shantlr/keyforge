@@ -71,8 +71,8 @@ export const Keymap = ({
     }
 
     const w = Math.min(
-      containerSize.width / xUnit - keySepWidth,
-      containerSize.height / yUnit - keySepWidth,
+      (containerSize.width - 10) / xUnit - keySepWidth,
+      (containerSize.height - 10) / yUnit - keySepWidth,
       40
     );
     return w;
