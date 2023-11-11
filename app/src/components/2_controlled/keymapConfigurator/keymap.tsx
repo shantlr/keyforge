@@ -73,7 +73,13 @@ export const ConfiguratorKeymap = ({
   useListenKeyboardEvent(updateKey);
 
   if (!keyboard || !keymap || selectedLayerId == null) {
-    return null;
+    return (
+      <div className="h-full w-full border border-default-darker rounded border-dashed flex items-center justify-center">
+        <span className="text-default-darker">
+          Select a layout or start from an existing keymap
+        </span>
+      </div>
+    );
   }
 
   return (

@@ -176,8 +176,9 @@ export const KeymapConfigurator = ({
               title="Your keymaps"
               titleClassName="sticky top-[0px]"
               contentClassName="py-2 px-2 space-y-1"
-              show={showUserKeymaps}
+              show={showUserKeymaps && userKeymaps?.length > 0}
               onVisibilityChange={setShowUserKeymaps}
+              disabled={!userKeymaps?.length}
             >
               {userKeymaps?.map((k) => (
                 <Tooltip
