@@ -84,7 +84,7 @@ export const Keymap = ({
     const w = Math.min(
       (containerSize.width - 10) / xUnit - keySepWidth,
       (containerSize.height - 10) / yUnit - keySepWidth,
-      40
+      35
     );
     return w;
   }, [containerSize, keySepWidth, xUnit, yUnit]);

@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 
 export const Disclosure = ({
+  disabled,
   defaultOpen = false,
   titleClassName,
   title,
@@ -13,6 +14,7 @@ export const Disclosure = ({
   show: controlledShow,
   onVisibilityChange,
 }: {
+  disabled?: boolean;
   defaultOpen?: boolean;
   titleClassName?: string;
   title: ReactNode;
@@ -60,8 +62,12 @@ export const Disclosure = ({
     <>
       <div className="border border-gray-700 rounded overflow-hidden">
         <button
+          disabled={disabled}
           className={clsx(
             'w-full px-2 shrink-0 rounded-none border-b border-gray-800 truncate text-start hover:bg-secondarybg-lighter transition',
+            {
+              'cursor-not-allowed': disabled,
+            },
             titleClassName
           )}
           onClick={() => {

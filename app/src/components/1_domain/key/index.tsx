@@ -6,12 +6,21 @@ import { Tooltip } from '@/components/0_base/tooltips';
 export type KeyTheme = {
   primary: string;
   secondary: string;
+  down?: {
+    primary: string;
+    secondary: string;
+  };
 };
 
 export const KEY_THEME: Record<string, KeyTheme> = {
   default: {
     primary: 'bg-slate-400',
     secondary: 'bg-slate-600',
+
+    down: {
+      primary: 'bg-yellow-400',
+      secondary: 'bg-yellow-600',
+    },
   },
 };
 
@@ -48,10 +57,7 @@ export const Key = forwardRef<
       width = KEY_DEFAULT_WIDTH,
       height = KEY_DEFAULT_HEIGHT,
 
-      theme: {
-        primary = KEY_THEME.default.primary,
-        secondary = KEY_THEME.default.secondary,
-      } = KEY_THEME.default,
+      theme = KEY_THEME.default,
       zIndex,
       ...props
     },
@@ -67,8 +73,10 @@ export const Key = forwardRef<
             'hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]':
               !isDragging,
             'pb-[2px] mt-[2px] mt-[6px]': !isDragging && isDown,
+
+            [`${theme.down?.secondary || theme.secondary}`]: isDown,
+            [`${theme.secondary}`]: !isDown,
           },
-          secondary,
           className
         )}
         style={{
@@ -81,10 +89,11 @@ export const Key = forwardRef<
       >
         <div
           className={clsx(
-            `text-mainbg whitespace-pre group-hover:${secondary} text-center rounded-sm w-full h-full flex items-center justify-center transition`,
+            `text-mainbg whitespace-pre text-center rounded-sm w-full h-full flex items-center justify-center transition`,
             {
-              [secondary]: isDragging,
-              [primary]: !isDragging,
+              [`${theme.down?.primary || theme.primary}`]:
+                isDown && !isDragging,
+              [`${theme.primary}`]: !isDown && !isDragging,
             },
             textSize
           )}
