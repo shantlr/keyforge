@@ -99,7 +99,7 @@ export function Combobox<T>({
         >
           <ul
             {...getListboxProps()}
-            className="max-w-[300px] bg-slate-300 py-2 rounded max-h-[500px] overflow-auto"
+            className="max-w-[300px] bg-slate-300 py-2 rounded max-h-[500px] overflow-auto shadow-lg shadow-slate-800"
           >
             {(groupedOptions as T[]).map((opt, index) => (
               <li
