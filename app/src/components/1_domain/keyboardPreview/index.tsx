@@ -47,7 +47,7 @@ export const KeyboardPreview = ({
   return (
     <div
       className={clsx(
-        'border border-gray-700 rounded inline-block min-w-[400px]',
+        'border border-gray-700 rounded inline-block  lg:w-[400px] md:w-[350px] sm:w-[280px] h-[200px]',
         className
       )}
     >
@@ -55,7 +55,8 @@ export const KeyboardPreview = ({
         <span className="text-sm text-default-darker">{keyboardKey}</span>
         {keyboard?.keyboard_name ? ` - ${keyboard.keyboard_name}` : ''}
       </div>
-      <div className="p-2" style={{ width: 450, height: 200 }}>
+
+      <div className="p-2 w-full h-full">
         {isLoading && <span>Loading...</span>}
         {data === null && <span>Keyboard not found</span>}
         {preview && (

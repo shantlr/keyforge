@@ -14,13 +14,13 @@ export const SelectKeyboardPage = ({
   const [keyboardKey, setKeyboardKey] = useState<string | undefined>(undefined);
 
   return (
-    <div className="px-16 flex grow w-full h-full overflow-hidden">
+    <div className="px-16 flex grow w-full h-full overflow-hidden justify-center">
       <SelectKeyboard
-        className="ml-2 max-w-[500px]"
+        className="ml-2 grow max-w-[500px]"
         keyboards={keyboards}
         onKeyboardHover={(kb) => setKeyboardKey(kb.key)}
       />
-      <div className="pl-12 w-full">
+      <div className="pl-12">
         <UserKeyboards onKeyboardHover={(key) => setKeyboardKey(key)} />
         {keyboardKey && (
           <KeyboardPreview className="mt-4" keyboardKey={keyboardKey} />
