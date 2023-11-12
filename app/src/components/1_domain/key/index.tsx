@@ -67,12 +67,15 @@ export const Key = forwardRef<
       <div
         ref={ref}
         className={clsx(
-          'outline-none box-content group select-none cursor-pointer rounded transition-all p-[2px] pb-[8px]',
+          'outline-none box-content group select-none cursor-pointer rounded transition-all p-[2px] pb-[8px] active:before:animate-[ripples]',
           {
             'border-dashed pb-[0px] mt-[8px]': isDragging,
             'hover:pb-[6px] active:pb-[2px] hover:mt-[2px] active:mt-[6px]':
               !isDragging,
             'pb-[2px] mt-[2px] mt-[6px]': !isDragging && isDown,
+
+            'before:w-full before:h-full before:box-content before:outline-yellow-700 before:rounded before:top-0 before:left-0 before:absolute before:animate-[ripples_0.8s_ease-in]':
+              isDown,
 
             [`${theme.down?.secondary || theme.secondary}`]: isDown,
             [`${theme.secondary}`]: !isDown,
