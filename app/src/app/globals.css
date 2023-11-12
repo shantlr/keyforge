@@ -12,4 +12,15 @@
   .expanded-container {
     @apply flex flex-col h-full w-full;
   }
+
+  @keyframes ripples {
+    0% {
+      @apply outline;
+      opacity: 1;
+    }
+    100% {
+      @apply outline outline-offset-4;
+      opacity: 0;
+    }
+  }
 }

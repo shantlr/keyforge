@@ -7,7 +7,11 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
-import { faCopy, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCopy,
+  faLayerGroup,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from 'clsx';
 import { isEqual, map, sortBy } from 'lodash';
@@ -20,6 +24,7 @@ import {
   WrappedCollisionDetection,
 } from '@/components/0_base/dnd/context';
 import { InputButton } from '@/components/0_base/inputButton';
+import { MenuItem } from '@/components/0_base/menuItem';
 import { Tooltip } from '@/components/0_base/tooltips';
 import { SelectKey } from '@/components/1_domain/selectKey';
 import {
@@ -169,151 +174,164 @@ export const KeymapConfigurator = ({
           data-blur-key-down
         >
           <div
-            className="h-full mr-8 space-y-1 overflow-y-auto relative w-[220px] shrink-0"
+            className="h-full mr-4 space-y-1 overflow-y-auto relative shrink-0"
             data-blur-key-down
           >
-            <Disclosure
-              title="Your keymaps"
-              titleClassName="sticky top-[0px]"
-              contentClassName="py-2 px-2 space-y-1"
-              show={showUserKeymaps && userKeymaps?.length > 0}
-              onVisibilityChange={setShowUserKeymaps}
-              disabled={!userKeymaps?.length}
-            >
-              {userKeymaps?.map((k) => (
-                <Tooltip
-                  key={k.id}
-                  delay={0}
-                  closeDelay={200}
-                  placement="right"
-                  tooltip={
-                    <div className="flex space-x-1">
+            <MenuItem
+              content={
+                <>
+                  <Disclosure
+                    title="Your keymaps"
+                    titleClassName="sticky top-[0px]"
+                    contentClassName="py-2 px-2 space-y-1"
+                    show={showUserKeymaps && userKeymaps?.length > 0}
+                    onVisibilityChange={setShowUserKeymaps}
+                    disabled={!userKeymaps?.length}
+                  >
+                    {userKeymaps?.map((k) => (
+                      <Tooltip
+                        key={k.id}
+                        delay={0}
+                        closeDelay={200}
+                        placement="right"
+                        tooltip={
+                          <div className="flex space-x-1">
+                            <Button
+                              className="text-[10px] px-[6px] bg-mainbg"
+                              onPress={() => {
+                                dispatch(
+                                  keymapSlice.actions.addKeymap({
+                                    keyboard: keyboardKey,
+                                    layers: k.layers,
+                                    layout: k.layout,
+                                    name: `${k.name} copy`,
+                                    replaceTemp: true,
+                                  })
+                                );
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faCopy} />
+                            </Button>
+                            <Button
+                              className="text-[10px] px-[6px] bg-mainbg"
+                              onPress={() => {
+                                dispatch(
+                                  keymapSlice.actions.removeKeymap({
+                                    id: k.id,
+                                    keyboard: keyboardKey,
+                                  })
+                                );
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </Button>
+                          </div>
+                        }
+                      >
+                        <InputButton
+                          active={k.id === selectedKeymap?.id}
+                          colorScheme="text"
+                          onClick={() => {
+                            dispatch(
+                              viewSlice.actions.selectKeymap({
+                                keyboard: keyboardKey,
+                                keymapId: k.id,
+                              })
+                            );
+                          }}
+                          onChange={(e) => {
+                            dispatch(
+                              keymapSlice.actions.updateKeymapName({
+                                id: k.id,
+                                name: (e.target as HTMLInputElement).value,
+                              })
+                            );
+                          }}
+                          value={k.name}
+                          placeholder="<unamed-keymap>"
+                        />
+                      </Tooltip>
+                    ))}
+                  </Disclosure>
+
+                  <Disclosure
+                    titleClassName="sticky top-[0px]"
+                    title="From scratch - Layouts"
+                    contentClassName="p-2 space-y-1"
+                    show={showLayouts}
+                    onVisibilityChange={setShowLayouts}
+                  >
+                    {layouts.map((l) => (
                       <Button
-                        className="text-[10px] px-[6px] bg-mainbg"
+                        key={l.name}
+                        colorScheme="text"
+                        justify="start"
+                        className={clsx('text-sm w-full', {
+                          'border-dashed border-default':
+                            l.name === selectedKeymap?.layout,
+                        })}
+                        onPress={() => {
+                          dispatch(
+                            keymapSlice.actions.addKeymap({
+                              name: '',
+                              keyboard: keyboardKey,
+                              layout: l.name,
+                              layers: [
+                                {
+                                  name: '1',
+                                  keys: l.layout.map(() => 'KC_NO'),
+                                },
+                              ],
+                              temp: true,
+                              replaceTemp: true,
+                            })
+                          );
+                          setShowUserKeymaps(true);
+                        }}
+                      >
+                        {l.name}
+                      </Button>
+                    ))}
+                  </Disclosure>
+                  <Disclosure
+                    title="From existing keymap"
+                    titleClassName="sticky top-[0px]"
+                    contentClassName="p-2 space-y-1"
+                  >
+                    {keymaps.map((k, idx) => (
+                      <Button
+                        key={idx}
+                        justify="start"
+                        className="text-sm w-full"
+                        colorScheme="text"
                         onPress={() => {
                           dispatch(
                             keymapSlice.actions.addKeymap({
                               keyboard: keyboardKey,
-                              layers: k.layers,
                               layout: k.layout,
-                              name: `${k.name} copy`,
+                              layers: k.layers,
+                              name: `Copy ${k.name}`,
                               replaceTemp: true,
+                              temp: true,
                             })
                           );
+                          setShowUserKeymaps(true);
                         }}
                       >
-                        <FontAwesomeIcon icon={faCopy} />
+                        {k.name}
                       </Button>
-                      <Button
-                        className="text-[10px] px-[6px] bg-mainbg"
-                        onPress={() => {
-                          dispatch(
-                            keymapSlice.actions.removeKeymap({
-                              id: k.id,
-                              keyboard: keyboardKey,
-                            })
-                          );
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </Button>
-                    </div>
-                  }
-                >
-                  <InputButton
-                    active={k.id === selectedKeymap?.id}
-                    colorScheme="text"
-                    onClick={() => {
-                      dispatch(
-                        viewSlice.actions.selectKeymap({
-                          keyboard: keyboardKey,
-                          keymapId: k.id,
-                        })
-                      );
-                    }}
-                    onChange={(e) => {
-                      dispatch(
-                        keymapSlice.actions.updateKeymapName({
-                          id: k.id,
-                          name: (e.target as HTMLInputElement).value,
-                        })
-                      );
-                    }}
-                    value={k.name}
-                    placeholder="<unamed-keymap>"
-                  />
-                </Tooltip>
-              ))}
-            </Disclosure>
-
-            <Disclosure
-              titleClassName="sticky top-[0px]"
-              title="From scratch - Layouts"
-              contentClassName="p-2 space-y-1"
-              show={showLayouts}
-              onVisibilityChange={setShowLayouts}
+                    ))}
+                    {!keymaps.length && (
+                      <div className="text-sm">No known keymaps</div>
+                    )}
+                  </Disclosure>
+                </>
+              }
             >
-              {layouts.map((l) => (
-                <Button
-                  key={l.name}
-                  colorScheme="text"
-                  justify="start"
-                  className={clsx('text-sm w-full', {
-                    'border-dashed border-default':
-                      l.name === selectedKeymap?.layout,
-                  })}
-                  onPress={() => {
-                    dispatch(
-                      keymapSlice.actions.addKeymap({
-                        name: '',
-                        keyboard: keyboardKey,
-                        layout: l.name,
-                        layers: [
-                          { name: '1', keys: l.layout.map(() => 'KC_NO') },
-                        ],
-                        temp: true,
-                        replaceTemp: true,
-                      })
-                    );
-                    setShowUserKeymaps(true);
-                  }}
-                >
-                  {l.name}
-                </Button>
-              ))}
-            </Disclosure>
-            <Disclosure
-              title="From existing keymap"
-              titleClassName="sticky top-[0px]"
-              contentClassName="p-2 space-y-1"
-            >
-              {keymaps.map((k, idx) => (
-                <Button
-                  key={idx}
-                  justify="start"
-                  className="text-sm w-full"
-                  colorScheme="text"
-                  onPress={() => {
-                    dispatch(
-                      keymapSlice.actions.addKeymap({
-                        keyboard: keyboardKey,
-                        layout: k.layout,
-                        layers: k.layers,
-                        name: `Copy ${k.name}`,
-                        replaceTemp: true,
-                        temp: true,
-                      })
-                    );
-                    setShowUserKeymaps(true);
-                  }}
-                >
-                  {k.name}
-                </Button>
-              ))}
-              {!keymaps.length && (
-                <div className="text-sm">No known keymaps</div>
-              )}
-            </Disclosure>
+              <FontAwesomeIcon icon={faLayerGroup} />
+              {/* <span className="select-none">K</span> */}
+            </MenuItem>
+            {/* <MenuItem></MenuItem> */}
           </div>
 
           {/* Keymap */}
