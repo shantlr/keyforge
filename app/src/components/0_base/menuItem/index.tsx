@@ -60,24 +60,36 @@ export const MenuItem = ({
       }
     );
     console.log(scope.current.querySelector('&>#content').clientHeight);
-    await animate(scope.current, {
-      width: 300,
-    });
+    await animate(
+      scope.current,
+      {
+        width: 300,
+      },
+      {
+        type: 'spring',
+        duration: 0.3,
+      }
+    );
     await animate(scope.current, {
       height: 'fit-content',
     });
     await animate('&>#content', {
       opacity: 1,
     });
-    // await animate(scope.current, {
-    //   borderStyle: 'solid',
-    // });
   };
   const runCloseAnimation = async () => {
     await animate('&>#content', { opacity: 0 });
     animate('&>#content', { display: 'none' });
+
     await animate(scope.current, { height: 30, borderStyle: 'dashed' });
-    await animate(scope.current, { width: 30 });
+    await animate(
+      scope.current,
+      { width: 30 },
+      {
+        type: 'spring',
+        duration: 0.5,
+      }
+    );
     await animate('& > #icon', {
       opacity: 1,
       display: 'flex',
@@ -130,7 +142,7 @@ export const MenuItem = ({
           <div
             id="content"
             ref={contentRef}
-            className="h-full hidden p-2 space-y-2 opacity-0 shadow-lg shadow-default-darker"
+            className="h-full hidden p-2 space-y-2 opacity-0 shadow-md shadow-default-darker"
             onClick={(e) => {
               if (expand && e.target === contentRef.current) {
                 setExpand(false);

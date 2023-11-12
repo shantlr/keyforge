@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from 'clsx';
 import { isEqual, map, sortBy } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { RiKeyboardFill } from 'react-icons/ri';
 
 import { $$getExistingKeymap } from '@/actions/getExisingKeymap';
 import { Disclosure } from '@/components/0_base/disclosure';
@@ -328,7 +329,8 @@ export const KeymapConfigurator = ({
                 </>
               }
             >
-              <FontAwesomeIcon icon={faLayerGroup} />
+              <RiKeyboardFill />
+              {/* <FontAwesomeIcon icon={faLayerGroup} /> */}
               {/* <span className="select-none">K</span> */}
             </MenuItem>
             {/* <MenuItem></MenuItem> */}
